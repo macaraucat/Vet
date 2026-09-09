@@ -2,30 +2,204 @@
     box-sizing: border-box;
 }
 
-header {
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
     text-align: center;
+}
+
+p {
+    text-align: justify;
+}
+
+header {
     padding: 20px;
     color: white;
     background-color: #145E5C;
+    border-color: rgb(0, 50, 0);
 }
 
 header .header {
     display: flex;
     align-items: center;
-    gap: 20px;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-header #logo {
-    width: 120px;
-    height: 120px;
+/* Contenedor logo + nav, y contenedor de íconos */
+header .header > div {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+header .logo {
+    width: 110px;
+    height: 110px;    
+}
+
+header .icon {
+    width: 40px;
+    height: 40px;
+    transition: transform 0.2s ease, filter 0.2s ease;
+    cursor: pointer;
+}
+
+header .icon:hover {
+    transform: scale(1.15);
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
 }
 
 nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 0;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-size: 24px;
+    padding-bottom: 4px;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+nav a:hover {
+    color: #E8F5F4;
+    border-bottom: 2px solid currentColor;
+}
+
+.hero-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.hero {
+    text-align: left;
+}
+
+.hero-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    flex: 1;
+}
+
+.hero-img {
+    max-width: 45%;
+    height: auto;
+    flex-shrink: 0;
+    border-radius: 24px;
+}
+
+.servicios {
     text-align: center;
-    padding: 15px;
+}
+
+.lista-servicios {
+    margin-block: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.servicio {
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 24px;
+    padding: 24px;
+    width: 160px;
+    box-sizing: border-box;
+}
+
+.servicio h3 {
+    margin: 0 0 20px 0;
+    font-size: 1.1rem;
+    color: #2b2b2b;
+}
+
+.servicio .icono-servicio {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+}
+
+.nosotros h2 {
+    text-align: center;
+}
+
+.nosotros p {
+    margin-inline: 52px;
+    text-align: justify;
+}
+
+.team-img {
+    display: block;
+    margin: 0 auto;
+    max-width: 50%;
+    height: auto;
+    border-radius: 24px;
+}
+
+.blogs h2 {
+    text-align: center;
+}
+
+.blogs p {
+    text-align: left;
+}
+
+.lista-blogs {
+    margin-block: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.blog-preview {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    background-color: #ececec;
+    border: none;
+    border-radius: 16px;
+    padding: 30px;
+    text-align: left;
+    width: auto;
+}
+
+.blog-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    flex: 1;
+}
+
+.blog-img {
+    max-width: 45%;
+    width: 45%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 12px;
+    flex-shrink: 0;
+    margin-top: 0;
 }
 
 footer {
     color: white;
     background-color: #145E5C;
+    text-align: center;
+    padding: 15px;
 }
