@@ -17,6 +17,7 @@ p {
 
 header {
     padding: 20px;
+    position: sticky;
     color: white;
     background-color: #145E5C;
     border-color: rgb(0, 50, 0);
