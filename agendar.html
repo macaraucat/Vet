@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendar Hora | Veterinaria San Marcos</title>
+    <link rel="icon" type="image/x-icon" href="img/logo-fondo-blanco.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/agendar.css">
+</head>
+<body>
+
+    <header>
+        <div class="header">
+            <div>
+                <a href="index.html"><img src="img/logo-fondo-blanco.png" alt="Logo Veterinaria San Marcos" class="logo"></a>
+                <nav>
+                    <a href="catalogo.html">Productos</a>
+                    <a href="index.html#nosotros">Nosotros</a>
+                    <a href="index.html#blogs">Blogs</a>
+                    <a href="contacto.html">Contacto</a>
+                </nav>
+            </div>
+            <div>
+                <a href="login.html" title="Iniciar sesión"><img src="img/cuenta.svg" alt="Iniciar sesión" class="icon"></a>
+                <a href="carrito.html" title="Carrito" class="position-relative">
+                    <img src="img/carrito.svg" alt="Carrito" class="icon">
+                    <span id="contador-carrito" class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">0</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container py-5" style="max-width: 700px;">
+        <h2 class="text-center mb-4">Agendar hora</h2>
+        <p class="text-center mb-4">Completa el formulario y te confirmaremos tu hora a la brevedad.</p>
+
+        <form id="form-agendar" class="row g-3" novalidate>
+
+            <div class="col-12 col-md-6">
+                <label for="nombre-dueno" class="form-label">Nombre del dueño</label>
+                <input type="text" class="form-control" id="nombre-dueno" minlength="3" required>
+                <div class="invalid-feedback">Ingresa tu nombre (mínimo 3 letras).</div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label for="telefono" class="form-label">Teléfono de contacto</label>
+                <input type="tel" class="form-control" id="telefono" pattern="(\+?56)?\s?9\s?\d{4}\s?\d{4}" placeholder="+56 9 8765 4321" required>
+                <div class="invalid-feedback">Ingresa un celular chileno válido, ej: +56 9 8765 4321.</div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label for="nombre-mascota" class="form-label">Nombre de la mascota</label>
+                <input type="text" class="form-control" id="nombre-mascota" minlength="2" required>
+                <div class="invalid-feedback">Ingresa el nombre de tu mascota.</div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label for="especie" class="form-label">Especie</label>
+                <select class="form-select" id="especie" required>
+                    <option value="" selected disabled>Selecciona una opción</option>
+                    <option value="Perro">Perro</option>
+                    <option value="Gato">Gato</option>
+                    <option value="Conejo">Conejo</option>
+                    <option value="Ave">Ave</option>
+                    <option value="Otro">Otro</option>
+                </select>
+                <div class="invalid-feedback">Selecciona la especie de tu mascota.</div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label for="servicio" class="form-label">Servicio</label>
+                <select class="form-select" id="servicio" required>
+                    <option value="" selected disabled>Selecciona una opción</option>
+                    <option value="Consulta general">Consulta general</option>
+                    <option value="Vacunación">Vacunación</option>
+                    <option value="Cirugía">Cirugía</option>
+                    <option value="Desparasitación">Desparasitación</option>
+                    <option value="Exámenes">Exámenes</option>
+                    <option value="Otro">Otro</option>
+                </select>
+                <div class="invalid-feedback">Selecciona el servicio.</div>
+            </div>
+
+            <div class="col-12 col-md-3">
+                <label for="fecha" class="form-label">Fecha</label>
+                <input type="date" class="form-control" id="fecha" required>
+                <div class="invalid-feedback">Elige una fecha válida (no puede ser anterior a hoy).</div>
+            </div>
+
+            <div class="col-12 col-md-3">
+                <label for="hora" class="form-label">Hora</label>
+                <input type="time" class="form-control" id="hora" required>
+                <div class="invalid-feedback">Elige una hora.</div>
+            </div>
+
+            <div class="col-12">
+                <label for="comentario" class="form-label">Comentario (opcional)</label>
+                <textarea class="form-control" id="comentario" rows="3"></textarea>
+            </div>
+
+            <div class="col-12 text-center">
+                <button type="submit" class="btn btn-success px-5">Solicitar hora</button>
+            </div>
+
+        </form>
+
+        <div id="confirmacion" class="alert alert-success mt-4 d-none" role="alert"></div>
+
+        <h3 class="text-center mt-5 mb-3">Mis horas solicitadas</h3>
+        <div id="lista-citas">
+        </div>
+
+    </main>
+
+    <footer class="footer py-3"><p>© Veterinaria San Marcos 2026. Todos los derechos reservados.</p></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/agendar.js"></script>
+</body>
+</html>
