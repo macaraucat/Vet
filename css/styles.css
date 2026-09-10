@@ -17,6 +17,7 @@ p {
 
 header {
     padding: 20px;
+    position: sticky;
     color: white;
     background-color: #145E5C;
     border-color: rgb(0, 50, 0);
@@ -78,6 +79,19 @@ nav a:hover {
     filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.8));
 }
 
+.user-name {
+    font-weight: bold;
+    color: white;
+    font-size: 1rem;
+    white-space: nowrap;
+}
+
+body {
+    background-color: #FAFAFA;
+    min-height: calc(100vh - 200px); /* Asegura que cubra el espacio entre header y footer */
+}
+
+/* INICIO */
 .hero-content {
     display: flex;
     flex-direction: row;
@@ -88,7 +102,6 @@ nav a:hover {
     margin: 0 auto;
 }
 
-/* INICIO */
 .hero {
     text-align: left;
 }
@@ -106,6 +119,19 @@ nav a:hover {
     height: auto;
     flex-shrink: 0;
     border-radius: 24px;
+}
+
+.cita-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    background-color: #f8f9fa;
+}
+
+.cita-card p {
+    margin: 0;
+    text-align: left;
 }
 
 /* SERVICIOS */
