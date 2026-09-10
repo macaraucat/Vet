@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Veterinaria San Marcos</title>
-    <link rel="icon" type="image/x-icon" href="img/logo-fondo-blanco.png">
+    <link rel="icon" type="image/x-icon" href="img/logo.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -13,22 +13,23 @@
     <header>
         <div class="header">
             <div>
-                <a href="index.html"><img src="img/logo-fondo-blanco.png" alt="Logo Veterinaria San Marcos" class="logo"></a>                
+                <a href="index.html"><img src="img/logo.png" alt="Logo Veterinaria San Marcos" class="logo"></a>                
                 <nav>
                     <a href="catalogo.html">Productos</a>
-                    <a href="#nosotros">Nosotros</a>
-                    <a href="#blogs">Blogs</a>
+                    <a href="index.html#nosotros">Nosotros</a>
+                    <a href="index.html#blogs">Blogs</a>
                     <a href="contacto.html">Contacto</a>
                 </nav>
             </div>
             <div>
                 <span id="user-name-display" class="user-name"></span>
-                <a href="login.html" title="Iniciar sesión"><img src="img/cuenta.svg" alt="Iniciar sesión" class="icon"></a>
+                <a href="login.html" id="btn-login" title="Iniciar sesión"><img src="img/cuenta.svg" alt="Iniciar sesión" class="icon"></a>
+                <a href="#" id="btn-logout" title="Cerrar sesión" style="display: none;"><img src="img/logout.svg" alt="Cerrar sesión" class="icon"></a>
                 <a href="carrito.html" title="Carrito" class="position-relative">
                     <img src="img/carrito.svg" alt="Carrito" class="icon">
                     <span id="contador-carrito" class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">0</span>
                 </a>
-            </div>     
+            </div>
         </div>
     </header>
 

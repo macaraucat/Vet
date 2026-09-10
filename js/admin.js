@@ -1,4 +1,11 @@
-document.addEventListener('DOMContentLoaded', function () {
+(function protegerAdmin() {
+    const usuarioActivo = localStorage.getItem('usuarioActivo');
+    if (!usuarioActivo) {
+        window.location.href = 'login.html';
+    }
+})();
+
+document.addEventListener('DOMContentLoaded', function () {    
     // ==================== Navegación entre secciones ====================
     const itemsMenu = document.querySelectorAll('.nav-section .nav-item');
     const secciones = document.querySelectorAll('.admin-section');
