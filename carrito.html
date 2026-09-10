@@ -52,14 +52,17 @@
                 </tr>
             </thead>
             <tbody id="items-carrito">
+                <!-- Los items se cargan aquí con JavaScript -->
             </tbody>
         </table>
 
         <div class="text-end d-none" id="resumen-carrito">
             <h4>Total: $<span id="total-carrito">0</span></h4>
             <button class="btn btn-outline-danger" onclick="limpiarCarrito()">Vaciar carrito</button>
-            <button class="btn btn-success">Finalizar compra</button>
+            <button class="btn btn-success" onclick="finalizarCompra()">Finalizar compra</button>
         </div>
+
+        <div id="pedido-confirmado" class="alert alert-success text-center mt-4 d-none" role="alert"></div>
     </main>
 
     <footer id="footer">

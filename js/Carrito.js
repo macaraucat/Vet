@@ -77,6 +77,25 @@ function limpiarCarrito() {
     actualizarContadorCarrito();
 }
 
+// Simula que el pedido se concretó (no hay backend ni pago real)
+function finalizarCompra() {
+    const carrito = obtenerCarrito();
+
+    if (carrito.length === 0) {
+        return;
+    }
+
+    const numeroPedido = Math.floor(100000 + Math.random() * 900000);
+
+    vaciarCarrito();
+    pintarCarrito();
+    actualizarContadorCarrito();
+
+    const aviso = document.getElementById("pedido-confirmado");
+    aviso.textContent = `¡Pedido N.º ${numeroPedido} realizado con éxito! Te contactaremos para coordinar la entrega.`;
+    aviso.classList.remove("d-none");
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     pintarCarrito();
     actualizarContadorCarrito();
