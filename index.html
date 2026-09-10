@@ -22,9 +22,13 @@
                 </nav>
             </div>
             <div>
+                <span id="user-name-display" class="user-name"></span>
                 <a href="login.html" title="Iniciar sesión"><img src="img/cuenta.svg" alt="Iniciar sesión" class="icon"></a>
-                <img src="img/carrito.svg" alt="Carrito" class="icon">
-            </div>
+                <a href="carrito.html" title="Carrito" class="position-relative">
+                    <img src="img/carrito.svg" alt="Carrito" class="icon">
+                    <span id="contador-carrito" class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">0</span>
+                </a>
+            </div>     
         </div>
     </header>
 
@@ -120,6 +124,8 @@
     </main>
 
     <footer class="footer py-3"><p>© Veterinaria San Marcos 2026. Todos los derechos reservados.</p></footer>
+
+    <script src="js/auth.js"></script>
 
 </body>
 </html>

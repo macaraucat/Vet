@@ -79,6 +79,13 @@ nav a:hover {
     filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.8));
 }
 
+.user-name {
+    font-weight: bold;
+    color: white;
+    font-size: 1rem;
+    white-space: nowrap;
+}
+
 body {
     background-color: #FAFAFA;
     min-height: calc(100vh - 200px); /* Asegura que cubra el espacio entre header y footer */
