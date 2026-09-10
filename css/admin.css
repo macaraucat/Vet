@@ -66,14 +66,29 @@
     display: block;
 }
 
-/* Contenido principal */
+/* CONTENIDO PRINCIPAL */
 .main-content {
     flex: 1;
     padding: 2rem;
     overflow-y: auto;
 }
 
-/* Barra de acciones del CRUD de usuarios y productos */
+/* MODAL */
+.modal-header {
+    background-color: #145E5C;
+    color: white;
+}
+
+.modal-title {
+    font-weight: 600;
+}
+
+.modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+/* TOOLBAR CRUD */
 .toolbar-usuarios,
 .toolbar-productos {
     display: flex;
@@ -81,7 +96,7 @@
     margin-bottom: 16px;
 }
 
-/* Tabla de usuarios */
+/* TABLAS */
 .tabla-wrapper {
     width: 100%;
     overflow-x: auto;
