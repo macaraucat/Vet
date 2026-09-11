@@ -18,7 +18,7 @@
                     <a href="catalogo.html">Productos</a>
                     <a href="index.html#nosotros">Nosotros</a>
                     <a href="index.html#blogs">Blogs</a>
-                    <a href="contacto.html">Contacto</a>
+                    <a href="index.html#contacto">Contacto</a>
                 </nav>
             </div>
             <div>
@@ -119,6 +119,41 @@
                     </div>
                     <img src="img/conejo.jpg" alt="Dato curioso" class="blog-img">
                 </article>
+            </div>
+        </section>
+
+        <section id="contacto" class="contacto px-5 py-4">
+            <h2>Contacte con nosotros</h2>
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-md-8 col-lg-6">
+                        <div class="card shadow-sm border">
+                            <div class="card-body p-4 p-md-4">
+                                <form>
+                                    <div class="mb-3">
+                                        <label for="asunto" class="form-label"><b>Asunto</b></label>
+                                        <input type="text" class="form-control" id="asunto" name="asunto" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label"><b>Correo electrónico</b></label>
+                                        <input type="email" class="form-control" id="email" name="email" placeholder="Ingresar correo electrónico" required>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label for="mensaje" class="form-label"><b>Mensaje</b></label>
+                                        <textarea class="form-control" id="mensaje" name="mensaje" rows="4" placeholder="¿Cómo podemos ayudarle?" required></textarea>
+                                    </div>
+
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" class="btn btn-success">Enviar</button>
+                                    </div>
+                                    <p class="text-center mt-3 mb-0">Respondemos en un plazo de 24 horas</p>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
