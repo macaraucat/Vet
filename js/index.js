@@ -19,17 +19,4 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-
-    // Función para el toast de "Agendar cita"
-    const btnAgendarCita = document.getElementById('btnAgendarCita');
-    if (btnAgendarCita) {
-        btnAgendarCita.addEventListener('click', function(e) {
-            e.preventDefault();
-            const toastElement = document.getElementById('toastFuncionEnConstruccion');
-            if (toastElement) {
-                const toast = new bootstrap.Toast(toastElement, { autohide: true, delay: 3000 });
-                toast.show();
-            }
-        });
-    }
 });
