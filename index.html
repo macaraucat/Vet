@@ -44,7 +44,7 @@
                         veterinarios, técnico veterinario y equipamiento especializado. Sabemos lo importante que es tu mascota
                         para ti, por eso trabajamos con dedicación y cariño en cada visita.</p>
                     <img src="img/hero.jpg" alt="Mascotas" class="hero-img">
-                    <a href="agendar.html" class="boton boton-primario"><button type="submit" class="btn btn-success">Agendar cita</button></a>
+                    <button type="button" id="btnAgendarCita" class="btn btn-success boton boton-primario">Agendar cita</button>
                 </div>
             </div>
         </section>
@@ -90,11 +90,13 @@
                             atención, desde la comodidad de nuestras instalaciones hasta la calidez con la que recibimos a cada mascota y su familia.</p>
                         <img src="img/team.jpg" alt="Veterinaria San Marcos team" class="team-img mx-auto d-block my-4">
                         <h3>Nuestro equipo:</h3>
-                        <p><b>Laura Claro Hernández:</b> Médica Veterinaria, Universidad de Concepción. Diplomado en Cirugía de Pequeños Animales (Universidad de Chile). Directora clínica y fundadora de Veterinaria San Marcos, con más de 15 años de trayectoria en medicina y cirugía de perros y gatos.<hr>
-                        <b>Carmen Martínez Larraín:</b> Médica Veterinaria, Universidad Austral de Chile. Diplomado en Medicina Interna de Pequeños Animales; responsable de consultas generales, vacunación y programas preventivos.<hr>
-                        <b>Ignacio Solar Guzmán:</b> Médico Veterinario, Universidad de Concepción. Magíster en Medicina de Especies Exóticas, con dedicación especial a aves y conejos; a cargo de la atención de mascotas no convencionales.<hr>
-                        <b>Jorge Vial Peña:</b> Técnico en Enfermería Veterinaria, Universidad Santo Tomás. Encargado de pabellón y apoyo en procedimientos quirúrgicos, cuidados intensivos y toma de exámenes.<hr>
-                        <b>Sofía Astorga Zapata:</b> Administradora, Universidad de Talca. Recepcionista y encargada de atención a clientes, agendamiento de horas y gestión administrativa de la clínica.</p>
+                        <p>
+                            <b>Laura Claro Hernández:</b> Médica Veterinaria, Universidad de Concepción. Diplomado en Cirugía de Pequeños Animales (Universidad de Chile). Directora clínica y fundadora de Veterinaria San Marcos, con más de 15 años de trayectoria en medicina y cirugía de perros y gatos.<hr>
+                            <b>Carmen Martínez Larraín:</b> Médica Veterinaria, Universidad Austral de Chile. Diplomado en Medicina Interna de Pequeños Animales; responsable de consultas generales, vacunación y programas preventivos.<hr>
+                            <b>Ignacio Solar Guzmán:</b> Médico Veterinario, Universidad de Concepción. Magíster en Medicina de Especies Exóticas, con dedicación especial a aves y conejos; a cargo de la atención de mascotas no convencionales.<hr>
+                            <b>Jorge Vial Peña:</b> Técnico en Enfermería Veterinaria, Universidad Santo Tomás. Encargado de pabellón y apoyo en procedimientos quirúrgicos, cuidados intensivos y toma de exámenes.<hr>
+                            <b>Sofía Astorga Zapata:</b> Administradora, Universidad de Talca. Recepcionista y encargada de atención a clientes, agendamiento de horas y gestión administrativa de la clínica.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -105,14 +107,26 @@
             <div class="lista-noticias">
                 <article class="noticia">
                     <h4>Una cirugía de emergencia con final feliz</h4>
-                    <p>Firulais llegó en estado crítico por un accidente, fue operado de urgencia y, tras semanas de cuidados y acompañamiento familiar, se recuperó por completo.</p>
-                    <a href="#">Ver más</a>
+                    <p class="texto-corto">Firulais llegó en estado crítico por un accidente, fue operado de urgencia y, tras semanas de cuidados y acompañamiento familiar, se recuperó por completo.</p>
+                    <p class="texto-extendido" style="display: none;">
+                        Firulais llegó a nuestra clínica en estado crítico tras un accidente, con signos vitales alterados y una lesión que requería intervención inmediata.
+                        Nuestro equipo médico actuó rápido: en menos de una hora ya estaba en cirugía, estabilizado y bajo constante monitoreo.
+                        Los días posteriores fueron clave, con curaciones diarias, controles de dolor y mucho acompañamiento de su familia, que no se separó de él en ningún momento.
+                        Hoy, varias semanas después, Firulais corre, juega y mueve la cola como si nada hubiera pasado, un recordatorio de por qué actuar a tiempo puede marcar toda la diferencia.
+                    </p>
+                    <a href="#" class="boton-expandir" data-target="0">Expandir</a>
                     <img src="img/firulais.jpg" alt="Firulais" class="blog-img">
                 </article>
                 <article class="noticia">
                     <h4>Problemas dentales en conejos</h4>
-                    <p>Sus dientes crecen continuamente; desequilibrios en la dieta o alineación pueden causar problemas graves. Revisiones periódicas y dieta rica en fibra ayudan a prevenirlos.</p>
-                    <a href="#">Ver más</a>
+                    <p class="texto-corto">Sus dientes crecen continuamente; desequilibrios en la dieta o alineación pueden causar problemas graves. Revisiones periódicas y dieta rica en fibra ayudan a prevenirlos.</p>
+                    <p class="texto-extendido" style="display: none;">
+                        Los conejos son pacientes poco comunes en la consulta diaria, pero cada vez llegan más a nuestra clínica, y sus dientes suelen ser la razón principal.
+                        A diferencia de perros y gatos, sus dientes crecen de forma continua durante toda su vida, así que cualquier desequilibrio en su dieta o alineación dental puede derivar en molestias serias.
+                        Señales como babeo, pérdida de apetito o cambios en el pelaje alrededor del hocico son motivo suficiente para pedir hora.
+                        Con revisiones periódicas y una dieta rica en fibra, la mayoría de estos problemas se puede prevenir antes de que se conviertan en una urgencia.
+                    </p>
+                    <a href="#" class="boton-expandir" data-target="1">Expandir</a>
                     <img src="img/conejo.jpg" alt="Conejo" class="blog-img">
                 </article>
             </div>
@@ -161,8 +175,8 @@
         </div>
     </footer>
 
-    <script src="js/auth.js"></script>
+    <script src="js/auth.js"></script>    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-7svj63xp6T2LGS6K2i4L5jQ5Q6C1Jh7PqLJQ6qB5G2D2L6J1J5Q6C1Jh7PqLJQ" crossorigin="anonymous"></script>
-
+    <script src="js/index.js"></script>
 </body>
 </html>
