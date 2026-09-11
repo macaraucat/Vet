@@ -10,25 +10,27 @@
 </head>
 
 <body class="d-flex flex-column min-vh-100">
-    <header>
-        <div class="header">
-            <div>
-                <a href="index.html"><img src="img/logo.png" alt="Logo Veterinaria San Marcos" class="logo"></a>                
-                <nav>
-                    <a href="catalogo.html">Productos</a>
-                    <a href="index.html#nosotros">Nosotros</a>
-                    <a href="index.html#blogs">Blogs</a>
-                    <a href="contacto.html">Contacto</a>
-                </nav>
-            </div>
-            <div>
-                <span id="user-name-display" class="user-name"></span>
-                <a href="login.html" id="btn-login" title="Iniciar sesión"><img src="img/cuenta.svg" alt="Iniciar sesión" class="icon"></a>
-                <a href="#" id="btn-logout" title="Cerrar sesión" style="display: none;"><img src="img/logout.svg" alt="Cerrar sesión" class="icon"></a>
-                <a href="carrito.html" title="Carrito" class="position-relative">
-                    <img src="img/carrito.svg" alt="Carrito" class="icon">
-                    <span id="contador-carrito" class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">0</span>
-                </a>
+    <header class="py-3">
+        <div class="container">
+            <div class="header d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <a href="index.html"><img src="img/logo.png" alt="Logo Veterinaria San Marcos" class="logo"></a>
+                    <nav class="d-flex align-items-center gap-3">
+                        <a href="catalogo.html">Productos</a>
+                        <a href="index.html#nosotros">Nosotros</a>
+                        <a href="index.html#blogs">Blogs</a>
+                        <a href="index.html#contacto">Contacto</a>
+                    </nav>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <span id="user-name-display" class="user-name"></span>
+                    <a href="login.html" id="btn-login" title="Iniciar sesión"><img src="img/cuenta.svg" alt="Iniciar sesión" class="icon"></a>
+                    <a href="#" id="btn-logout" title="Cerrar sesión" style="display: none;"><img src="img/logout.svg" alt="Cerrar sesión" class="icon"></a>
+                    <a href="carrito.html" title="Carrito" class="position-relative">
+                        <img src="img/carrito.svg" alt="Carrito" class="icon">
+                        <span id="contador-carrito" class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">0</span>
+                    </a>
+                </div>
             </div>
         </div>
     </header>
@@ -136,7 +138,11 @@
         </section>
     </main>
 
-    <footer class="footer py-3"><p>© Veterinaria San Marcos 2026. Todos los derechos reservados.</p></footer>
+    <footer class="footer py-3">
+        <div class="container">
+            <p class="text-center">© Veterinaria San Marcos 2026. Todos los derechos reservados.</p>
+        </div>
+    </footer>
     
     <script src="js/auth.js"></script>
     <script src="js/validaciones.js"></script>

@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    /* CONTACTO */
     const contactoSection = document.getElementById('contacto');
     if (contactoSection) {
         const contactoForm = contactoSection.querySelector('form');
