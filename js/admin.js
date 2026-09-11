@@ -6,7 +6,7 @@
         window.location.href = 'login.html';
         return;
     }
-    // Solo Funcionario o Administrador pueden ver el panel.
+
     if (tipoUsuario !== 'Funcionario' && tipoUsuario !== 'Administrador') {
         window.location.href = 'index.html';
     }
@@ -14,7 +14,18 @@
 
 document.addEventListener('DOMContentLoaded', function () {
 
-    // ==================== Navegación entre secciones ====================
+    // Restricción por rol: ocultar "Gestión de Usuarios" a Funcionario
+    const tipoUsuario = localStorage.getItem('tipoUsuario');
+
+    if (tipoUsuario === 'Funcionario') {
+        const navUsuarios = document.querySelector('.nav-item[data-target="usuarios"]');
+        const seccionUsuarios = document.getElementById('seccion-usuarios');
+
+        if (navUsuarios) navUsuarios.remove();
+        if (seccionUsuarios) seccionUsuarios.remove();
+    }
+
+    // Navegación entre secciones
     const itemsMenu = document.querySelectorAll('.nav-section .nav-item');
     const secciones = document.querySelectorAll('.admin-section');
 
@@ -30,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // ==================== Gestión de Usuarios ====================
+    // Gestión de Usuarios
     const btnAgregarUsuario = document.getElementById('btn-agregar-usuario');
     const btnModificarUsuario = document.getElementById('btn-modificar-usuario');
     const btnGuardarUsuario = document.getElementById('btn-guardar-usuario');
@@ -110,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // ==================== Gestión de Productos ====================
+    // Gestión de Productos
     const btnAgregarProducto = document.getElementById('btn-agregar-producto');
     const btnModificarProducto = document.getElementById('btn-modificar-producto');
     const btnGuardarProducto = document.getElementById('btn-guardar-producto');
