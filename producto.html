@@ -11,7 +11,7 @@
 </head>
 <body>
 
-    <div id="aviso-toast" class="alert alert-success text-center d-none" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1050;"></div>
+    <div id="aviso-toast" class="alert alert-success text-center d-none"></div>
 
     <header>
         <div class="header">
@@ -36,12 +36,12 @@
         </div>
     </header>
 
-    <main class="container mb-5">
-        <div class="row g-4 align-items-start">
-            <div class="col-12 col-md-6">
+    <main class="container py-5">
+        <div class="row g-2 align-items-start">
+            <div class="col-12 col-md-5">
                 <img src="img/ME001.jpeg" alt="Amoxibay 250mg" class="img-fluid rounded shadow-sm">
             </div>
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-7">
                 <span class="badge bg-secondary mb-2">Antibióticos</span>
                 <h2>Amoxibay 250mg</h2>
                 <p class="fs-4 fw-bold">$4.200</p>
@@ -50,8 +50,10 @@
                     <li><strong>Presentación:</strong> Blíster 10 comp.</li>
                     <li><strong>Especie:</strong> Perro / Gato</li>
                 </ul>
-                <button class="btn btn-success" onclick="agregarAlCarrito('ME001', 'Amoxibay 250mg', 4200, 'img/ME001.jpeg')">Agregar al carrito</button>
-                <a href="catalogo.html" class="btn btn-outline-secondary">Volver al catálogo</a>
+                <div class="d-flex gap-2 mt-3">
+                    <button class="btn btn-success" onclick="agregarAlCarrito('ME001', 'Amoxibay 250mg', 4200, 'img/ME001.jpeg')">Agregar al carrito</button>
+                    <a href="catalogo.html" class="btn btn-outline-secondary">Volver al catálogo</a>
+                </div>
             </div>
         </div>
     </main>

@@ -77,7 +77,7 @@ function limpiarCarrito() {
     actualizarContadorCarrito();
 }
 
-// Simula que el pedido se concretó (no hay backend ni pago real)
+// Simula que el pedido se concretó
 function finalizarCompra() {
     const carrito = obtenerCarrito();
 

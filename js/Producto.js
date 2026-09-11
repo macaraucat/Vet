@@ -14,7 +14,7 @@ function agregarAlCarrito(id, nombre, precio, imagen) {
     mostrarAviso("Producto agregado correctamente");
 }
 
-// Muestra un aviso pequeño que desaparece solo (sin que el usuario tenga que cerrarlo)
+// Muestra un aviso pequeño que desaparece solo 
 function mostrarAviso(mensaje) {
     const aviso = document.getElementById("aviso-toast");
     if (!aviso) return;

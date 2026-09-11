@@ -26,6 +26,14 @@ main {
     font-size: 0.8rem;
 }
 
+#aviso-toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1050;
+}
+
+
 /* producto.css */
 #detalle-producto img {
     max-height: 400px;
