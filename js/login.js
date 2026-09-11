@@ -6,38 +6,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const loginForm = document.getElementById('login-form');
     const registroForm = document.getElementById('registro-form');
-    const userNameDisplay = document.getElementById('user-name-display');
 
-    // 1. Usuarios predefinidos requeridos
+    // Usuarios predefinidos con acceso al panel de administración.
     const usuariosPredefinidos = [
-        { nombre: 'Admin', email: 'admin@gmail.com', pass: 'admin123', role: 'admin' },
-        { nombre: 'Funcionario', email: 'func@gmail.com', pass: 'func123', role: 'funcionario' }
+        { nombre: 'Admin', email: 'admin@gmail.com', pass: 'admin123', role: 'Administrador' },
+        { nombre: 'Funcionario', email: 'func@gmail.com', pass: 'func123', role: 'Funcionario' }
     ];
 
-    // Inicializar usuarios en localStorage si no existen
+    // Inicializar la "base de datos" de usuarios en localStorage si aún no existe.
     let usuariosDB = JSON.parse(localStorage.getItem('usuariosDB'));
     if (!usuariosDB) {
         usuariosDB = usuariosPredefinidos;
         localStorage.setItem('usuariosDB', JSON.stringify(usuariosDB));
-    } else {
-        // Garantizar que los usuarios creados previamente sigan presentes
-        usuariosPredefinidos.forEach(preUser => {
-            if (!usuariosDB.some(user => user.email === preUser.email)) {
-                usuariosDB.push(preUser);
-            }
-        });
-        localStorage.setItem('usuariosDB', JSON.stringify(usuariosDB));
     }
 
-    function cargarUsuarioHeader() {
-        const usuarioGuardado = localStorage.getItem('usuarioActivo');
-        if (usuarioGuardado && userNameDisplay) {
-            userNameDisplay.textContent = usuarioGuardado;
-        }
-    }
-    cargarUsuarioHeader();
-
-    // 2. Registro de nuevos usuarios
+    // 1. Registro de nuevos usuarios (siempre quedan como Cliente)
     if (registroForm) {
         registroForm.addEventListener('submit', function (e) {
             e.preventDefault();
@@ -52,48 +35,42 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            const listaUsuarios = JSON.parse(localStorage.getItem('usuariosDB')) || [];
-
-            if (listaUsuarios.some(user => user.email === email)) {
+            if (usuariosDB.some(user => user.email === email)) {
                 alert('Este correo electrónico ya está registrado.');
                 return;
             }
 
-            listaUsuarios.push({ nombre, email, pass, role: 'cliente' });
-            localStorage.setItem('usuariosDB', JSON.stringify(listaUsuarios));
+            usuariosDB.push({ nombre, email, pass, role: 'Cliente' });
+            localStorage.setItem('usuariosDB', JSON.stringify(usuariosDB));
 
             alert('¡Registro completado! Ahora puedes iniciar sesión.');
             registroForm.reset();
-            
+
             regSection.style.display = 'none';
             loginSection.style.display = 'block';
         });
     }
 
-    // 3. Login y Redirección condicionada
+    // 2. Login: valida contra la base de usuarios y redirige según el rol
     if (loginForm) {
         loginForm.addEventListener('submit', function (e) {
             e.preventDefault();
 
-            const emailInput = document.getElementById('email').value.trim().toLowerCase();
-            const passInput = document.getElementById('pass').value;
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            const pass = document.getElementById('pass').value;
 
-            const listaUsuarios = JSON.parse(localStorage.getItem('usuariosDB')) || [];
-            const usuarioEncontrado = listaUsuarios.find(user => user.email === emailInput && user.pass === passInput);
+            const usuario = usuariosDB.find(u => u.email === email && u.pass === pass);
 
-            if (usuarioEncontrado) {
-                // Guardar nombre del usuario activo
-                localStorage.setItem('usuarioActivo', usuarioEncontrado.nombre);
-
-                // Redirección condicionada
-                if (usuarioEncontrado.email === 'admin@gmail.com' || usuarioEncontrado.email === 'func@gmail.com') {
-                    window.location.href = 'admin.html';
-                } else {
-                    window.location.href = 'index.html';
-                }
-            } else {
+            if (!usuario) {
                 alert('Correo o contraseña incorrectos.');
+                return;
             }
+
+            // Cliente -> queda predefinido y navega al sitio público.
+            // Funcionario / Administrador -> navegan al panel de administración.
+            localStorage.setItem('usuarioActivo', usuario.nombre);
+            localStorage.setItem('tipoUsuario', usuario.role);
+            window.location.href = usuario.role === 'Cliente' ? 'index.html' : 'admin.html';
         });
     }
 
