@@ -57,7 +57,7 @@ function pintarCarrito() {
             <td>$${item.precio.toLocaleString("es-CL")}</td>
             <td>${item.cantidad}</td>
             <td>$${subtotal.toLocaleString("es-CL")}</td>
-            <td><button class="btn btn-sm btn-outline-danger" onclick="eliminarItem(${item.id})">Quitar</button></td>
+            <td><button class="btn btn-sm btn-outline-danger" onclick="eliminarItem('${item.id}')">Quitar</button></td>
         `;
         cuerpoTabla.appendChild(fila);
     });

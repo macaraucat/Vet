@@ -11,7 +11,20 @@ function agregarAlCarrito(id, nombre, precio, imagen) {
 
     localStorage.setItem("carrito", JSON.stringify(carrito));
     actualizarContadorCarrito();
-    alert("Producto agregado al carrito");
+    mostrarAviso("Producto agregado correctamente");
+}
+
+// Muestra un aviso pequeño que desaparece solo (sin que el usuario tenga que cerrarlo)
+function mostrarAviso(mensaje) {
+    const aviso = document.getElementById("aviso-toast");
+    if (!aviso) return;
+
+    aviso.textContent = mensaje;
+    aviso.classList.remove("d-none");
+
+    setTimeout(function () {
+        aviso.classList.add("d-none");
+    }, 2500);
 }
 
 function actualizarContadorCarrito() {
