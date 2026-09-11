@@ -77,8 +77,7 @@
                                     <div class="mb-3">
                                         <label for="run" class="form-label"><b>RUN (sin dígito verificador)</b></label>
                                         <input type="text" class="form-control" id="run" name="run" placeholder="Ingresar RUN" required>
-                                    </div>
-
+                                    </div>                                    
                                     <div class="mb-3">
                                         <label for="nombre" class="form-label"><b>Nombre</b></label>
                                         <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingresar nombre" required>
@@ -101,7 +100,17 @@
 
                                     <div class="mb-3">
                                         <label for="comuna" class="form-label"><b>Comuna</b></label>
-                                        <input type="text" class="form-control" id="comuna" name="comuna" placeholder="Ingresar comuna" required>
+                                        <select class="form-select" id="comuna" name="comuna" required>
+                                            <option value="" selected disabled>Seleccione una comuna</option>
+                                            <option value="Rancagua">Rancagua</option>
+                                            <option value="San Fernando">San Fernando</option>
+                                            <option value="Rengo">Rengo</option>
+                                            <option value="San Vicente de Tagua Tagua">San Vicente de Tagua Tagua</option>
+                                            <option value="Santa Cruz">Santa Cruz</option>
+                                            <option value="Chimbarongo">Chimbarongo</option>
+                                            <option value="Graneros">Graneros</option>
+                                            <option value="Machalí">Machalí</option>
+                                        </select>
                                     </div>
 
                                     <div class="mb-3">

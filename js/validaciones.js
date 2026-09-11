@@ -1,7 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // ----------------------------------------------------
-    // Reglas Generales y Funciones Auxiliares
-    // ----------------------------------------------------
     const dominiosPermitidos = ['@duoc.cl', '@profesor.duoc.cl', '@gmail.com'];
 
     // Validación de Correo (Max 100 caracteres y dominios específicos)
@@ -53,33 +50,33 @@ document.addEventListener('DOMContentLoaded', () => {
     /* LOGIN */
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
-        const emailInput = document.getElementById('email');
-        const passInput = document.getElementById('pass');
+        const email = document.getElementById('email');
+        const pass = document.getElementById('pass');
 
         loginForm.addEventListener('submit', (e) => {
             let valido = true;
 
-            // Correo: Requerido, máx 100, dominios permitidos
-            if (!emailInput.value.trim()) {
-                mostrarError(emailInput, 'El correo es obligatorio.');
+            // Correo: máx 100, dominios permitidos
+            if (!email.value.trim()) {
+                mostrarError(email, 'El correo es obligatorio.');
                 valido = false;
-            } else if (!validarCorreo(emailInput.value.trim())) {
-                mostrarError(emailInput, 'Correo inválido. Solo @duoc.cl, @profesor.duoc.cl o @gmail.com (máx. 100 caracteres).');
+            } else if (!validarCorreo(email.value.trim())) {
+                mostrarError(email, 'Correo inválido. Solo @duoc.cl, @profesor.duoc.cl o @gmail.com (máx. 100 caracteres).');
                 valido = false;
             } else {
-                mostrarExito(emailInput);
+                mostrarExito(email);
             }
 
-            // Contraseña: Requerido, entre 4 y 10 caracteres
-            const passVal = passInput.value;
+            // Contraseña: entre 4 y 10 caracteres
+            const passVal = pass.value;
             if (!passVal) {
-                mostrarError(passInput, 'La contraseña es obligatoria.');
+                mostrarError(pass, 'La contraseña es obligatoria.');
                 valido = false;
             } else if (passVal.length < 4 || passVal.length > 10) {
-                mostrarError(passInput, 'La contraseña debe tener entre 4 y 10 caracteres.');
+                mostrarError(pass, 'La contraseña debe tener entre 4 y 10 caracteres.');
                 valido = false;
             } else {
-                mostrarExito(passInput);
+                mostrarExito(pass);
             }
 
             if (!valido) e.preventDefault();
@@ -89,92 +86,92 @@ document.addEventListener('DOMContentLoaded', () => {
     /* REGISTRO */
     const registroForm = document.getElementById('registro-form');
     if (registroForm) {
-        const runInput = document.getElementById('run');
-        const nombreInput = document.getElementById('nombre');
-        const apellidosInput = document.getElementById('apellidos');
-        const emailRegInput = document.getElementById('email-registro');
-        const direccionInput = document.getElementById('direccion');
-        const passRegInput = document.getElementById('pass-registro');
-        const pass2RegInput = document.getElementById('pass2-registro');
+        const run = document.getElementById('run');
+        const nombre = document.getElementById('nombre');
+        const apellidos = document.getElementById('apellidos');
+        const emailReg = document.getElementById('email-registro');
+        const direccion = document.getElementById('direccion');
+        const passReg = document.getElementById('pass-registro');
+        const pass2Reg = document.getElementById('pass2-registro');
 
         registroForm.addEventListener('submit', (e) => {
             let valido = true;
 
             // RUN: Requerido, 7-9 caracteres, formato válido
-            if (!runInput.value.trim()) {
-                mostrarError(runInput, 'El RUN es obligatorio.');
+            if (!run.value.trim()) {
+                mostrarError(run, 'El RUN es obligatorio.');
                 valido = false;
-            } else if (!validarRunChileno(runInput.value.trim())) {
-                mostrarError(runInput, 'Ingrese un RUN válido sin puntos ni guion (Ej: 19011022K).');
+            } else if (!validarRunChileno(run.value.trim())) {
+                mostrarError(run, 'Ingrese un RUN válido sin puntos ni guion (Ej: 19011022K).');
                 valido = false;
             } else {
-                mostrarExito(runInput);
+                mostrarExito(run);
             }
 
             // Nombre: Requerido, máx 50 caracteres
-            if (!nombreInput.value.trim()) {
-                mostrarError(nombreInput, 'El nombre es obligatorio.');
+            if (!nombre.value.trim()) {
+                mostrarError(nombre, 'El nombre es obligatorio.');
                 valido = false;
-            } else if (nombreInput.value.trim().length > 50) {
-                mostrarError(nombreInput, 'El nombre no puede exceder los 50 caracteres.');
+            } else if (nombre.value.trim().length > 50) {
+                mostrarError(nombre, 'El nombre no puede exceder los 50 caracteres.');
                 valido = false;
             } else {
-                mostrarExito(nombreInput);
+                mostrarExito(nombre);
             }
 
             // Apellidos: Requerido, máx 100 caracteres
-            if (!apellidosInput.value.trim()) {
-                mostrarError(apellidosInput, 'Los apellidos son obligatorios.');
+            if (!apellidos.value.trim()) {
+                mostrarError(apellidos, 'Los apellidos son obligatorios.');
                 valido = false;
-            } else if (apellidosInput.value.trim().length > 100) {
-                mostrarError(apellidosInput, 'Los apellidos no pueden exceder los 100 caracteres.');
+            } else if (apellidos.value.trim().length > 100) {
+                mostrarError(apellidos, 'Los apellidos no pueden exceder los 100 caracteres.');
                 valido = false;
             } else {
-                mostrarExito(apellidosInput);
+                mostrarExito(apellidos);
             }
 
             // Correo: Requerido, máx 100, dominios autorizados
-            if (!emailRegInput.value.trim()) {
-                mostrarError(emailRegInput, 'El correo es obligatorio.');
+            if (!emailReg.value.trim()) {
+                mostrarError(emailReg, 'El correo es obligatorio.');
                 valido = false;
-            } else if (!validarCorreo(emailRegInput.value.trim())) {
-                mostrarError(emailRegInput, 'Correo inválido. Usar @duoc.cl, @profesor.duoc.cl o @gmail.com.');
+            } else if (!validarCorreo(emailReg.value.trim())) {
+                mostrarError(emailReg, 'Correo inválido. Usar @duoc.cl, @profesor.duoc.cl o @gmail.com.');
                 valido = false;
             } else {
-                mostrarExito(emailRegInput);
+                mostrarExito(emailReg);
             }
 
             // Dirección: Requerido, máx 300 caracteres
-            if (!direccionInput.value.trim()) {
-                mostrarError(direccionInput, 'La dirección es obligatoria.');
+            if (!direccion.value.trim()) {
+                mostrarError(direccion, 'La dirección es obligatoria.');
                 valido = false;
-            } else if (direccionInput.value.trim().length > 300) {
-                mostrarError(direccionInput, 'La dirección no puede exceder 300 caracteres.');
+            } else if (direccion.value.trim().length > 300) {
+                mostrarError(direccion, 'La dirección no puede exceder 300 caracteres.');
                 valido = false;
             } else {
-                mostrarExito(direccionInput);
+                mostrarExito(direccion);
             }
 
             // Contraseña: Entre 4 y 10 caracteres
-            if (!passRegInput.value) {
-                mostrarError(passRegInput, 'La contraseña es obligatoria.');
+            if (!passReg.value) {
+                mostrarError(passReg, 'La contraseña es obligatoria.');
                 valido = false;
-            } else if (passRegInput.value.length < 4 || passRegInput.value.length > 10) {
-                mostrarError(passRegInput, 'La contraseña debe tener entre 4 y 10 caracteres.');
+            } else if (passReg.value.length < 4 || passReg.value.length > 10) {
+                mostrarError(passReg, 'La contraseña debe tener entre 4 y 10 caracteres.');
                 valido = false;
             } else {
-                mostrarExito(passRegInput);
+                mostrarExito(passReg);
             }
 
             // Confirmar contraseña
-            if (!pass2RegInput.value) {
-                mostrarError(pass2RegInput, 'Debe confirmar la contraseña.');
+            if (!pass2Reg.value) {
+                mostrarError(pass2Reg, 'Debe confirmar la contraseña.');
                 valido = false;
-            } else if (pass2RegInput.value !== passRegInput.value) {
-                mostrarError(pass2RegInput, 'Las contraseñas no coinciden.');
+            } else if (pass2Reg.value !== passReg.value) {
+                mostrarError(pass2Reg, 'Las contraseñas no coinciden.');
                 valido = false;
             } else {
-                mostrarExito(pass2RegInput);
+                mostrarExito(pass2Reg);
             }
 
             if (!valido) e.preventDefault();
@@ -186,122 +183,54 @@ document.addEventListener('DOMContentLoaded', () => {
     if (contactoSection) {
         const contactoForm = contactoSection.querySelector('form');
         if (contactoForm) {
-            const asuntoInput = document.getElementById('asunto');
-            const emailContactoInput = document.getElementById('email');
-            const mensajeInput = document.getElementById('mensaje');
+            const asunto = document.getElementById('asunto');
+            const emailContacto = document.getElementById('email');
+            const mensaje = document.getElementById('mensaje');
 
             contactoForm.addEventListener('submit', (e) => {
                 let valido = true;
 
-                // Asunto / Nombre: Requerido, máx 100 caracteres
-                if (asuntoInput) {
-                    if (!asuntoInput.value.trim()) {
-                        mostrarError(asuntoInput, 'El asunto es obligatorio.');
+                // Asunto: máx 100 caracteres
+                if (asunto) {
+                    if (!asunto.value.trim()) {
+                        mostrarError(asunto, 'El asunto es obligatorio.');
                         valido = false;
-                    } else if (asuntoInput.value.trim().length > 100) {
-                        mostrarError(asuntoInput, 'El asunto no puede exceder 100 caracteres.');
+                    } else if (asunto.value.trim().length > 100) {
+                        mostrarError(asunto, 'El asunto no puede exceder 100 caracteres.');
                         valido = false;
                     } else {
-                        mostrarExito(asuntoInput);
+                        mostrarExito(asunto);
                     }
                 }
 
-                // Correo: Requerido, máx 100, dominios válidos
-                if (emailContactoInput) {
-                    if (!emailContactoInput.value.trim()) {
-                        mostrarError(emailContactoInput, 'El correo es obligatorio.');
+                // Correo: máx 100, dominios válidos
+                if (emailContacto) {
+                    if (!emailContacto.value.trim()) {
+                        mostrarError(emailContacto, 'El correo es obligatorio.');
                         valido = false;
-                    } else if (!validarCorreo(emailContactoInput.value.trim())) {
-                        mostrarError(emailContactoInput, 'Correo inválido. Solo @duoc.cl, @profesor.duoc.cl o @gmail.com.');
+                    } else if (!validarCorreo(emailContacto.value.trim())) {
+                        mostrarError(emailContacto, 'Correo inválido. Solo @duoc.cl, @profesor.duoc.cl o @gmail.com.');
                         valido = false;
                     } else {
-                        mostrarExito(emailContactoInput);
+                        mostrarExito(emailContacto);
                     }
                 }
 
-                // Mensaje / Comentario: Requerido, máx 500 caracteres
-                if (mensajeInput) {
-                    if (!mensajeInput.value.trim()) {
-                        mostrarError(mensajeInput, 'El mensaje es obligatorio.');
+                // Mensaje: máx 500 caracteres
+                if (mensaje) {
+                    if (!mensaje.value.trim()) {
+                        mostrarError(mensaje, 'El mensaje es obligatorio.');
                         valido = false;
-                    } else if (mensajeInput.value.trim().length > 500) {
-                        mostrarError(mensajeInput, 'El mensaje no puede superar los 500 caracteres.');
+                    } else if (mensaje.value.trim().length > 500) {
+                        mostrarError(mensaje, 'El mensaje no puede superar los 500 caracteres.');
                         valido = false;
                     } else {
-                        mostrarExito(mensajeInput);
+                        mostrarExito(mensaje);
                     }
                 }
 
                 if (!valido) e.preventDefault();
             });
         }
-    }
-
-    /* AGENDAR CITA */
-    const agendarForm = document.getElementById('form-agendar');
-    if (agendarForm) {
-        const nombreDueno = document.getElementById('nombre-dueno');
-        const telefono = document.getElementById('telefono');
-        const nombreMascota = document.getElementById('nombre-mascota');
-        const especie = document.getElementById('especie');
-        const servicio = document.getElementById('servicio');
-        const fecha = document.getElementById('fecha');
-        const hora = document.getElementById('hora');
-
-        agendarForm.addEventListener('submit', (e) => {
-            let valido = true;
-
-            // Nombre dueño: Mínimo 3 letras
-            if (!nombreDueno.value.trim() || nombreDueno.value.trim().length < 3) {
-                mostrarError(nombreDueno, 'Ingresa tu nombre (mínimo 3 letras).');
-                valido = false;
-            } else {
-                mostrarExito(nombreDueno);
-            }
-
-            // Teléfono chileno (+56 9 XXXX XXXX)
-            const regexTel = /^(\+?56)?\s?9\s?\d{4}\s?\d{4}$/;
-            if (!telefono.value.trim() || !regexTel.test(telefono.value.trim())) {
-                mostrarError(telefono, 'Ingresa un celular chileno válido (Ej: +56 9 8765 4321).');
-                valido = false;
-            } else {
-                mostrarExito(telefono);
-            }
-
-            // Nombre mascota: Mínimo 2 letras
-            if (!nombreMascota.value.trim() || nombreMascota.value.trim().length < 2) {
-                mostrarError(nombreMascota, 'Ingresa el nombre de tu mascota (mínimo 2 letras).');
-                valido = false;
-            } else {
-                mostrarExito(nombreMascota);
-            }
-
-            // Especie y Servicio
-            if (!especie.value) { mostrarError(especie, 'Selecciona una opción.'); valido = false; } else { mostrarExito(especie); }
-            if (!servicio.value) { mostrarError(servicio, 'Selecciona una opción.'); valido = false; } else { mostrarExito(servicio); }
-
-            // Fecha: No puede ser anterior a la fecha actual
-            if (fecha.value) {
-                const [year, month, day] = fecha.value.split('-').map(Number);
-                const fechaSeleccionada = new Date(year, month - 1, day);
-                const hoy = new Date();
-                hoy.setHours(0, 0, 0, 0);
-
-                if (fechaSeleccionada < hoy) {
-                    mostrarError(fecha, 'La fecha no puede ser anterior a hoy.');
-                    valido = false;
-                } else {
-                    mostrarExito(fecha);
-                }
-            } else {
-                mostrarError(fecha, 'Elige una fecha válida.');
-                valido = false;
-            }
-
-            // Hora
-            if (!hora.value) { mostrarError(hora, 'Elige una hora.'); valido = false; } else { mostrarExito(hora); }
-
-            if (!valido) e.preventDefault();
-        });
     }
 });
