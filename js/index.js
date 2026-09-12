@@ -28,44 +28,21 @@ document.addEventListener('DOMContentLoaded', function() {
             const mensaje = document.getElementById('mensaje');
 
             contactoForm.addEventListener('submit', (e) => {
-                let valido = true;
+                const asuntoValido = validarCampo(asunto, 'El asunto es obligatorio.', [
+                    { test: v => v.length <= 100, mensaje: 'El asunto no puede exceder 100 caracteres.' }
+                ]);
 
-                if (asunto) {
-                    if (!asunto.value.trim()) {
-                        mostrarError(asunto, 'El asunto es obligatorio.');
-                        valido = false;
-                    } else if (asunto.value.trim().length > 100) {
-                        mostrarError(asunto, 'El asunto no puede exceder 100 caracteres.');
-                        valido = false;
-                    } else {
-                        mostrarExito(asunto);
-                    }
-                }
+                const emailValido = validarCampo(emailContacto, 'El correo es obligatorio.', [
+                    { test: validarCorreo, mensaje: 'Correo inválido. Solo @duoc.cl, @profesor.duoc.cl o @gmail.com.' }
+                ]);
 
-                if (emailContacto) {
-                    if (!emailContacto.value.trim()) {
-                        mostrarError(emailContacto, 'El correo es obligatorio.');
-                        valido = false;
-                    } else if (!validarCorreo(emailContacto.value.trim())) {
-                        mostrarError(emailContacto, 'Correo inválido. Solo @duoc.cl, @profesor.duoc.cl o @gmail.com.');
-                        valido = false;
-                    } else {
-                        mostrarExito(emailContacto);
-                    }
-                }
+                const mensajeValido = validarCampo(mensaje, 'El mensaje es obligatorio.', [
+                    { test: v => v.length <= 500, mensaje: 'El mensaje no puede superar los 500 caracteres.' }
+                ]);
 
-                if (mensaje) {
-                    if (!mensaje.value.trim()) {
-                        mostrarError(mensaje, 'El mensaje es obligatorio.');
-                        valido = false;
-                    } else if (mensaje.value.trim().length > 500) {
-                        mostrarError(mensaje, 'El mensaje no puede superar los 500 caracteres.');
-                        valido = false;
-                    } else {
-                        mostrarExito(mensaje);
-                    }
+                if (!asuntoValido || !emailValido || !mensajeValido) {
+                    e.preventDefault();
                 }
-                if (!valido) e.preventDefault();
             });
         }
     }
