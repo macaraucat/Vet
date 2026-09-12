@@ -15,15 +15,6 @@ function vaciarCarrito() {
     localStorage.removeItem("carrito");
 }
 
-function actualizarContadorCarrito() {
-    const carrito = obtenerCarrito();
-    const total = carrito.reduce((suma, item) => suma + item.cantidad, 0);
-    const contador = document.getElementById("contador-carrito");
-    if (contador) {
-        contador.textContent = total;
-    }
-}
-
 // Pinta la tabla del carrito con lo que haya guardado
 function pintarCarrito() {
     const carrito = obtenerCarrito();
@@ -53,6 +44,7 @@ function pintarCarrito() {
 
         const fila = document.createElement("tr");
         fila.innerHTML = `
+            <td><img src="${item.imagen}" alt="${item.nombre}" style="width: 50px; height: 50px; object-fit: cover;"></td>
             <td>${item.nombre}</td>
             <td>$${item.precio.toLocaleString("es-CL")}</td>
             <td>${item.cantidad}</td>

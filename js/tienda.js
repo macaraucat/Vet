@@ -1,4 +1,3 @@
-// Agrega un producto al carrito (guardado en localStorage)
 function agregarAlCarrito(id, nombre, precio, imagen) {
     const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
     const item = carrito.find(p => p.id === id);
@@ -14,7 +13,6 @@ function agregarAlCarrito(id, nombre, precio, imagen) {
     mostrarAviso("Producto agregado correctamente");
 }
 
-// Muestra un aviso pequeño que desaparece solo 
 function mostrarAviso(mensaje) {
     const aviso = document.getElementById("aviso-toast");
     if (!aviso) return;
