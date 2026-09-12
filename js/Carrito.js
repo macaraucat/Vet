@@ -44,7 +44,7 @@ function pintarCarrito() {
 
         const fila = document.createElement("tr");
         fila.innerHTML = `
-            <td><img src="${item.imagen}" alt="${item.nombre}" style="width: 50px; height: 50px; object-fit: cover;"></td>
+            <td><img src="${item.imagen}" alt="${item.nombre}" class="img-carrito"></td>
             <td>${item.nombre}</td>
             <td>$${item.precio.toLocaleString("es-CL")}</td>
             <td>${item.cantidad}</td>
