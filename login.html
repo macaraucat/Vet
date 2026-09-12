@@ -77,22 +77,27 @@
 
                                 <form id="registro-form">
                                     <div class="mb-3">
-                                        <label for="run" class="form-label"><b>RUN (sin dígito verificador)</b></label>
-                                        <input type="text" class="form-control" id="run" name="run" placeholder="Ingresar RUN" required>
-                                    </div>                                    
+                                        <label for="run" class="form-label"><b>RUN (Sin puntos ni guión)</b></label>
+                                        <input type="text" class="form-control" id="run" name="run" placeholder="Ej: 19011022K" pattern="[0-9]{7,8}[0-9K]" maxlength="9"
+                                            title="Ingrese el RUN sin puntos ni guión: números seguidos de un dígito verificador (0-9 o K mayúscula). Entre 8 y 9 caracteres en total." required>
+                                        <div class="invalid-feedback"></div>
+                                    </div>                                 
                                     <div class="mb-3">
                                         <label for="nombre" class="form-label"><b>Nombre completo</b></label>
                                         <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingresar nombre" required>
+                                        <div class="invalid-feedback"></div>
                                     </div>
 
                                     <div class="mb-3">
                                         <label for="email-registro" class="form-label"><b>Correo electrónico</b></label>
                                         <input type="email" class="form-control" id="email-registro" name="email" placeholder="Ingresar correo electrónico" required>
+                                        <div class="invalid-feedback"></div>
                                     </div>
 
                                     <div class="mb-3">
                                         <label for="fecha-nacimiento" class="form-label"><b>Fecha de nacimiento</b></label>
                                         <input type="date" class="form-control" id="fecha-nacimiento" name="fecha-nacimiento" required>
+                                        <div class="invalid-feedback"></div>
                                     </div>
 
                                     <div class="mb-3">
@@ -113,16 +118,19 @@
                                     <div class="mb-3">
                                         <label for="direccion" class="form-label"><b>Dirección</b></label>
                                         <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Ingresar dirección" required>
+                                        <div class="invalid-feedback"></div>
                                     </div>
 
                                     <div class="mb-3">
                                         <label for="pass-registro" class="form-label"><b>Contraseña</b></label>
                                         <input type="password" class="form-control" id="pass-registro" name="pass" placeholder="Ingresar contraseña" required>
+                                        <div class="invalid-feedback"></div>
                                     </div>
 
                                     <div class="mb-4">
                                         <label for="pass2-registro" class="form-label"><b>Confirmar contraseña</b></label>
                                         <input type="password" class="form-control" id="pass2-registro" name="pass2" placeholder="Confirmar contraseña" required>
+                                        <div class="invalid-feedback"></div>
                                     </div>
 
                                     <div class="d-grid gap-2">
