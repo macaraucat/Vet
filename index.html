@@ -17,9 +17,9 @@
                     <a href="index.html"><img src="img/logo.png" alt="Logo Veterinaria San Marcos" class="logo"></a>
                     <nav class="d-flex align-items-center gap-3">
                         <a href="catalogo.html">Productos</a>
-                        <a href="index.html#nosotros">Nosotros</a>
-                        <a href="index.html#blogs">Blogs</a>
-                        <a href="index.html#contacto">Contacto</a>
+                        <a href="#nosotros">Nosotros</a>
+                        <a href="#blogs">Blogs</a>
+                        <a href="#contacto">Contacto</a>
                     </nav>
                 </div>
                 <div class="d-flex align-items-center gap-3">
@@ -36,58 +36,58 @@
     </header>
 
     <main>
-        <section id="hero" class="hero px-5 py-2">
-            <div class="hero-content">
-                <div class="hero-info">
+        <section id="hero" class="hero standard-section">
+            <div class="hero-content d-flex flex-row">
+                <div class="hero-info d-flex flex-column align-items-start flex-grow-1">
                     <h1 id="titulo-sitio">Veterinaria San Marcos</h1>
-                    <p> Llevamos más de 15 años entregando atención cercana y de calidad a las mascotas. Contamos con médicos
-                        veterinarios, técnico veterinario y equipamiento especializado. Sabemos lo importante que es tu mascota
-                        para ti, por eso trabajamos con dedicación y cariño en cada visita.</p>
-                    <img src="img/hero.jpg" alt="Mascotas" class="hero-img">
-                    <button type="button" id="btnAgendarCita" title="Función en construcción" class="btn btn-success boton boton-primario">Agendar cita</button>
+                    <p>Llevamos más de 15 años entregando atención cercana y de calidad a las mascotas. Contamos con médicos veterinarios, técnico veterinario y equipamiento especializado. Sabemos lo importante que es tu mascota para ti, por eso trabajamos con dedicación y cariño en cada visita.</p>
+                    <div class="hero-interactive d-flex flex-column align-items-start w-100">
+                        <div class="hero-pets-wrapper">
+                            <img src="img/hero-pets01.png" alt="Mascotas" class="hero-pets-img default">
+                            <img src="img/hero-pets02.png" alt="Mascotas" class="hero-pets-img hover">
+                        </div>
+                        <button type="button" id="btnAgendarCita" title="Función en construcción" class="btn btn-success boton-primario">Agendar cita</button>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section id="servicios" class="servicios px-5 py-2">
+        <section id="servicios" class="servicios standard-section">
             <h2>Nuestros servicios</h2>
-            <div class="lista-servicios">
+            <div class="lista-servicios d-flex flex-wrap justify-content-center gap-4 my-3">
                 <article class="servicio py-2">
                     <h6>Consultas</h6>
-                    <img src="img/icon-consultas.png" alt="Consultas" class="icono-servicio">
+                    <img src="img/servicios/icon-consultas.png" alt="Consultas" class="icono-servicio">
                 </article>
                 <article class="servicio py-2">
                     <h6>Vacunación</h6>
-                    <img src="img/icon-vacunacion.png" alt="Vacunación" class="icono-servicio">
+                    <img src="img/servicios/icon-vacunacion.png" alt="Vacunación" class="icono-servicio">
                 </article>
                 <article class="servicio py-2">
                     <h6>Cirugía</h6>
-                    <img src="img/icon-cirugia.png" alt="Cirugía" class="icono-servicio">
+                    <img src="img/servicios/icon-cirugia.png" alt="Cirugía" class="icono-servicio">
                 </article>
                 <article class="servicio py-2">
                     <h6>Desparasitación</h6>
-                    <img src="img/icon-desparasitacion.png" alt="Desparasitación" class="icono-servicio">
+                    <img src="img/servicios/icon-desparasitacion.png" alt="Desparasitación" class="icono-servicio">
                 </article>
                 <article class="servicio py-2">
                     <h6>Exámenes</h6>
-                    <img src="img/icon-examenes.png" alt="Exámenes" class="icono-servicio">
+                    <img src="img/servicios/icon-examenes.png" alt="Exámenes" class="icono-servicio">
                 </article>
                 <article class="servicio py-2">
                     <h6>Medicamentos</h6>
-                    <img src="img/icon-medicamentos.png" alt="Medicamentos" class="icono-servicio">
+                    <img src="img/servicios/icon-medicamentos.png" alt="Medicamentos" class="icono-servicio">
                 </article>
             </div>
         </section>
 
-        <section id="nosotros" class="nosotros py-2">
+        <section id="nosotros" class="nosotros standard-section">
             <div class="container">
                 <h2 class="text-center mb-4">Sobre nosotros</h2>
                 <div class="row justify-content-center">
                     <div class="col-12 col-lg-10">
-                        <p>Veterinaria San Marcos es una clínica veterinaria ubicada en Rancagua, Región del Libertador General Bernardo O'Higgins, fundada
-                            en 2009. Contamos con un equipo integral dedicado a brindar una atención cercana y profesional, para tus mascotas. A lo largo de
-                            estos años, hemos visto crecer la confianza de nuestros clientes, lo que nos motiva a seguir mejorando cada aspecto de nuestra
-                            atención, desde la comodidad de nuestras instalaciones hasta la calidez con la que recibimos a cada mascota y su familia.</p>
+                        <p>Veterinaria San Marcos es una clínica veterinaria ubicada en Rancagua, Región del Libertador General Bernardo O'Higgins, fundada en 2009. Contamos con un equipo integral dedicado a brindar una atención cercana y profesional, para tus mascotas. A lo largo de estos años, hemos visto crecer la confianza de nuestros clientes, lo que nos motiva a seguir mejorando cada aspecto de nuestra atención, desde la comodidad de nuestras instalaciones hasta la calidez con la que recibimos a cada mascota y su familia.</p>
                         <img src="img/team.jpg" alt="Veterinaria San Marcos team" class="team-img mx-auto d-block my-4">
                         <h3>Nuestro equipo:</h3>
                         <p>
@@ -102,17 +102,14 @@
             </div>
         </section>
 
-        <section id="blogs" class="blogs px-5 py-2">
+        <section id="blogs" class="blogs standard-section">
             <h2>Noticias importantes</h2>
-            <div class="lista-noticias">
+            <div class="lista-noticias d-flex flex-wrap justify-content-center gap-3 my-3">
                 <article class="noticia">
                     <h4>Una cirugía de emergencia con final feliz</h4>
                     <p class="texto-corto">Firulais llegó en estado crítico por un accidente, fue operado de urgencia y, tras semanas de cuidados y acompañamiento familiar, se recuperó por completo.</p>
                     <p class="texto-extendido" style="display: none;">
-                        Firulais llegó a nuestra clínica en estado crítico tras un accidente, con signos vitales alterados y una lesión que requería intervención inmediata.
-                        Nuestro equipo médico actuó rápido: en menos de una hora ya estaba en cirugía, estabilizado y bajo constante monitoreo.
-                        Los días posteriores fueron clave, con curaciones diarias, controles de dolor y mucho acompañamiento de su familia, que no se separó de él en ningún momento.
-                        Hoy, varias semanas después, Firulais corre, juega y mueve la cola como si nada hubiera pasado, un recordatorio de por qué actuar a tiempo puede marcar toda la diferencia.
+                        Firulais llegó a nuestra clínica en estado crítico tras un accidente, con signos vitales alterados y una lesión que requería intervención inmediata. Nuestro equipo médico actuó rápido: en menos de una hora ya estaba en cirugía, estabilizado y bajo constante monitoreo. Los días posteriores fueron clave, con curaciones diarias, controles de dolor y mucho acompañamiento de su familia, que no se separó de él en ningún momento. Hoy, varias semanas después, Firulais corre, juega y mueve la cola como si nada hubiera pasado, un recordatorio de por qué actuar a tiempo puede marcar toda la diferencia.
                     </p>
                     <a href="#" class="boton-expandir" data-target="0">Expandir</a>
                     <img src="img/firulais.jpg" alt="Firulais" class="blog-img">
@@ -121,10 +118,7 @@
                     <h4>Problemas dentales en conejos</h4>
                     <p class="texto-corto">Sus dientes crecen continuamente; desequilibrios en la dieta o alineación pueden causar problemas graves. Revisiones periódicas y dieta rica en fibra ayudan a prevenirlos.</p>
                     <p class="texto-extendido" style="display: none;">
-                        Los conejos son pacientes poco comunes en la consulta diaria, pero cada vez llegan más a nuestra clínica, y sus dientes suelen ser la razón principal.
-                        A diferencia de perros y gatos, sus dientes crecen de forma continua durante toda su vida, así que cualquier desequilibrio en su dieta o alineación dental puede derivar en molestias serias.
-                        Señales como babeo, pérdida de apetito o cambios en el pelaje alrededor del hocico son motivo suficiente para pedir hora.
-                        Con revisiones periódicas y una dieta rica en fibra, la mayoría de estos problemas se puede prevenir antes de que se conviertan en una urgencia.
+                        Los conejos son pacientes poco comunes en la consulta diaria, pero cada vez llegan más a nuestra clínica, y sus dientes suelen ser la razón principal. A diferencia de perros y gatos, sus dientes crecen de forma continua durante toda su vida, así que cualquier desequilibrio en su dieta o alineación dental puede derivar en molestias serias. Señales como babeo, pérdida de apetito o cambios en el pelaje alrededor del hocico son motivo suficiente para pedir hora. Con revisiones periódicas y una dieta rica en fibra, la mayoría de estos problemas se puede prevenir antes de que se conviertan en una urgencia.
                     </p>
                     <a href="#" class="boton-expandir" data-target="1">Expandir</a>
                     <img src="img/conejo.jpg" alt="Conejo" class="blog-img">
@@ -132,46 +126,55 @@
             </div>
         </section>
 
-        <section id="contacto" class="contacto px-5 py-4">
-            <h2>Contacte con nosotros</h2>
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-12 col-md-8 col-lg-6">
-                        <div class="card shadow-sm border">
-                            <div class="card-body p-4 p-md-4">
-                                <form>
-                                    <div class="mb-3">
-                                        <label for="asunto" class="form-label"><b>Asunto</b></label>
-                                        <input type="text" class="form-control" id="asunto" name="asunto" required>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label"><b>Correo electrónico</b></label>
-                                        <input type="email" class="form-control" id="email" name="email" placeholder="Ingresar correo electrónico" required>
-                                    </div>
-
-                                    <div class="mb-4">
-                                        <label for="mensaje" class="form-label"><b>Mensaje</b></label>
-                                        <textarea class="form-control" id="mensaje" name="mensaje" rows="3" placeholder="¿Cómo podemos ayudarle?" required></textarea>
-                                    </div>
-
-                                    <div class="d-grid gap-2">
-                                        <button type="submit" class="btn btn-success">Enviar</button>
-                                    </div>
-                                    <p class="text-center mt-3 mb-0">Respondemos en un plazo de 24 horas</p>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
     </main>
 
-    <footer class="footer py-3">
+    <footer id="contacto" class="footer py-2">
         <div class="container">
-            <p class="text-center">© Veterinaria San Marcos 2026. Todos los derechos reservados.</p>
+            <div class="row footer-row gy-1">
+                <div class="col-12 col-md-4 footer-col">
+                    <h6>Horario</h6>
+                    <p class="footer-text">
+                        Lunes a viernes: 10:00 - 19:30<br>
+                        Sábados: 10:00 - 16:00<br>
+                        Domingos y festivos: Cerrado
+                    </p>
+                    <h6>Consulta veterinaria</h6>
+                    <p class="footer-text">Valor consulta $15.000.<br> Se recomienda reservar hora</p>
+                    <img src="img/logo.png" alt="Logo" class="logo-footer">
+                </div>
+
+                <div class="col-12 col-md-4 footer-col">
+                    <h6>Ubicación</h6>
+                    <p class="footer-text">Recreo 26, Rancagua, Región de O'Higgins</p>
+                    <iframe
+                            class="footer-map"
+                            src="https://www.openstreetmap.org/export/embed.html?bbox=-70.7544%2C-34.1758%2C-70.7344%2C-34.1658&amp;layer=mapnik&amp;marker=-34.1708%2C-70.7444"
+                            loading="lazy"
+                            title="Mapa de ubicación de Veterinaria San Marcos"
+                            aria-label="Mapa de ubicación de Veterinaria San Marcos"></iframe>
+                </div>
+
+                <div class="col-12 col-md-4 footer-col">
+                    <h6>Contacto</h6>
+                    <form class="footer-form">
+                        <div class="form-group">
+                            <label for="asunto">Asunto</label>
+                            <input type="text" class="form-control form-control-sm" id="asunto" name="asunto" placeholder="Sobre qué nos escribes" aria-label="Asunto" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Correo</label>
+                            <input type="email" class="form-control form-control-sm" id="email" name="email" placeholder="tú@correo.com" aria-label="Correo electrónico" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="mensaje">Mensaje</label>
+                            <textarea class="form-control form-control-sm" id="mensaje" name="mensaje" rows="1" placeholder="Cuéntanos" aria-label="Mensaje" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-sm">Enviar mensaje</button>
+                    </form>
+                </div>
+            </div>
+
+            <p class="footer-copy text-center mb-0">© Veterinaria San Marcos 2026. Todos los derechos reservados.</p>
         </div>
     </footer>
 
