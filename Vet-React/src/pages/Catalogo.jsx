@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
-import { useCarrito } from "../hooks/useCarrito";
+import { useCarritoContext } from "../context/CarritoContext";
 import { productos } from "../utils/productos";
+import "./tienda.css";
 
 function Catalogo() {
-    const { agregarAlCarrito } = useCarrito();
+    const { agregarAlCarrito } = useCarritoContext();
 
     return (
         <main className="container mb-5">

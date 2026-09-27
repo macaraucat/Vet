@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useCarritoContext } from '../context/CarritoContext';
 
 function Header() {
     const [menuAbierto, setMenuAbierto] = useState(false);
+    const { totalItems } = useCarritoContext();
 
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -35,7 +37,7 @@ function Header() {
                     </button>
 
                     <nav className={menuAbierto ? 'nav-open' : ''}>
-                        <Link to="/catalogo" onClick={scrollToTop}>Producto</Link>
+                        <Link to="/catalogo" onClick={scrollToTop}>Catálogo</Link>
                         <a href="#nosotros" onClick={cerrarMenu}>Nosotros</a>
                         <a href="#blogs" onClick={cerrarMenu}>Blogs</a>
                         <a href="#contacto" onClick={cerrarMenu}>Contacto</a>
@@ -47,7 +49,7 @@ function Header() {
                         </Link>
                         <Link to="/carrito" title="Carrito" className="position-relative" onClick={cerrarMenu}>
                             <img src="/img/carrito.svg" alt="Carrito" className="icon" />
-                            <span className="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">0</span>
+                            <span className="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">{totalItems}</span>
                         </Link>
                     </div>
                 </div>
