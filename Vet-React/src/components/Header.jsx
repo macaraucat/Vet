@@ -1,12 +1,19 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 function Header() {
+    const [menuAbierto, setMenuAbierto] = useState(false);
+
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        setMenuAbierto(false);
     };
 
+    const toggleMenu = () => setMenuAbierto(!menuAbierto);
+    const cerrarMenu = () => setMenuAbierto(false);
+
     return (
-        <header className="py-3">
+        <header className="py-2">
             <div className="container">
                 <div className="header">
                     <Link to="/" onClick={scrollToTop} className="brand">
@@ -14,18 +21,31 @@ function Header() {
                         <h1 className="site-title mb-0">Veterinaria San Marcos</h1>
                     </Link>
 
-                    <nav>
-                        <Link to="/catalogo">Producto</Link>
-                        <a href="#nosotros">Nosotros</a>
-                        <a href="#blogs">Blogs</a>
-                        <a href="#contacto">Contacto</a>
+                    {/* Hamburguesa: solo visible en móvil (< 768px) */}
+                    <button
+                        type="button"
+                        className={`hamburger ${menuAbierto ? 'active' : ''}`}
+                        aria-label={menuAbierto ? 'Cerrar menú' : 'Abrir menú'}
+                        aria-expanded={menuAbierto}
+                        onClick={toggleMenu}
+                    >
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+
+                    <nav className={menuAbierto ? 'nav-open' : ''}>
+                        <Link to="/catalogo" onClick={scrollToTop}>Producto</Link>
+                        <a href="#nosotros" onClick={cerrarMenu}>Nosotros</a>
+                        <a href="#blogs" onClick={cerrarMenu}>Blogs</a>
+                        <a href="#contacto" onClick={cerrarMenu}>Contacto</a>
                     </nav>
 
                     <div className="header-icons">
-                        <Link to="/login" title="Iniciar sesión">
+                        <Link to="/login" title="Iniciar sesión" onClick={cerrarMenu}>
                             <img src="/img/cuenta.svg" alt="Iniciar sesión" className="icon" />
                         </Link>
-                        <Link to="/carrito" title="Carrito" className="position-relative">
+                        <Link to="/carrito" title="Carrito" className="position-relative" onClick={cerrarMenu}>
                             <img src="/img/carrito.svg" alt="Carrito" className="icon" />
                             <span className="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">0</span>
                         </Link>
