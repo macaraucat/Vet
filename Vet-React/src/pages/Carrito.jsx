@@ -1,8 +1,25 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useCarritoContext } from "../context/CarritoContext";
 
 function Carrito() {
     const { carrito, eliminarItem, vaciarCarrito, totalPrecio, cambiarCantidad } = useCarritoContext();
+    const [pedidoConfirmado, setPedidoConfirmado] = useState("");
+
+    function finalizarCompra() {
+        const numeroPedido = Math.floor(100000 + Math.random() * 900000);
+        vaciarCarrito();
+        setPedidoConfirmado(`¡Pedido N.º ${numeroPedido} realizado con éxito! Te contactaremos para coordinar la entrega.`);
+    }
+
+    if (pedidoConfirmado) {
+        return (
+            <main className="container mb-5">
+                <h2 className="text-center mb-4">Tu carrito de compras</h2>
+                <div className="alert alert-success text-center mt-4" role="alert">{pedidoConfirmado}</div>
+            </main>
+        );
+    }
 
     if (carrito.length === 0) {
         return (
@@ -52,6 +69,7 @@ function Carrito() {
             <div className="text-end">
                 <h4>Total: ${totalPrecio.toLocaleString("es-CL")}</h4>
                 <button className="btn btn-outline-danger" onClick={vaciarCarrito}>Vaciar carrito</button>
+                <button className="btn btn-success ms-2" onClick={finalizarCompra}>Finalizar compra</button>
             </div>
         </main>
     );
