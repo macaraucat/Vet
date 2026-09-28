@@ -13,10 +13,14 @@ function Catalogo() {
                 {productos.map((p) => (
                     <div className="col-12 col-sm-6 col-lg-3" key={p.id}>
                         <div className="card producto-card shadow-sm">
-                            <img src={p.imagen} className="card-img-top" alt={p.nombre} />
+                            <Link to={`/producto/${p.id}`} className="text-decoration-none text-dark">
+                                <img src={p.imagen} className="card-img-top" alt={p.nombre} />
+                            </Link>
                             <div className="card-body d-flex flex-column">
                                 <span className="badge bg-secondary badge-stock mb-2">{p.categoria}</span>
-                                <h5 className="card-title">{p.nombre}</h5>
+                                <Link to={`/producto/${p.id}`} className="text-decoration-none text-dark">
+                                    <h5 className="card-title">{p.nombre}</h5>
+                                </Link>
                                 <p className="card-text mb-1">{p.detalle}</p>
                                 <p className="card-text text-muted small">{p.especie}</p>
                                 <p className="card-text fw-bold">${p.precio.toLocaleString("es-CL")}</p>
