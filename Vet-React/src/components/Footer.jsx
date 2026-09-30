@@ -1,4 +1,5 @@
-import useContacto from '../hooks/useContacto';
+import useContacto from '../hooks/useContacto'
+import './footer.css'
 
 function Footer() {
   const { form, errores, enviado, handleChange, handleSubmit } = useContacto();

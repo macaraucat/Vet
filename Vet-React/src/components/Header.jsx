@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useCarritoContext } from '../context/CarritoContext';
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useCarritoContext } from '../context/CarritoContext'
+import './header.css'
 
 function Header() {
     const [menuAbierto, setMenuAbierto] = useState(false);

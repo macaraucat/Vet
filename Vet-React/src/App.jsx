@@ -25,6 +25,7 @@ function App() {
                 <AvisoCarrito />
                 <Routes>
                     <Route path="/" element={<Index />}/>
+                    <Route path="/login" element={<Login />} />
                     <Route path="/catalogo" element={<Catalogo />}/>
                     <Route path="/producto/:id" element={<Producto />}/>
                     <Route path="/carrito" element={<Carrito />}/>
