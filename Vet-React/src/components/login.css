@@ -1,5 +1,5 @@
-.login .form-control, 
-.registro .form-control {
+.auth .form-control,
+.auth .form-select {
     border: none;
     border-bottom: 1px solid #145E5C;
     border-radius: 0;
@@ -8,19 +8,44 @@
     padding: 2px 0;
 }
 
-.login .form-control:hover, 
-.registro .form-control:hover {
+.auth .form-control:hover,
+.auth .form-select:hover {
     border: none;
     border-bottom: 1px solid #145E5C;
     box-shadow: 0 2px rgba(20, 94, 92, 0.18);
     outline: none;
 }
 
-
-.login .form-control:focus, 
-.registro .form-control:focus {
+.auth .form-control:focus,
+.auth .form-select:focus {
     border: none;
-    border-bottom: 1x solid #145E5C;
+    border-bottom: 1px solid #145E5C;
     box-shadow: 0 2px rgba(20, 94, 92, 0.18);
     background-color: transparent;
+}
+
+/* Pestañas del card */
+.auth .login-tabs .nav-link {
+    color: #145E5C;
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    font-weight: 600;
+    background-color: transparent;
+}
+
+.auth .login-tabs .nav-link:hover {
+    border: none;
+    border-bottom: 2px solid rgba(20, 94, 92, 0.3);
+}
+
+.auth .login-tabs .nav-link.active {
+    color: #145E5C;
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid #145E5C;
+}
+
+.auth .form-label {
+    color: #145E5C;
 }

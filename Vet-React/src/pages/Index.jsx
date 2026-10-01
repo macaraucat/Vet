@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import useNoticias from '../hooks/useNoticias'
 import Button from 'react-bootstrap/Button'
 import './index.css'
@@ -6,11 +7,18 @@ import './index.css'
 function Index() {
     const { noticias, expandido, toggleExpandir } = useNoticias()
     const [animar, setAnimar] = useState(false)
+    const location = useLocation()
 
     useEffect(() => {
         const timer = setTimeout(() => setAnimar(true), 0)
         return () => clearTimeout(timer)
     }, []);
+
+    useEffect(() => {
+        if (!location.hash) return
+
+        document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: 'smooth' })
+    }, [location.hash, location.pathname])
 
     return (
         <main>

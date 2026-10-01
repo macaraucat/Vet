@@ -24,14 +24,7 @@ function Header() {
                         <h1 className="site-title mb-0">Veterinaria San Marcos</h1>
                     </Link>
 
-                    {/* Hamburguesa: solo visible en móvil (< 768px) */}
-                    <button
-                        type="button"
-                        className={`hamburger ${menuAbierto ? 'active' : ''}`}
-                        aria-label={menuAbierto ? 'Cerrar menú' : 'Abrir menú'}
-                        aria-expanded={menuAbierto}
-                        onClick={toggleMenu}
-                    >
+                    <button type="button" className={`hamburger ${menuAbierto ? 'active' : ''}`} aria-label={menuAbierto ? 'Cerrar menú' : 'Abrir menú'} aria-expanded={menuAbierto} onClick={toggleMenu}>
                         <span></span>
                         <span></span>
                         <span></span>
@@ -39,8 +32,8 @@ function Header() {
 
                     <nav className={menuAbierto ? 'nav-open' : ''}>
                         <Link to="/catalogo" onClick={scrollToTop}>Catálogo</Link>
-                        <a href="#nosotros" onClick={cerrarMenu}>Nosotros</a>
-                        <a href="#blogs" onClick={cerrarMenu}>Blogs</a>
+                        <Link to="/#nosotros" onClick={cerrarMenu}>Nosotros</Link>
+                        <Link to="/#blogs" onClick={cerrarMenu}>Blogs</Link>
                         <a href="#contacto" onClick={cerrarMenu}>Contacto</a>
                     </nav>
 
