@@ -1,10 +1,11 @@
+import { Form, Button, Alert } from 'react-bootstrap'
 import useContacto from '../hooks/useContacto'
 import './footer.css'
 
 function Footer() {
-  const { form, errores, enviado, handleChange, handleSubmit } = useContacto();
+    const { form, errores, enviado, handleChange, handleSubmit } = useContacto();
 
-  return (
+    return (
     <footer id="contacto" className="footer py-2">
       <div className="container">
         <div className="row footer-row gy-1">
@@ -33,44 +34,74 @@ function Footer() {
 
           <div className="col-12 col-md-4 footer-col">
             <h6>Contacto</h6>
-            {enviado && <p className="footer-text text-success">¡Mensaje enviado!</p>}
-            <form className="footer-form" onSubmit={handleSubmit} noValidate>
-              <div className="form-group">
-                <label htmlFor="asunto">Asunto</label>
-                <input
-                  type="text" id="asunto" name="asunto" value={form.asunto} onChange={handleChange}
-                  className={`form-control form-control-sm ${errores.asunto ? 'is-invalid' : ''}`}
+            {enviado && (
+              <Alert variant="success" className="py-1 px-2 mb-2">
+                ¡Mensaje enviado!
+              </Alert>
+            )}
+
+            <Form className="footer-form" onSubmit={handleSubmit} noValidate>
+              <Form.Group className="form-group" controlId="contacto-asunto">
+                <Form.Label>Asunto</Form.Label>
+                <Form.Control
+                  size="sm"
+                  type="text"
+                  name="asunto"
+                  value={form.asunto}
+                  onChange={handleChange}
                   placeholder="Sobre qué nos escribes"
+                  isInvalid={!!errores.asunto}
                 />
-                {errores.asunto && <div className="invalid-feedback">{errores.asunto}</div>}
-              </div>
-              <div className="form-group">
-                <label htmlFor="email">Correo</label>
-                <input
-                  type="email" id="email" name="email" value={form.email} onChange={handleChange}
-                  className={`form-control form-control-sm ${errores.email ? 'is-invalid' : ''}`}
+                <Form.Control.Feedback type="invalid">
+                  {errores.asunto}
+                </Form.Control.Feedback>
+              </Form.Group>
+
+              <Form.Group className="form-group" controlId="contacto-email">
+                <Form.Label>Correo</Form.Label>
+                <Form.Control
+                  size="sm"
+                  type="email"
+                  name="email"
+                  value={form.email}
+                  onChange={handleChange}
                   placeholder="tú@correo.com"
+                  isInvalid={!!errores.email}
                 />
-                {errores.email && <div className="invalid-feedback">{errores.email}</div>}
-              </div>
-              <div className="form-group">
-                <label htmlFor="mensaje">Mensaje</label>
-                <textarea
-                  id="mensaje" name="mensaje" rows="1" value={form.mensaje} onChange={handleChange}
-                  className={`form-control form-control-sm ${errores.mensaje ? 'is-invalid' : ''}`}
+                <Form.Control.Feedback type="invalid">
+                  {errores.email}
+                </Form.Control.Feedback>
+              </Form.Group>
+
+              <Form.Group className="form-group" controlId="contacto-mensaje">
+                <Form.Label>Mensaje</Form.Label>
+                <Form.Control
+                  size="sm"
+                  as="textarea"
+                  rows={1}
+                  name="mensaje"
+                  value={form.mensaje}
+                  onChange={handleChange}
                   placeholder="Cuéntanos"
-                ></textarea>
-                {errores.mensaje && <div className="invalid-feedback">{errores.mensaje}</div>}
-              </div>
-              <button type="submit" className="btn btn-sm">Enviar mensaje</button>
-            </form>
+                  isInvalid={!!errores.mensaje}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errores.mensaje}
+                </Form.Control.Feedback>
+              </Form.Group>
+
+              <Button variant="success" size="sm" type="submit">
+                Enviar mensaje
+              </Button>
+            </Form>
           </div>
         </div>
 
         <p className="footer-copy text-center mb-0">© Veterinaria San Marcos 2026. Todos los derechos reservados.</p>
       </div>
-    </footer>
-  );
+    </footer>        
+    );
+
 }
 
-export default Footer;
+export default Footer

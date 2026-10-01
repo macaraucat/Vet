@@ -1,0 +1,26 @@
+.login .form-control, 
+.registro .form-control {
+    border: none;
+    border-bottom: 1px solid #145E5C;
+    border-radius: 0;
+    box-shadow: none;
+    background-color: transparent;
+    padding: 2px 0;
+}
+
+.login .form-control:hover, 
+.registro .form-control:hover {
+    border: none;
+    border-bottom: 1px solid #145E5C;
+    box-shadow: 0 2px rgba(20, 94, 92, 0.18);
+    outline: none;
+}
+
+
+.login .form-control:focus, 
+.registro .form-control:focus {
+    border: none;
+    border-bottom: 1x solid #145E5C;
+    box-shadow: 0 2px rgba(20, 94, 92, 0.18);
+    background-color: transparent;
+}

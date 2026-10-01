@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react';
-import useNoticias from '../hooks/useNoticias';
-import Button from 'react-bootstrap/Button';
-import './Index.css';
+import { useEffect, useState } from 'react'
+import useNoticias from '../hooks/useNoticias'
+import Button from 'react-bootstrap/Button'
+import './index.css'
 
 function Index() {
-    const { noticias, expandido, toggleExpandir } = useNoticias();
-    const [animar, setAnimar] = useState(false);
+    const { noticias, expandido, toggleExpandir } = useNoticias()
+    const [animar, setAnimar] = useState(false)
 
     useEffect(() => {
-        const timer = setTimeout(() => setAnimar(true), 0);
-        return () => clearTimeout(timer);
+        const timer = setTimeout(() => setAnimar(true), 0)
+        return () => clearTimeout(timer)
     }, []);
 
     return (
@@ -93,4 +93,4 @@ function Index() {
 
 }
 
-export default Index;
+export default Index
