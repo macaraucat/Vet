@@ -2,109 +2,55 @@ import { useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { Container, Row, Col, Card, Form, Button, Alert, Nav } from 'react-bootstrap'
 import { useAuthContext } from '../context/AuthContext'
-import { validarCorreo, validarPass, validarRun, validarNombre, validarDireccion, validarPassIguales, validarFechaNacimiento } from '../utils/validaciones'
+import useFormulario from '../hooks/useFormulario'
+import { reglasLogin, reglasRegistro } from '../utils/validaciones'
 import './login.css'
 
+const loginInicial = { email: '', pass: '' }
 const registroInicial = { run: '', nombre: '', email: '', fechaNac: '', comuna: '', direccion: '', pass: '', pass2: '' }
 
 function Login() {
     const { usuario, login, registrar } = useAuthContext()
     const [tab, setTab] = useState('login')
-
-    const [email, setEmail] = useState('')
-    const [pass, setPass] = useState('')
-    const [error, setError] = useState('')
     const [exito, setExito] = useState('')
 
-    const [registro, setRegistro] = useState(registroInicial)
-    const [errorRegistro, setErrorRegistro] = useState('')
+    const formularioLogin = useFormulario(loginInicial, reglasLogin, (valores) => {
+        const resultado = login(valores.email.trim(), valores.pass)
+        return resultado.ok ? null : resultado.error
+    })
 
-    // Si ya hay sesión activa (o recién se inició), se vuelve al inicio
-    if (usuario) return <Navigate to="/" replace />
+    const formularioRegistro = useFormulario(registroInicial, reglasRegistro, (valores) => {
+        const resultado = registrar(valores)
+        if (!resultado.ok) return resultado.error
+
+        setExito('¡Registro completado! Ahora puedes iniciar sesión.')
+        setTab('login')
+        return null
+    })
+
+    const { valores: credenciales, errores: erroresLogin, errorGeneral: errorLogin, handleChange: actualizarLogin, handleSubmit: enviarLogin, limpiarErrores: limpiarErroresLogin } = formularioLogin
+    const { valores: registro, errores: erroresRegistro, errorGeneral: errorRegistro, handleChange: actualizarRegistro, handleSubmit: enviarRegistro, limpiarErrores: limpiarErroresRegistro } = formularioRegistro
+
+    if (usuario) {
+        const puedeAdministrar = ['Funcionario', 'Administrador'].includes(usuario.role)
+        return <Navigate to={puedeAdministrar ? '/admin' : '/'} replace />
+    }
 
     const handleTabChange = (key) => {
         setTab(key)
-        setError('')
-        setErrorRegistro('')
+        limpiarErroresLogin()
+        limpiarErroresRegistro()
         setExito('')
     }
 
-    const actualizarReg = (e) => {
-        setRegistro({ ...registro, [e.target.name]: e.target.value })
-    }
-
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        setError('')
+    const actualizarCampoLogin = (event) => {
         setExito('')
-
-        const correo = email.trim()
-
-        if (!validarCorreo(correo)) {
-            setError('Ingrese un correo válido: @duoc.cl, @profesor.duoc.cl o @gmail.com.')
-            return
-        }
-
-        if (!validarPass(pass)) {
-            setError('La contraseña debe tener entre 4 y 10 caracteres.')
-            return
-        }
-
-        const resultado = login(correo, pass)
-        if (!resultado.ok) setError(resultado.error)
-        // Si es correcto, el contexto guarda la sesión y el <Navigate> de arriba redirige al inicio
+        actualizarLogin(event)
     }
 
-    const handleSubmitRegistro = (e) => {
-        e.preventDefault()
-        setErrorRegistro('')
-
-        if (!validarRun(registro.run)) {
-            setErrorRegistro('Ingrese un RUN válido sin puntos ni guion (ej: 19011022K).')
-            return
-        }
-        if (!validarNombre(registro.nombre)) {
-            setErrorRegistro('El nombre es obligatorio (máx. 50 caracteres).')
-            return
-        }
-        if (!validarCorreo(registro.email.trim())) {
-            setErrorRegistro('Ingrese un correo válido: @duoc.cl, @profesor.duoc.cl o @gmail.com.')
-            return
-        }
-        if (!validarFechaNacimiento(registro.fechaNac)) {
-            setErrorRegistro('Debes ser mayor de 18 años para registrarte.')
-            return
-        }
-        if (!registro.comuna) {
-            setErrorRegistro('Selecciona una comuna.')
-            return
-        }
-        if (!validarDireccion(registro.direccion)) {
-            setErrorRegistro('La dirección es obligatoria (máx. 300 caracteres).')
-            return
-        }
-        if (!validarPass(registro.pass)) {
-            setErrorRegistro('La contraseña debe tener entre 4 y 10 caracteres.')
-            return
-        }
-        if (!validarPassIguales(registro.pass, registro.pass2)) {
-            setErrorRegistro('Las contraseñas no coinciden.')
-            return
-        }
-
-        const resultado = registrar(registro)
-        if (!resultado.ok) {
-            setErrorRegistro(resultado.error)
-            return
-        }
-
-        // Registro correcto: se limpia el formulario y se pasa a la pestaña de login
-        setRegistro(registroInicial)
-        setEmail('')
-        setPass('')
-        setError('')
-        setExito('¡Registro completado! Ahora puedes iniciar sesión.')
-        setTab('login')
+    const actualizarCampoRegistro = (event) => {
+        setExito('')
+        actualizarRegistro(event)
     }
 
     return (
@@ -124,23 +70,25 @@ function Login() {
                                 </Nav>
 
                                 {tab === 'login' ? (
-                                    <Form id="login-form" onSubmit={handleSubmit} noValidate>
+                                    <Form id="login-form" onSubmit={enviarLogin} noValidate>
                                         {exito && (
                                             <Alert variant="success" className="py-2">{exito}</Alert>
                                         )}
 
                                         <Form.Group className="mb-3" controlId="email">
                                             <Form.Label><b>Correo electrónico</b></Form.Label>
-                                            <Form.Control type="email" placeholder="Ingresar correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                                            <Form.Control type="email" name="email" placeholder="Ingresar correo electrónico" value={credenciales.email} onChange={actualizarCampoLogin} isInvalid={!!erroresLogin.email}/>
+                                            <Form.Control.Feedback type="invalid">{erroresLogin.email}</Form.Control.Feedback>
                                         </Form.Group>
 
                                         <Form.Group className="mb-4" controlId="pass">
                                             <Form.Label><b>Contraseña</b></Form.Label>
-                                            <Form.Control type="password" placeholder="Ingresar contraseña" value={pass} onChange={(e) => setPass(e.target.value)}/>
+                                            <Form.Control type="password" name="pass" placeholder="Ingresar contraseña" value={credenciales.pass} onChange={actualizarCampoLogin} isInvalid={!!erroresLogin.pass}/>
+                                            <Form.Control.Feedback type="invalid">{erroresLogin.pass}</Form.Control.Feedback>
                                         </Form.Group>
 
-                                        {error && (
-                                            <Alert variant="danger" className="py-2">{error}</Alert>
+                                        {errorLogin && (
+                                            <Alert variant="danger" className="py-2">{errorLogin}</Alert>
                                         )}
 
                                         <div className="d-grid gap-2">
@@ -148,30 +96,34 @@ function Login() {
                                         </div>
                                     </Form>
                                 ) : (
-                                    <Form id="signup-form" onSubmit={handleSubmitRegistro} noValidate>
+                                    <Form id="signup-form" onSubmit={enviarRegistro} noValidate>
                                         <Form.Group className="mb-3" controlId="registro-run">
                                             <Form.Label><b>RUN</b></Form.Label>
-                                            <Form.Control type="text" name="run" placeholder="Ingresar RUN" value={registro.run} onChange={actualizarReg}/>
+                                            <Form.Control type="text" name="run" placeholder="Ingresar RUN" value={registro.run} onChange={actualizarCampoRegistro} isInvalid={!!erroresRegistro.run}/>
+                                            <Form.Control.Feedback type="invalid">{erroresRegistro.run}</Form.Control.Feedback>
                                         </Form.Group>
 
                                         <Form.Group className="mb-3" controlId="registro-nombre">
                                             <Form.Label><b>Nombre completo</b></Form.Label>
-                                            <Form.Control type="text" name="nombre" placeholder="Ingresar nombre completo" value={registro.nombre} onChange={actualizarReg}/>
+                                            <Form.Control type="text" name="nombre" placeholder="Ingresar nombre completo" value={registro.nombre} onChange={actualizarCampoRegistro} isInvalid={!!erroresRegistro.nombre}/>
+                                            <Form.Control.Feedback type="invalid">{erroresRegistro.nombre}</Form.Control.Feedback>
                                         </Form.Group>
 
                                         <Form.Group className="mb-3" controlId="registro-email">
                                             <Form.Label><b>Correo electrónico</b></Form.Label>
-                                            <Form.Control type="email" name="email" placeholder="Ingresar correo electrónico" value={registro.email} onChange={actualizarReg}/>
+                                            <Form.Control type="email" name="email" placeholder="Ingresar correo electrónico" value={registro.email} onChange={actualizarCampoRegistro} isInvalid={!!erroresRegistro.email}/>
+                                            <Form.Control.Feedback type="invalid">{erroresRegistro.email}</Form.Control.Feedback>
                                         </Form.Group>
 
                                         <Form.Group className="mb-3" controlId="registro-fecha-nacimiento">
                                             <Form.Label><b>Fecha de nacimiento</b></Form.Label>
-                                            <Form.Control type="date" name="fechaNac" value={registro.fechaNac} onChange={actualizarReg}/>
+                                            <Form.Control type="date" name="fechaNac" value={registro.fechaNac} onChange={actualizarCampoRegistro} isInvalid={!!erroresRegistro.fechaNac}/>
+                                            <Form.Control.Feedback type="invalid">{erroresRegistro.fechaNac}</Form.Control.Feedback>
                                         </Form.Group>
 
                                         <Form.Group className="mb-3" controlId="registro-comuna">
                                             <Form.Label><b>Comuna</b></Form.Label>
-                                            <Form.Select name="comuna" value={registro.comuna} onChange={actualizarReg}>
+                                            <Form.Select name="comuna" value={registro.comuna} onChange={actualizarCampoRegistro} isInvalid={!!erroresRegistro.comuna}>
                                                 <option value="" disabled>Seleccionar comuna</option>
                                                 <option value="Rancagua">Rancagua</option>
                                                 <option value="San Fernando">San Fernando</option>
@@ -182,21 +134,25 @@ function Login() {
                                                 <option value="Graneros">Graneros</option>
                                                 <option value="Machalí">Machalí</option>
                                             </Form.Select>
+                                            <Form.Control.Feedback type="invalid">{erroresRegistro.comuna}</Form.Control.Feedback>
                                         </Form.Group>
 
                                         <Form.Group className="mb-3" controlId="registro-direccion">
                                             <Form.Label><b>Dirección</b></Form.Label>
-                                            <Form.Control type="text" name="direccion" placeholder="Ingresar dirección" value={registro.direccion} onChange={actualizarReg}/>
+                                            <Form.Control type="text" name="direccion" placeholder="Ingresar dirección" value={registro.direccion} onChange={actualizarCampoRegistro} isInvalid={!!erroresRegistro.direccion}/>
+                                            <Form.Control.Feedback type="invalid">{erroresRegistro.direccion}</Form.Control.Feedback>
                                         </Form.Group>
 
                                         <Form.Group className="mb-3" controlId="registro-pass">
                                             <Form.Label><b>Contraseña</b></Form.Label>
-                                            <Form.Control type="password" name="pass" placeholder="Ingresar contraseña" value={registro.pass} onChange={actualizarReg}/>
+                                            <Form.Control type="password" name="pass" placeholder="Ingresar contraseña" value={registro.pass} onChange={actualizarCampoRegistro} isInvalid={!!erroresRegistro.pass}/>
+                                            <Form.Control.Feedback type="invalid">{erroresRegistro.pass}</Form.Control.Feedback>
                                         </Form.Group>
 
                                         <Form.Group className="mb-4" controlId="registro-confirmar-pass">
                                             <Form.Label><b>Confirmar Contraseña</b></Form.Label>
-                                            <Form.Control type="password" name="pass2" placeholder="Confirmar contraseña" value={registro.pass2} onChange={actualizarReg}/>
+                                            <Form.Control type="password" name="pass2" placeholder="Confirmar contraseña" value={registro.pass2} onChange={actualizarCampoRegistro} isInvalid={!!erroresRegistro.pass2}/>
+                                            <Form.Control.Feedback type="invalid">{erroresRegistro.pass2}</Form.Control.Feedback>
                                         </Form.Group>
 
                                         {errorRegistro && (

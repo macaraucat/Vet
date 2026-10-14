@@ -20,3 +20,40 @@
     height: 50px;
     object-fit: cover;
 }
+
+.producto-card,
+.producto-card .card-body {
+    min-width: 0;
+}
+
+.container > .table {
+    display: block;
+    overflow-x: auto;
+}
+
+.container h2 {
+    margin-block: 8px;
+    text-align: center;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 600;
+    color: #145E5C;
+}
+
+@media (min-width: 360px) {
+    .producto-card img {
+        height: clamp(160px, 25vw, 200px);
+    }
+}
+
+@media (min-width: 768px) {
+    .container > .table {
+        display: table;
+        overflow-x: visible;
+    }
+}
+
+@media (min-width: 1280px) {
+    .producto-card img {
+        height: 200px;
+    }
+}

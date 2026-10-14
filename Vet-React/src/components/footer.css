@@ -122,17 +122,29 @@ footer .logo-footer {
     text-align: center;
 }
 
-@media (min-width: 768px) {
-    footer {
-        height: auto;
-        min-height: 35vh;
-        align-items: center;
+@media (min-width: 768px) and (max-width: 1279.98px) {
+    .footer-row > .footer-col {
+        flex: 0 0 50%;
+        max-width: 50%;
+        margin-bottom: 1.5rem;
+    }
+
+    .footer-row > .footer-col:last-child {
+        flex-basis: 100%;
+        max-width: 100%;
+        margin-bottom: 0;
+    }
+
+    .footer-form,
+    .footer-text {
+        max-width: 340px;
     }
 }
 
 @media (min-width: 1280px) {
-    footer {
-        height: 35vh;
-        overflow-y: auto;
+    .footer-row > .footer-col {
+        flex: 0 0 33.333333%;
+        max-width: 33.333333%;
+        margin-bottom: 0;
     }
 }

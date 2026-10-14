@@ -49,3 +49,28 @@
 .auth .form-label {
     color: #145E5C;
 }
+
+@media (min-width: 360px) {
+    .auth {
+        width: 100%;
+        padding-inline: 1rem;
+    }
+
+    .auth .card,
+    .auth .card-body {
+        min-width: 0;
+    }
+}
+
+@media (min-width: 768px) {
+    .auth .card-body {
+        padding: clamp(1.5rem, 4vw, 3rem) !important;
+    }
+}
+
+@media (min-width: 1280px) {
+    .auth .row {
+        max-width: 1100px;
+        margin-inline: auto;
+    }
+}

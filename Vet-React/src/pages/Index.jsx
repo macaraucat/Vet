@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import useNoticias from '../hooks/useNoticias'
+import { useAuthContext } from '../context/AuthContext'
+import AgendarCita from '../components/Cita'
 import Button from 'react-bootstrap/Button'
 import './index.css'
 
@@ -8,6 +10,9 @@ function Index() {
     const { noticias, expandido, toggleExpandir } = useNoticias()
     const [animar, setAnimar] = useState(false)
     const location = useLocation()
+    const navigate = useNavigate()
+    const { usuario } = useAuthContext()
+    const [mostrarCita, setMostrarCita] = useState(false)
 
     useEffect(() => {
         const timer = setTimeout(() => setAnimar(true), 0)
@@ -20,6 +25,16 @@ function Index() {
         document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: 'smooth' })
     }, [location.hash, location.pathname])
 
+    const esCliente = usuario && usuario.role === 'Cliente'
+
+    const agendarCita = () => {
+        if (!esCliente) {
+            navigate('/login')
+            return
+        }
+        setMostrarCita(true)
+    }
+
     return (
         <main>
             <section id="hero" className="hero">
@@ -27,7 +42,7 @@ function Index() {
                     <div className="hero-text">
                         <h2 className="hero-tagline">Cuidado veterinario cercano y profesional</h2>
                         <p>Llevamos más de 15 años entregando atención cercana y de calidad a las mascotas. Contamos con médicos veterinarios, técnico veterinario y equipamiento especializado. Sabemos lo importante que es tu mascota para ti, por eso trabajamos con dedicación y cariño en cada visita.</p>
-                        <Button variant="success" className="boton-primario">Agendar cita</Button>
+                        <Button variant="success" className="boton-primario" onClick={agendarCita}>Agendar cita</Button>
                     </div>
                     <div className="hero-pets-wrapper">
                         <img src="/img/hero.jpg" alt="Mascotas" className={`hero-pets-img ${animar ? 'bounce-on-load' : ''}`}/>
@@ -35,7 +50,7 @@ function Index() {
                 </div>
             </section>
 
-            <section id="servicios" className="servicios standard-section">
+            <section id="servicios" className="servicios container">
                 <h2>Nuestros servicios</h2>
                 <div className="lista-servicios">
                     <article className="servicio py-2">
@@ -65,7 +80,7 @@ function Index() {
                 </div>
             </section>
 
-            <section id="nosotros" className="nosotros standard-section">
+            <section id="nosotros" className="nosotros container">
                 <h2 className="text-center mb-4">Sobre nosotros</h2>
                 <p>Veterinaria San Marcos es una clínica veterinaria ubicada en Rancagua, Región del Libertador General Bernardo O'Higgins, fundada en 2009. Contamos con un equipo integral dedicado a brindar una atención cercana y profesional, para tus mascotas. A lo largo de estos años, hemos visto crecer la confianza de nuestros clientes, lo que nos motiva a seguir mejorando cada aspecto de nuestra atención, desde la comodidad de nuestras instalaciones hasta la calidez con la que recibimos a cada mascota y su familia.</p>
                 <img src="/img/team.jpg" alt="Veterinaria San Marcos team" className="team-img mx-auto d-block my-4" />
@@ -79,7 +94,7 @@ function Index() {
                 </p>
             </section>
 
-            <section id="blogs" className="blogs standard-section">
+            <section id="blogs" className="blogs container">
                 <h2>Noticias importantes</h2>
                 <div className="lista-noticias">
                     {noticias.map((n, i) => (
@@ -95,6 +110,8 @@ function Index() {
                     ))}
                 </div>
             </section>
+
+            <AgendarCita mostrar={mostrarCita} onCerrar={() => setMostrarCita(false)} />
 
         </main>
     )

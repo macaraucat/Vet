@@ -1,10 +1,30 @@
+import { useState } from 'react'
 import { Form, Button, Alert } from 'react-bootstrap'
-import MapaUbicacion from './MapaUbicacion'
-import useContacto from '../hooks/useContacto'
+import MapaUbicacion from './Mapa'
+import useFormulario from '../hooks/useFormulario'
+import { reglasContacto } from '../utils/validaciones'
 import './footer.css'
 
+const valoresContactoIniciales = { asunto: '', email: '', mensaje: '' }
+
 function Footer() {
-    const { form, errores, enviado, handleChange, handleSubmit } = useContacto()
+    const [enviado, setEnviado] = useState(false)
+    const {
+        valores: form,
+        errores,
+        errorGeneral,
+        handleChange: actualizarCampo,
+        handleSubmit,
+    } = useFormulario(valoresContactoIniciales, reglasContacto, () => {
+        setEnviado(true)
+        return null
+    })
+
+    const handleChange = (event) => {
+        setEnviado(false)
+        actualizarCampo(event)
+    }
+
     return (
         <footer id="contacto" className="footer py-2">
             <div className="container">
@@ -34,60 +54,32 @@ function Footer() {
                                 ¡Mensaje enviado!
                             </Alert>
                         )}
+                        {errorGeneral && (
+                            <Alert variant="danger" className="py-1 px-2 mb-2">
+                                {errorGeneral}
+                            </Alert>
+                        )}
 
                         <Form className="footer-form" onSubmit={handleSubmit} noValidate>
                             <Form.Group className="form-group" controlId="contacto-asunto">
                                 <Form.Label>Asunto</Form.Label>
-                                <Form.Control
-                                    size="sm"
-                                    type="text"
-                                    name="asunto"
-                                    value={form.asunto}
-                                    onChange={handleChange}
-                                    placeholder="Sobre qué nos escribes"
-                                    isInvalid={!!errores.asunto}
-                                />
-                                <Form.Control.Feedback type="invalid">
-                                    {errores.asunto}
-                                </Form.Control.Feedback>
+                                <Form.Control type="text" name="asunto" value={form.asunto} onChange={handleChange} placeholder="Sobre qué nos escribes" isInvalid={!!errores.asunto} />
+                                <Form.Control.Feedback type="invalid">{errores.asunto}</Form.Control.Feedback>
                             </Form.Group>
 
                             <Form.Group className="form-group" controlId="contacto-email">
                                 <Form.Label>Correo</Form.Label>
-                                <Form.Control
-                                    size="sm"
-                                    type="email"
-                                    name="email"
-                                    value={form.email}
-                                    onChange={handleChange}
-                                    placeholder="tú@correo.com"
-                                    isInvalid={!!errores.email}
-                                />
-                                <Form.Control.Feedback type="invalid">
-                                    {errores.email}
-                                </Form.Control.Feedback>
+                                <Form.Control type="email" name="email" value={form.email} onChange={handleChange} placeholder="Ingresar correo electrónico" isInvalid={!!errores.email}/>
+                                <Form.Control.Feedback type="invalid">{errores.email}</Form.Control.Feedback>
                             </Form.Group>
 
                             <Form.Group className="form-group" controlId="contacto-mensaje">
                                 <Form.Label>Mensaje</Form.Label>
-                                <Form.Control
-                                    size="sm"
-                                    as="textarea"
-                                    rows={1}
-                                    name="mensaje"
-                                    value={form.mensaje}
-                                    onChange={handleChange}
-                                    placeholder="Cuéntanos"
-                                    isInvalid={!!errores.mensaje}
-                                />
-                                <Form.Control.Feedback type="invalid">
-                                    {errores.mensaje}
-                                </Form.Control.Feedback>
+                                <Form.Control as="textarea" rows={1} name="mensaje" value={form.mensaje} onChange={handleChange} placeholder="Cuéntanos" isInvalid={!!errores.mensaje}/>
+                                <Form.Control.Feedback type="invalid">{errores.mensaje}</Form.Control.Feedback>
                             </Form.Group>
 
-                            <Button variant="success" size="sm" type="submit">
-                                Enviar mensaje
-                            </Button>
+                            <Button variant="success" type="submit">Enviar mensaje</Button>
                         </Form>
                     </div>
                 </div>

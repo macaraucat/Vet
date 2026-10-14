@@ -4,15 +4,9 @@ import { useCarritoContext } from '../context/CarritoContext'
 import { useAuthContext } from '../context/AuthContext'
 import './header.css'
 
-// Ícono de "cerrar sesión" (inline para no depender de un archivo nuevo en /public/img).
-// Si prefieres una imagen, cámbialo por: <img src="/img/logout.svg" alt="Cerrar sesión" className="icon" />
 function IconoLogout() {
     return (
-        <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" role="img" aria-label="Cerrar sesión">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-            <polyline points="16 17 21 12 16 7" />
-            <line x1="21" y1="12" x2="9" y2="12" />
-        </svg>
+        <img src="/img/logout.svg" alt="Cerrar sesión" className="icon"/>
     )
 }
 
@@ -53,6 +47,9 @@ function Header() {
 
                     <nav className={menuAbierto ? 'nav-open' : ''}>
                         <Link to="/catalogo" onClick={scrollToTop}>Catálogo</Link>
+                        {['Funcionario', 'Administrador'].includes(usuario?.role) && (
+                            <Link to="/admin" onClick={scrollToTop}>Administración</Link>
+                        )}
                         <Link to="/#nosotros" onClick={cerrarMenu}>Nosotros</Link>
                         <Link to="/#blogs" onClick={cerrarMenu}>Blogs</Link>
                         <a href="#contacto" onClick={cerrarMenu}>Contacto</a>
@@ -68,7 +65,7 @@ function Header() {
                             </>
                         ) : (
                             <Link to="/login" title="Iniciar sesión" onClick={cerrarMenu}>
-                                <img src="/img/cuenta.svg" alt="Iniciar sesión" className="icon" />
+                                <img src="/img/login.svg" alt="Iniciar sesión" className="icon" />
                             </Link>
                         )}
                         <Link to="/carrito" title="Carrito" className="position-relative" onClick={cerrarMenu}>

@@ -14,18 +14,18 @@ main {
     flex: 1 0 auto;
 }
 
-.standard-section {
+.container {
     max-width: 1200px;
     margin-inline: auto;
     padding: 1rem;
 }
 
-.standard-section h1,
-.standard-section h2,
-.standard-section h3,
-.standard-section h4,
-.standard-section h5,
-.standard-section h6 {
+.container h1,
+.container h2,
+.container h3,
+.container h4,
+.container h5,
+.container h6 {
     margin-block: 8px;
     text-align: center;
     font-family: 'Inter', system-ui, sans-serif;
@@ -33,7 +33,7 @@ main {
     color: #145E5C;
 }
 
-.standard-section p {
+.container p {
     margin-block: 8px;
     text-align: justify;
 }
