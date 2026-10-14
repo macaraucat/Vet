@@ -1,22 +1,32 @@
 import { useState } from 'react'
+import { Navigate } from 'react-router-dom'
 import { Container, Row, Col, Card, Form, Button, Alert, Nav } from 'react-bootstrap'
+import { useAuthContext } from '../context/AuthContext'
 import { validarCorreo, validarPass, validarRun, validarNombre, validarDireccion, validarPassIguales, validarFechaNacimiento } from '../utils/validaciones'
 import './login.css'
 
-function Login({ onLogin, onRegistro }) {
+const registroInicial = { run: '', nombre: '', email: '', fechaNac: '', comuna: '', direccion: '', pass: '', pass2: '' }
+
+function Login() {
+    const { usuario, login, registrar } = useAuthContext()
     const [tab, setTab] = useState('login')
 
     const [email, setEmail] = useState('')
     const [pass, setPass] = useState('')
     const [error, setError] = useState('')
+    const [exito, setExito] = useState('')
 
-    const [registro, setRegistro] = useState({ run:'', nombre:'', email:'', fechaNac:'', comuna:'', direccion:'', pass:'', pass2:'',})
+    const [registro, setRegistro] = useState(registroInicial)
     const [errorRegistro, setErrorRegistro] = useState('')
+
+    // Si ya hay sesión activa (o recién se inició), se vuelve al inicio
+    if (usuario) return <Navigate to="/" replace />
 
     const handleTabChange = (key) => {
         setTab(key)
         setError('')
         setErrorRegistro('')
+        setExito('')
     }
 
     const actualizarReg = (e) => {
@@ -26,9 +36,12 @@ function Login({ onLogin, onRegistro }) {
     const handleSubmit = (e) => {
         e.preventDefault()
         setError('')
+        setExito('')
 
-        if (!validarCorreo(email)) {
-            setError('Ingrese un correo válido: @duoc.cl, @profesor.duoc.cl o @gmail.com (máx. 100 caracteres).')
+        const correo = email.trim()
+
+        if (!validarCorreo(correo)) {
+            setError('Ingrese un correo válido: @duoc.cl, @profesor.duoc.cl o @gmail.com.')
             return
         }
 
@@ -37,7 +50,9 @@ function Login({ onLogin, onRegistro }) {
             return
         }
 
-        onLogin?.({ email, pass })
+        const resultado = login(correo, pass)
+        if (!resultado.ok) setError(resultado.error)
+        // Si es correcto, el contexto guarda la sesión y el <Navigate> de arriba redirige al inicio
     }
 
     const handleSubmitRegistro = (e) => {
@@ -52,14 +67,18 @@ function Login({ onLogin, onRegistro }) {
             setErrorRegistro('El nombre es obligatorio (máx. 50 caracteres).')
             return
         }
-        if (!validarCorreo(registro.email)) {
+        if (!validarCorreo(registro.email.trim())) {
             setErrorRegistro('Ingrese un correo válido: @duoc.cl, @profesor.duoc.cl o @gmail.com.')
             return
         }
         if (!validarFechaNacimiento(registro.fechaNac)) {
             setErrorRegistro('Debes ser mayor de 18 años para registrarte.')
             return
-        }        
+        }
+        if (!registro.comuna) {
+            setErrorRegistro('Selecciona una comuna.')
+            return
+        }
         if (!validarDireccion(registro.direccion)) {
             setErrorRegistro('La dirección es obligatoria (máx. 300 caracteres).')
             return
@@ -73,7 +92,19 @@ function Login({ onLogin, onRegistro }) {
             return
         }
 
-        onRegistro?.(registro)
+        const resultado = registrar(registro)
+        if (!resultado.ok) {
+            setErrorRegistro(resultado.error)
+            return
+        }
+
+        // Registro correcto: se limpia el formulario y se pasa a la pestaña de login
+        setRegistro(registroInicial)
+        setEmail('')
+        setPass('')
+        setError('')
+        setExito('¡Registro completado! Ahora puedes iniciar sesión.')
+        setTab('login')
     }
 
     return (
@@ -94,6 +125,10 @@ function Login({ onLogin, onRegistro }) {
 
                                 {tab === 'login' ? (
                                     <Form id="login-form" onSubmit={handleSubmit} noValidate>
+                                        {exito && (
+                                            <Alert variant="success" className="py-2">{exito}</Alert>
+                                        )}
+
                                         <Form.Group className="mb-3" controlId="email">
                                             <Form.Label><b>Correo electrónico</b></Form.Label>
                                             <Form.Control type="email" placeholder="Ingresar correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)}/>
@@ -126,8 +161,7 @@ function Login({ onLogin, onRegistro }) {
 
                                         <Form.Group className="mb-3" controlId="registro-email">
                                             <Form.Label><b>Correo electrónico</b></Form.Label>
-                                            <Form.Control type="email" name="email" placeholder="Ingresar correo electrónico" value={registro.email} onChange={actualizarReg}
-                                            />
+                                            <Form.Control type="email" name="email" placeholder="Ingresar correo electrónico" value={registro.email} onChange={actualizarReg}/>
                                         </Form.Group>
 
                                         <Form.Group className="mb-3" controlId="registro-fecha-nacimiento">
