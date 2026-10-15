@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { PRECIO_CONSULTA } from "../utils/servicios";
+import { PRECIO_CONSULTA } from "../utils/productos";
 
 export function useCarrito() {
     const [carrito, setCarrito] = useState(() => {

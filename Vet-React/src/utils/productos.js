@@ -1,3 +1,5 @@
+export const PRECIO_CONSULTA = 15000
+
 export const productos = [
     { id: "ME001", categoria: "Antibióticos", nombre: "Amoxibay 250mg", detalle: "Amoxicilina · Blíster 10 comp.", especie: "Perro / Gato", precio: 4200, imagen: "/img/ME001.jpeg" },
     { id: "ME002", categoria: "Antibióticos", nombre: "Enrox 50mg", detalle: "Enrofloxacino · Blíster 10 comp.", especie: "Perro / Gato", precio: 6800, imagen: "/img/ME002.jpeg" },

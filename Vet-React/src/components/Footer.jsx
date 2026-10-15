@@ -3,7 +3,7 @@ import { Alert, Button, Col, Container, Form, Image, Row } from 'react-bootstrap
 import MapaUbicacion from './Mapa'
 import useFormulario from '../hooks/useFormulario'
 import { reglasContacto } from '../utils/validaciones'
-import { PRECIO_CONSULTA } from '../utils/servicios'
+import { PRECIO_CONSULTA } from '../utils/productos'
 
 const valoresContactoIniciales = { asunto: '', email: '', mensaje: '' }
 
@@ -39,7 +39,7 @@ function Footer() {
                         <h6 className="my-1 fw-semibold">Horario</h6>
                         <p className="mb-1 text-start">
                             Lunes a viernes: 10:00 - 19:30<br />
-                            Sábados: 10:00 - 16:00
+                            Sábados y domingos: 10:00 - 16:00
                         </p>
                         <h6 className="my-1 fw-semibold">Consulta veterinaria</h6>
                         <p className="mb-1 text-start">Valor de la consulta ${PRECIO_CONSULTA.toLocaleString('es-CL')}</p>

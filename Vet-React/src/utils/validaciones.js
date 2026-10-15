@@ -22,9 +22,6 @@ const mayorDeEdad = (edadMinima = 18) => (v) => {
 const fechaNoPasada = (hoy) => (v) =>
     v >= hoy ? '' : 'No puedes seleccionar una fecha pasada.'
 
-const fechaNoDomingo = (v) =>
-    new Date(`${v}T00:00:00`).getDay() !== 0 ? '' : 'Los domingos no hay atención.'
-
 const horarioDisponible = (horariosDisponibles) => (v) =>
     horariosDisponibles.includes(v) ? '' : 'Selecciona un horario disponible.'
 
@@ -59,7 +56,6 @@ export function crearReglasCita({ hoy, horariosDisponibles }) {
     return {
         fecha: [
             requerido('Selecciona una fecha.'),
-            fechaNoDomingo,
             fechaNoPasada(hoy),
         ],
         hora: [

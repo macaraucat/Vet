@@ -4,11 +4,11 @@ import { useAuthContext } from '../context/AuthContext'
 import { useCarritoContext } from '../context/CarritoContext'
 import useFormulario from '../hooks/useFormulario'
 import { crearReglasCita } from '../utils/validaciones'
-import { PRECIO_CONSULTA } from '../utils/servicios'
+import { PRECIO_CONSULTA } from '../utils/productos'
 import '../pages/index.css'
 
-const BLOQUES_LUNES_A_VIERNES = ['10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00', '18:00']
-const BLOQUES_SABADO = ['10:00', '11:00', '12:00', '14:00', '15:00']
+const LUN_VIE = ['10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00', '18:00']
+const SAB_DOM = ['10:00', '11:00', '12:00', '14:00', '15:00']
 const DURACION_BLOQUE = 45
 
 const citaInicial = {
@@ -32,21 +32,26 @@ function obtenerDiaSemana(fechaISO) {
     return new Date(anio, mes - 1, dia).getDay()
 }
 
+function obtenerHoraFin(hora) {
+    const [horas, minutos] = hora.split(':').map(Number)
+    const minutosFin = horas * 60 + minutos + DURACION_BLOQUE
+    return `${String(Math.floor(minutosFin / 60)).padStart(2, '0')}:${String(minutosFin % 60).padStart(2, '0')}`
+}
+
 function obtenerBloquesDisponibles(fecha, hoy) {
     if (!fecha) return []
 
     const diaSemana = obtenerDiaSemana(fecha)
-    if (diaSemana === 0) return []
-
-    const bloques = diaSemana === 6 ? BLOQUES_SABADO : BLOQUES_LUNES_A_VIERNES
+    const bloques = diaSemana === 0 || diaSemana === 6
+        ? SAB_DOM
+        : LUN_VIE
     if (fecha !== hoy) return bloques
 
     const ahora = new Date()
+    const minutosActuales = ahora.getHours() * 60 + ahora.getMinutes()
     return bloques.filter((hora) => {
         const [horas, minutos] = hora.split(':').map(Number)
-        const finBloque = new Date()
-        finBloque.setHours(horas, minutos + DURACION_BLOQUE, 0, 0)
-        return finBloque > ahora
+        return horas * 60 + minutos + DURACION_BLOQUE > minutosActuales
     })
 }
 
@@ -98,10 +103,7 @@ function AgendarCita({ mostrar, onCerrar }) {
             .toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
         : ''
 
-    const [horasInicio, minutosInicio] = citaVisible.hora.split(':').map(Number)
-    const horaFin = citaVisible.hora
-        ? `${String(horasInicio + Math.floor((minutosInicio + DURACION_BLOQUE) / 60)).padStart(2, '0')}:${String((minutosInicio + DURACION_BLOQUE) % 60).padStart(2, '0')}`
-        : ''
+    const horaFin = citaVisible.hora ? obtenerHoraFin(citaVisible.hora) : ''
 
     return (
         <Modal show={mostrar} onHide={confirmada ? cerrarModal : onCerrar} centered>
@@ -141,10 +143,8 @@ function AgendarCita({ mostrar, onCerrar }) {
                                         : 'Seleccionar hora'}
                                 </option>
                                 {bloquesDisponibles.map((hora) => {
-                                    const [h, m] = hora.split(':').map(Number)
-                                    const fin = `${String(h + Math.floor((m + DURACION_BLOQUE) / 60)).padStart(2, '0')}:${String((m + DURACION_BLOQUE) % 60).padStart(2, '0')}`
                                     return (
-                                        <option key={hora} value={hora}>{hora} a {fin}</option>
+                                        <option key={hora} value={hora}>{hora} a {obtenerHoraFin(hora)}</option>
                                     )
                                 })}
                             </Form.Select>

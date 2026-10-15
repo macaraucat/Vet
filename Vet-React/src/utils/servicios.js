@@ -1,1 +1,0 @@
-export const PRECIO_CONSULTA = 15000
