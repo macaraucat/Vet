@@ -8,6 +8,7 @@ import Catalogo from './pages/Catalogo'
 import Producto from './pages/Producto'
 import Carrito from './pages/Carrito'
 import Admin from './pages/Admin'
+import Checkout from './pages/Checkout'
 import { CarritoProvider, useCarritoContext } from './context/CarritoContext'
 
 function AvisoCarrito() {
@@ -33,6 +34,7 @@ function App() {
                     <Route path="/producto/:id" element={<Producto />}/>
                     <Route path="/carrito" element={<Carrito />}/>
                     <Route path="/admin" element={<Admin />}/>
+                    <Route path="/checkout" element={<Checkout />}/>
                 </Routes>
                 <Footer />
             </BrowserRouter>

@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { Alert, Button, Container, Image, Table } from "react-bootstrap";
 import { useCarritoContext } from "../context/CarritoContext";
+import { Link, useNavigate } from "react-router-dom";
 
 function Carrito() {
     const { carrito, eliminarItem, vaciarCarrito, totalPrecio, cambiarCantidad } = useCarritoContext();
+    const navigate = useNavigate();
     const [pedidoConfirmado, setPedidoConfirmado] = useState("");
 
     function finalizarCompra() {
@@ -89,7 +90,7 @@ function Carrito() {
                 <div className="text-end">
                     <h4>Total: ${totalPrecio.toLocaleString("es-CL")}</h4>
                     <Button variant="outline-danger" onClick={vaciarCarrito}>Vaciar carrito</Button>
-                    <Button variant="success" className="ms-2" onClick={finalizarCompra}>Finalizar compra</Button>
+                    <Button variant="success" className="ms-2" onClick={() => navigate("/checkout")}>Ir a pagar</Button>
                 </div>
             </Container>
         </main>

@@ -52,6 +52,17 @@ export const reglasContacto = {
     mensaje: [requerido('El mensaje es obligatorio.'), maximo(500)],
 }
 
+export const reglasCheckout = {
+    nombre: [requerido('El nombre es obligatorio.'), maximo(50)],
+    apellidos: [requerido('Los apellidos son obligatorios.'), maximo(50)],
+    correo: email,
+    calle: [requerido('La calle es obligatoria.'), maximo(100)],
+    departamento: [maximo(20)],
+    region: [requerido('Selecciona una región.')],
+    comuna: [requerido('La comuna es obligatoria.'), maximo(50)],
+    indicaciones: [maximo(300)],
+}
+
 export function crearReglasCita({ hoy, horariosDisponibles }) {
     return {
         fecha: [
