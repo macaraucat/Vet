@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import useNoticias from '../hooks/useNoticias'
 import { useAuthContext } from '../context/AuthContext'
 import AgendarCita from '../components/Cita'
-import Button from 'react-bootstrap/Button'
+import { Button, Image } from 'react-bootstrap'
 import './index.css'
 
 function Index() {
@@ -83,7 +83,7 @@ function Index() {
             <section id="nosotros" className="nosotros container">
                 <h2 className="text-center mb-4">Sobre nosotros</h2>
                 <p>Veterinaria San Marcos es una clínica veterinaria ubicada en Rancagua, Región del Libertador General Bernardo O'Higgins, fundada en 2009. Contamos con un equipo integral dedicado a brindar una atención cercana y profesional, para tus mascotas. A lo largo de estos años, hemos visto crecer la confianza de nuestros clientes, lo que nos motiva a seguir mejorando cada aspecto de nuestra atención, desde la comodidad de nuestras instalaciones hasta la calidez con la que recibimos a cada mascota y su familia.</p>
-                <img src="/img/team.jpg" alt="Veterinaria San Marcos team" className="team-img mx-auto d-block my-4" />
+                <Image src="/img/team.jpg" alt="Veterinaria San Marcos team" className="team-img mx-auto d-block my-4" />
                 <h3>Nuestro equipo:</h3>
                 <p>
                     <b>Laura Claro Hernández:</b> Médica Veterinaria, Universidad de Concepción. Diplomado en Cirugía de Pequeños Animales (Universidad de Chile). Directora clínica y fundadora de Veterinaria San Marcos, con más de 15 años de trayectoria en medicina y cirugía de perros y gatos.<hr />
@@ -102,20 +102,18 @@ function Index() {
                             <h4>{n.titulo}</h4>
                             <p className="texto-corto" style={{ display: expandido[i] ? 'none' : 'block' }}>{n.corto}</p>
                             <p className="texto-extendido" style={{ display: expandido[i] ? 'block' : 'none' }}>{n.extendido}</p>
-                            <a href="#" className="boton-expandir" onClick={(e) => { e.preventDefault(); toggleExpandir(i); }}>
+                            <Button variant="link" className="boton-expandir p-0 w-100" onClick={() => toggleExpandir(i)}>
                                 {expandido[i] ? 'Contraer' : 'Expandir'}
-                            </a>
-                            <img src={n.img} alt={n.alt} className="blog-img" />
+                            </Button>
+                            <Image src={n.img} alt={n.alt} className="blog-img" />
                         </article>
                     ))}
                 </div>
             </section>
 
             <AgendarCita mostrar={mostrarCita} onCerrar={() => setMostrarCita(false)} />
-
         </main>
     )
-
 }
 
 export default Index

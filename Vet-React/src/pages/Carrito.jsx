@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Alert, Button, Container, Image, Table } from "react-bootstrap";
 import { useCarritoContext } from "../context/CarritoContext";
 
 function Carrito() {
@@ -14,63 +15,69 @@ function Carrito() {
 
     if (pedidoConfirmado) {
         return (
-            <main className="container mb-5">
-                <h2 className="text-center mb-4">Tu carrito de compras</h2>
-                <div className="alert alert-success text-center mt-4" role="alert">{pedidoConfirmado}</div>
+            <main>
+                <Container className="mb-5">
+                    <h2 className="text-center mb-4">Tu carrito de compras</h2>
+                    <Alert variant="success" className="text-center mt-4">{pedidoConfirmado}</Alert>
+                </Container>
             </main>
         );
     }
 
     if (carrito.length === 0) {
         return (
-            <main className="container mb-5">
-                <h2 className="text-center mb-4">Tu carrito de compras</h2>
-                <div className="text-center">
-                    <p>Tu carrito está vacío.</p>
-                    <Link to="/catalogo" className="btn btn-success">Ir al catálogo</Link>
-                </div>
+            <main>
+                <Container className="mb-5">
+                    <h2 className="text-center mb-4">Tu carrito de compras</h2>
+                    <div className="text-center">
+                        <p>Tu carrito está vacío.</p>
+                        <Button as={Link} to="/catalogo" variant="success">Ir al catálogo</Button>
+                    </div>
+                </Container>
             </main>
         );
     }
 
     return (
-        <main className="container mb-5">
-            <h2 className="text-center mb-4">Tu carrito de compras</h2>
-            <table className="table align-middle">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Producto</th>
-                        <th>Precio</th>
-                        <th>Cantidad</th>
-                        <th>Subtotal</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {carrito.map((item) => (
-                        <tr key={item.id}>
-                            <td><img src={item.imagen} alt={item.nombre} className="img-carrito" /></td>
-                            <td>{item.nombre}</td>
-                            <td>${item.precio.toLocaleString("es-CL")}</td>
-                            <td>
-                                <div className="d-flex align-items-center gap-2">
-                                    <button className="btn btn-sm btn-outline-secondary" onClick={() => cambiarCantidad(item.id, item.cantidad - 1)}>-</button>
-                                    <span>{item.cantidad}</span>
-                                    <button className="btn btn-sm btn-outline-secondary" onClick={() => cambiarCantidad(item.id, item.cantidad + 1)}>+</button>
-                                </div>
-                            </td>
-                            <td>${(item.precio * item.cantidad).toLocaleString("es-CL")}</td>
-                            <td><button className="btn btn-sm btn-outline-danger" onClick={() => eliminarItem(item.id)}>Quitar</button></td>
+        <main>
+            <Container className="mb-5">
+                <h2 className="text-center mb-4">Tu carrito de compras</h2>
+                <Table responsive className="align-middle">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Producto</th>
+                            <th>Precio</th>
+                            <th>Cantidad</th>
+                            <th>Subtotal</th>
+                            <th></th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-            <div className="text-end">
-                <h4>Total: ${totalPrecio.toLocaleString("es-CL")}</h4>
-                <button className="btn btn-outline-danger" onClick={vaciarCarrito}>Vaciar carrito</button>
-                <button className="btn btn-success ms-2" onClick={finalizarCompra}>Finalizar compra</button>
-            </div>
+                    </thead>
+                    <tbody>
+                        {carrito.map((item) => (
+                            <tr key={item.id}>
+                                <td><Image src={item.imagen} alt={item.nombre} width={50} height={50} style={{ objectFit: "cover" }} /></td>
+                                <td>{item.nombre}</td>
+                                <td>${item.precio.toLocaleString("es-CL")}</td>
+                                <td>
+                                    <div className="d-flex align-items-center gap-2">
+                                        <Button size="sm" variant="outline-secondary" aria-label={`Disminuir cantidad de ${item.nombre}`} onClick={() => cambiarCantidad(item.id, item.cantidad - 1)}>-</Button>
+                                        <span>{item.cantidad}</span>
+                                        <Button size="sm" variant="outline-secondary" aria-label={`Aumentar cantidad de ${item.nombre}`} onClick={() => cambiarCantidad(item.id, item.cantidad + 1)}>+</Button>
+                                    </div>
+                                </td>
+                                <td>${(item.precio * item.cantidad).toLocaleString("es-CL")}</td>
+                                <td><Button size="sm" variant="outline-danger" onClick={() => eliminarItem(item.id)}>Quitar</Button></td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
+                <div className="text-end">
+                    <h4>Total: ${totalPrecio.toLocaleString("es-CL")}</h4>
+                    <Button variant="outline-danger" onClick={vaciarCarrito}>Vaciar carrito</Button>
+                    <Button variant="success" className="ms-2" onClick={finalizarCompra}>Finalizar compra</Button>
+                </div>
+            </Container>
         </main>
     );
 }

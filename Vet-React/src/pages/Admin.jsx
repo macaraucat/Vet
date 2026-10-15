@@ -47,31 +47,28 @@ function Admin() {
 
     return (
         <main className="admin-container">
-            <aside className="admin-sidebar" aria-label="Navegación de administración">
-                <Nav
-                    as="nav"
-                    activeKey={tabActual}
-                    className="admin-nav"
-                    onSelect={(id) => {
-                        if (!id) return
-                        setTabActual(id)
-                        admin.setFeedback(null)
-                    }}
-                >
-                    {secciones.filter(({ id }) => id !== 'usuarios' || !esFuncionario).map(({ id, label }) => (
-                        <Nav.Item key={id}>
-                            <Nav.Link as="button" type="button" eventKey={id} className="tab">{label}</Nav.Link>
-                        </Nav.Item>
-                    ))}
-                </Nav>
-            </aside>
+            <Nav
+                activeKey={tabActual}
+                className="admin-sidebar admin-nav"
+                onSelect={(id) => {
+                    if (!id) return
+                    setTabActual(id)
+                    admin.setFeedback(null)
+                }}
+            >
+                {secciones.filter(({ id }) => id !== 'usuarios' || !esFuncionario).map(({ id, label }) => (
+                    <Nav.Item key={id}>
+                        <Nav.Link as="button" type="button" eventKey={id} className="tab">{label}</Nav.Link>
+                    </Nav.Item>
+                ))}
+            </Nav>
 
             <section className="admin-main-content">
                 {admin.feedback && <Alert variant={admin.feedback.variant} dismissible onClose={() => admin.setFeedback(null)}>{admin.feedback.message}</Alert>}
 
                 {tabActual === 'productos' && (
-                    <section aria-labelledby="admin-title">
-                        <h2 id="admin-title">Gestión de Productos</h2>
+                    <section aria-labelledby="admin-productos-title">
+                        <h2 id="admin-productos-title">Gestión de Productos</h2>
                         <div className="admin-toolbar">
                             <Button variant="success" onClick={() => admin.abrirProducto('agregar')}>+ Agregar</Button>
                             <Button variant="warning" onClick={() => admin.abrirProducto('modificar')}>Modificar</Button>
@@ -116,8 +113,8 @@ function Admin() {
                 )}
 
                 {tabActual === 'usuarios' && !esFuncionario && (
-                    <section aria-labelledby="admin-title">
-                        <h2 id="admin-title">Gestión de Usuarios</h2>
+                    <section aria-labelledby="admin-usuarios-title">
+                        <h2 id="admin-usuarios-title">Gestión de Usuarios</h2>
                         <div className="admin-toolbar">
                             <Button variant="success" onClick={() => admin.abrirUsuario('agregar')}>+ Agregar</Button>
                             <Button variant="warning" onClick={() => admin.abrirUsuario('modificar')}>Modificar</Button>
@@ -166,8 +163,8 @@ function Admin() {
                 )}
 
                 {tabActual === 'citas' && (
-                    <section aria-labelledby="admin-title">
-                        <h2 id="admin-title">Gestión de Citas</h2>
+                    <section aria-labelledby="admin-citas-title">
+                        <h2 id="admin-citas-title">Gestión de Citas</h2>
                         <div className="admin-toolbar">
                             <Button variant="success" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Confirmada')}>Confirmar</Button>
                             <Button variant="warning" disabled={admin.citaSeleccionada === null} onClick={admin.abrirCita}>Modificar</Button>
@@ -221,8 +218,8 @@ function Admin() {
                 )}
 
                 {tabActual === 'mensajes' && (
-                    <section aria-labelledby="admin-title">
-                        <h2 id="admin-title">Mensajes</h2>
+                    <section aria-labelledby="admin-mensajes-title">
+                        <h2 id="admin-mensajes-title">Mensajes</h2>
                         <p>No hay mensajes nuevos por el momento.</p>
                     </section>
                 )}

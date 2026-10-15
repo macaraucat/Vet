@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Form, Button, Alert } from 'react-bootstrap'
+import { Alert, Button, Col, Container, Form, Image, Row } from 'react-bootstrap'
 import MapaUbicacion from './Mapa'
 import useFormulario from '../hooks/useFormulario'
 import { reglasContacto } from '../utils/validaciones'
@@ -27,9 +27,9 @@ function Footer() {
 
     return (
         <footer id="contacto" className="footer py-2">
-            <div className="container">
-                <div className="row footer-row gy-1">
-                    <div className="col-12 col-md-4 footer-col">
+            <Container className="w-100">
+                <Row className="gy-1 align-items-center">
+                    <Col xs={12} md={6} xl={4} className="d-flex flex-column align-items-center">
                         <h6>Horario</h6>
                         <p className="footer-text">
                             Lunes a viernes: 10:00 - 19:30<br />
@@ -38,16 +38,16 @@ function Footer() {
                         </p>
                         <h6>Consulta veterinaria</h6>
                         <p className="footer-text">Valor de la consulta $15.000</p>
-                        <img src="/img/logo.png" alt="Logo" className="logo-footer" />
-                    </div>
+                        <Image src="/img/logo.png" alt="Logo" className="logo-footer" />
+                    </Col>
 
-                    <div className="col-12 col-md-4 footer-col">
+                    <Col xs={12} md={6} xl={4} className="d-flex flex-column align-items-center">
                         <h6>Ubicación</h6>
                         <p className="footer-text">Recreo 26, Rancagua, Región de O'Higgins</p>
                         <MapaUbicacion />
-                    </div>
+                    </Col>
 
-                    <div className="col-12 col-md-4 footer-col">
+                    <Col xs={12} md={12} xl={4} className="d-flex flex-column align-items-center">
                         <h6>Contacto</h6>
                         {enviado && (
                             <Alert variant="success" className="py-1 px-2 mb-2">
@@ -81,11 +81,11 @@ function Footer() {
 
                             <Button variant="success" type="submit">Enviar mensaje</Button>
                         </Form>
-                    </div>
-                </div>
+                    </Col>
+                </Row>
 
                 <p className="footer-copy text-center mb-0">© Veterinaria San Marcos 2026. Todos los derechos reservados.</p>
-            </div>
+            </Container>
         </footer>
     );
 }

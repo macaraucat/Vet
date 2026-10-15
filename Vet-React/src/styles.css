@@ -24,8 +24,7 @@ main {
 .container h2,
 .container h3,
 .container h4,
-.container h5,
-.container h6 {
+.container h5 {
     margin-block: 8px;
     text-align: center;
     font-family: 'Inter', system-ui, sans-serif;
@@ -33,7 +32,50 @@ main {
     color: #145E5C;
 }
 
+.container h6 {
+    color: white;
+}
 .container p {
     margin-block: 8px;
     text-align: justify;
+}
+
+/* Badge catálogo */
+.badge-stock {
+    font-size: 0.8rem;
+}
+
+/* Propiedades carrito */
+.table td {
+    vertical-align: middle;
+}
+
+.img-carrito {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+.container > .table {
+    display: block;
+    overflow-x: auto;
+}
+
+@media (min-width: 360px) {
+    .catalogo-product-image {
+        height: clamp(160px, 25vw, 200px);
+    }
+}
+
+@media (min-width: 768px) {
+    .container > .table {
+        display: table;
+        overflow-x: visible;
+    }
+}
+
+@media (min-width: 1280px) {
+    .catalogo-product-image {
+        height: 200px;
+    }
 }
