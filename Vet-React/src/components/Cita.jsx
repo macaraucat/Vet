@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react'
 import { Modal, Button, Form, Alert } from 'react-bootstrap'
 import { useAuthContext } from '../context/AuthContext'
+import { useCarritoContext } from '../context/CarritoContext'
 import useFormulario from '../hooks/useFormulario'
 import { crearReglasCita } from '../utils/validaciones'
+import { PRECIO_CONSULTA } from '../utils/servicios'
 import '../pages/index.css'
 
 const BLOQUES_LUNES_A_VIERNES = ['10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00', '18:00']
@@ -50,6 +52,7 @@ function obtenerBloquesDisponibles(fecha, hoy) {
 
 function AgendarCita({ mostrar, onCerrar }) {
     const { usuario } = useAuthContext()
+    const { agregarCitaAlCarrito } = useCarritoContext()
     const [confirmada, setConfirmada] = useState(false)
     const [citaConfirmada, setCitaConfirmada] = useState(null)
 
@@ -61,6 +64,7 @@ function AgendarCita({ mostrar, onCerrar }) {
             horariosDisponibles: obtenerBloquesDisponibles(valores.fecha, hoy),
         }),
         (valores) => {
+            agregarCitaAlCarrito(valores, usuario.nombre)
             setCitaConfirmada(valores)
             setConfirmada(true)
             return null
@@ -107,7 +111,7 @@ function AgendarCita({ mostrar, onCerrar }) {
             <Modal.Body>
                 {confirmada ? (
                     <Alert variant="success">
-                        <p className="mb-1"><b>¡Cita agendada con éxito!</b></p>
+                        <p className="mb-1"><b>¡Cita agendada y agregada al carrito!</b></p>
                         <p className="mb-1"><b>Fecha:</b> {fechaFormateada}</p>
                         <p className="mb-1"><b>Hora:</b> {citaVisible.hora} a {horaFin}</p>
                         <p className="mb-1">
@@ -115,6 +119,7 @@ function AgendarCita({ mostrar, onCerrar }) {
                             {citaVisible.raza.trim() ? `, ${citaVisible.raza}` : ''}, {citaVisible.edad} {citaVisible.edad === '1' ? 'año' : 'años'})
                         </p>
                         <p className="mb-0"><b>Tutor:</b> {usuario.nombre}</p>
+                        <p className="mb-0"><b>Valor consulta:</b> ${PRECIO_CONSULTA.toLocaleString('es-CL')}</p>
                     </Alert>
                 ) : (
                     <Form className="cita-form" onSubmit={(event) => {

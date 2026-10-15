@@ -1,3 +1,11 @@
+:root {
+    --verde: #145E5C;
+}
+
+.bg-verde {
+    background-color: var(--verde);
+}
+
 html, body {
     height: 100%;
 }
@@ -23,8 +31,7 @@ main {
 .container h1,
 .container h2,
 .container h3,
-.container h4,
-.container h5 {
+.container h4 {
     margin-block: 8px;
     text-align: center;
     font-family: 'Inter', system-ui, sans-serif;
@@ -35,9 +42,55 @@ main {
 .container h6 {
     color: white;
 }
+
 .container p {
     margin-block: 8px;
     text-align: justify;
+}
+
+/* HEADER */
+.navbar.header[data-bs-theme="dark"] {
+    --bs-navbar-color: #fff;
+    --bs-navbar-hover-color: #fff;
+    --bs-navbar-active-color: #fff;
+    background-color: #145E5C;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+.header .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    transition: opacity 0.4s ease;
+}
+
+.header .brand:hover {
+    opacity: 0.75;
+}
+
+.header .logo {
+    width: clamp(40px, 6vw, 64px);
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+}
+
+.header .site-title {
+    font-family: 'Quicksand', system-ui, sans-serif;
+    font-weight: 500;
+    font-style: italic;
+    font-size: clamp(1.1rem, 2.6vw, 2rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.header .icon {
+    width: 26px;
+    height: 26px;
+    transition: transform 0.2s ease;
+}
+
+.header .icon:hover {
+    transform: scale(1.15);
 }
 
 /* Badge catálogo */
@@ -59,6 +112,39 @@ main {
 .container > .table {
     display: block;
     overflow-x: auto;
+}
+
+/* FOOTER */
+.footer-map,
+.footer-form {
+    width: 80%;
+    max-width: 340px;
+}
+
+.footer-map {
+    height: 175px;
+    border-radius: 8px;
+}
+
+.footer-form {
+    --bs-body-bg: transparent;
+    --bs-body-color: white;
+    --bs-secondary-color: rgba(255, 255, 255, 0.55);
+    --bs-border-color: rgba(255, 255, 255, 0.4);
+}
+
+.footer-form .form-control {
+    border-width: 0 0 1px;
+    border-radius: 0;
+    padding-block: 2px;
+    padding-inline-start: 0;
+    font-size: 0.8rem;
+    box-shadow: none;
+    resize: none;
+}
+
+.footer .btn:hover {
+    opacity: 0.75;
 }
 
 @media (min-width: 360px) {
