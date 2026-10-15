@@ -24,3 +24,6 @@ export const productos = [
     { id: "ME021", categoria: "Suplementos", nombre: "Omega vet 3-6-9", detalle: "Ácidos grasos omega · Frasco 100ml", especie: "Perro / Gato", precio: 9900, imagen: "/img/ME021.jpeg" },
     { id: "ME022", categoria: "Suplementos", nombre: "Condrovet forte", detalle: "Condroitín + Glucosamina · Blíster 30 comp.", especie: "Perro", precio: 14500, imagen: "/img/ME022.jpeg" }
 ];
+
+export const productosEnOferta = ["ME001", "ME005", "ME010", "ME013", "ME016", "ME021"]
+export const DESCUENTO_OFERTA = 0.2

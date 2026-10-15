@@ -1,17 +1,54 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Badge, Button, Card, Col, Container, Row } from "react-bootstrap";
+import { Badge, Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { useCarritoContext } from "../context/CarritoContext";
 import { productos } from "../utils/productos";
 
+// Lista de categorías sin repetir
+const categorias = [...new Set(productos.map((p) => p.categoria))];
+
 function Catalogo() {
     const { agregarAlCarrito } = useCarritoContext();
+    const [busqueda, setBusqueda] = useState("");
+    const [categoria, setCategoria] = useState("");
+
+    // Solo quedan los productos que coinciden con el nombre y la categoría elegida
+    const productosFiltrados = productos.filter((p) => {
+        const coincideNombre = p.nombre.toLowerCase().includes(busqueda.toLowerCase());
+        const coincideCategoria = categoria === "" || p.categoria === categoria;
+        return coincideNombre && coincideCategoria;
+    });
 
     return (
         <main>
             <Container className="mb-5">
                 <h2 className="text-center mb-4">Nuestro catálogo</h2>
+
+                <Row className="g-3 mb-4">
+                    <Col md={8}>
+                        <Form.Control
+                            type="search"
+                            placeholder="Buscar producto por nombre..."
+                            value={busqueda}
+                            onChange={(e) => setBusqueda(e.target.value)}
+                        />
+                    </Col>
+                    <Col md={4}>
+                        <Form.Select value={categoria} onChange={(e) => setCategoria(e.target.value)}>
+                            <option value="">Todas las categorías</option>
+                            {categorias.map((c) => (
+                                <option key={c} value={c}>{c}</option>
+                            ))}
+                        </Form.Select>
+                    </Col>
+                </Row>
+
+                {productosFiltrados.length === 0 && (
+                    <p className="text-center text-muted">No se encontraron productos.</p>
+                )}
+
                 <Row className="g-4">
-                    {productos.map((p) => (
+                    {productosFiltrados.map((p) => (
                         <Col xs={12} sm={6} lg={3} key={p.id}>
                             <Card className="shadow-sm" style={{ height: "100%", minWidth: 0 }}>
                                 <Link to={`/producto/${p.id}`} className="text-decoration-none text-dark">
