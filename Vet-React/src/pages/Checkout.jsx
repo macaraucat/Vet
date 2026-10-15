@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Alert, Button, Card, Container, Form, Table } from "react-bootstrap";
+import { Alert, Button, Card, Col, Container, Form, Row, Table } from "react-bootstrap";
 import { useCarritoContext } from "../context/CarritoContext";
 import { validar, reglasCheckout } from "../utils/validaciones";
 
@@ -126,59 +126,75 @@ function Checkout() {
         <main>
             <Container className="mb-5" style={{ maxWidth: 720 }}>
                 <h2 className="text-center mb-4">Checkout</h2>
-                <h4 className="text-end">Total a pagar: ${totalPrecio.toLocaleString("es-CL")}</h4>
+                <h4 className="text-end mb-3">Total a pagar: ${totalPrecio.toLocaleString("es-CL")}</h4>
 
                 <Form onSubmit={pagar} noValidate>
                     <h5>Información del cliente</h5>
 
-                    <Form.Group className="mb-3">
-                        <Form.Label>Nombre</Form.Label>
-                        <Form.Control name="nombre" value={datos.nombre} onChange={cambiar} isInvalid={!!errores.nombre} />
-                        <Form.Control.Feedback type="invalid">{errores.nombre}</Form.Control.Feedback>
-                    </Form.Group>
-
-                    <Form.Group className="mb-3">
-                        <Form.Label>Apellidos</Form.Label>
-                        <Form.Control name="apellidos" value={datos.apellidos} onChange={cambiar} isInvalid={!!errores.apellidos} />
-                        <Form.Control.Feedback type="invalid">{errores.apellidos}</Form.Control.Feedback>
-                    </Form.Group>
+                    <Row>
+                        <Col md={6}>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Nombre</Form.Label>
+                                <Form.Control name="nombre" value={datos.nombre} onChange={cambiar} isInvalid={!!errores.nombre} />
+                                <Form.Control.Feedback type="invalid">{errores.nombre}</Form.Control.Feedback>
+                            </Form.Group>
+                        </Col>
+                        <Col md={6}>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Apellidos</Form.Label>
+                                <Form.Control name="apellidos" value={datos.apellidos} onChange={cambiar} isInvalid={!!errores.apellidos} />
+                                <Form.Control.Feedback type="invalid">{errores.apellidos}</Form.Control.Feedback>
+                            </Form.Group>
+                        </Col>
+                    </Row>
 
                     <Form.Group className="mb-3">
                         <Form.Label>Correo</Form.Label>
-                        <Form.Control name="correo" value={datos.correo} onChange={cambiar} isInvalid={!!errores.correo} />
+                        <Form.Control type="email" name="correo" value={datos.correo} onChange={cambiar} isInvalid={!!errores.correo} />
                         <Form.Control.Feedback type="invalid">{errores.correo}</Form.Control.Feedback>
                     </Form.Group>
 
-                    <h5 className="mt-4">Dirección de entrega</h5>
+                    <h5 className="mt-3">Dirección de entrega</h5>
 
-                    <Form.Group className="mb-3">
-                        <Form.Label>Calle</Form.Label>
-                        <Form.Control name="calle" value={datos.calle} onChange={cambiar} isInvalid={!!errores.calle} />
-                        <Form.Control.Feedback type="invalid">{errores.calle}</Form.Control.Feedback>
-                    </Form.Group>
+                    <Row>
+                        <Col md={8}>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Calle</Form.Label>
+                                <Form.Control name="calle" value={datos.calle} onChange={cambiar} isInvalid={!!errores.calle} />
+                                <Form.Control.Feedback type="invalid">{errores.calle}</Form.Control.Feedback>
+                            </Form.Group>
+                        </Col>
+                        <Col md={4}>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Departamento (opcional)</Form.Label>
+                                <Form.Control name="departamento" value={datos.departamento} onChange={cambiar} isInvalid={!!errores.departamento} />
+                                <Form.Control.Feedback type="invalid">{errores.departamento}</Form.Control.Feedback>
+                            </Form.Group>
+                        </Col>
+                    </Row>
 
-                    <Form.Group className="mb-3">
-                        <Form.Label>Departamento (opcional)</Form.Label>
-                        <Form.Control name="departamento" value={datos.departamento} onChange={cambiar} isInvalid={!!errores.departamento} />
-                        <Form.Control.Feedback type="invalid">{errores.departamento}</Form.Control.Feedback>
-                    </Form.Group>
-
-                    <Form.Group className="mb-3">
-                        <Form.Label>Región</Form.Label>
-                        <Form.Select name="region" value={datos.region} onChange={cambiar} isInvalid={!!errores.region}>
-                            <option value="">Selecciona...</option>
-                            <option>Región del Libertador General Bernardo O'Higgins</option>
-                            <option>Región Metropolitana de Santiago</option>
-                            <option>Región de Valparaíso</option>
-                        </Form.Select>
-                        <Form.Control.Feedback type="invalid">{errores.region}</Form.Control.Feedback>
-                    </Form.Group>
-
-                    <Form.Group className="mb-3">
-                        <Form.Label>Comuna</Form.Label>
-                        <Form.Control name="comuna" value={datos.comuna} onChange={cambiar} isInvalid={!!errores.comuna} />
-                        <Form.Control.Feedback type="invalid">{errores.comuna}</Form.Control.Feedback>
-                    </Form.Group>
+                    <Row>
+                        <Col md={6}>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Región</Form.Label>
+                                <Form.Select name="region" value={datos.region} onChange={cambiar} isInvalid={!!errores.region}>
+                                    <option value="">Selecciona...</option>
+                                    <option>Región del Libertador General Bernardo O'Higgins</option>
+                                    <option>Región Metropolitana de Santiago</option>
+                                    <option>Región de Valparaíso</option>
+                                    <option>Región de Coquimbo</option>
+                                </Form.Select>
+                                <Form.Control.Feedback type="invalid">{errores.region}</Form.Control.Feedback>
+                            </Form.Group>
+                        </Col>
+                        <Col md={6}>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Comuna</Form.Label>
+                                <Form.Control name="comuna" value={datos.comuna} onChange={cambiar} isInvalid={!!errores.comuna} />
+                                <Form.Control.Feedback type="invalid">{errores.comuna}</Form.Control.Feedback>
+                            </Form.Group>
+                        </Col>
+                    </Row>
 
                     <Form.Group className="mb-3">
                         <Form.Label>Indicaciones para la entrega (opcional)</Form.Label>
