@@ -5,7 +5,6 @@ import { useCarritoContext } from "../context/CarritoContext";
 import { useAuthContext } from "../context/AuthContext";
 import { validar, reglasCheckout } from "../utils/validaciones";
 
-// Busca los datos que el usuario dejó al registrarse
 function buscarDatosUsuario(nombre) {
     try {
         const usuarios = JSON.parse(localStorage.getItem("usuariosDB")) || [];
@@ -19,7 +18,6 @@ function Checkout() {
     const { carrito, totalPrecio, vaciarCarrito } = useCarritoContext();
     const { usuario } = useAuthContext();
 
-    // Si hay sesión iniciada, se completan los datos automáticamente
     const guardado = (usuario && buscarDatosUsuario(usuario.nombre)) || {};
 
     const [datos, setDatos] = useState({
@@ -34,7 +32,7 @@ function Checkout() {
         indicaciones: "",
     });
     const [errores, setErrores] = useState({});
-    const [resultado, setResultado] = useState(null); // null, "exito" o "error"
+    const [resultado, setResultado] = useState(null); 
     const [pedido, setPedido] = useState(null);
     const [correoEnviado, setCorreoEnviado] = useState(false);
 
@@ -47,8 +45,6 @@ function Checkout() {
     function pagar(e) {
         e.preventDefault();
 
-        // Si es retiro en tienda, solo se validan los datos del cliente
-        //No validar dirección.. será retiro en tienda por lo que no tiene sentido
         const reglas = esRetiro
             ? { nombre: reglasCheckout.nombre, apellidos: reglasCheckout.apellidos, correo: reglasCheckout.correo }
             : reglasCheckout;
@@ -65,7 +61,6 @@ function Checkout() {
         if (pagoCorrecto) vaciarCarrito();
     }
 
-    // Vista: compra exitosa o pago con error
     if (resultado) {
         const exito = resultado === "exito";
         return (
@@ -143,7 +138,6 @@ function Checkout() {
         );
     }
 
-    // Vista: carrito vacío
     if (carrito.length === 0) {
         return (
             <main>
@@ -156,7 +150,6 @@ function Checkout() {
         );
     }
 
-    // Vista: formulario
     return (
         <main>
             <Container className="mb-5" style={{ maxWidth: 720 }}>
@@ -202,7 +195,6 @@ function Checkout() {
                         </Form.Select>
                     </Form.Group>
 
-                    {/* La dirección solo se pide si es despacho a domicilio */}
                     {!esRetiro && (
                         <>
                             <h5 className="mt-3">Dirección de entrega</h5>

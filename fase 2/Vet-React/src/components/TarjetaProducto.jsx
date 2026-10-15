@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { Badge, Button, Card } from "react-bootstrap";
 import { useCarritoContext } from "../context/CarritoContext";
 
-// Tarjeta de un producto. Si recibe descuento, muestra el precio rebajado.
 function TarjetaProducto({ producto, descuento = 0 }) {
     const { agregarAlCarrito } = useCarritoContext();
     const precioFinal = Math.round(producto.precio * (1 - descuento));

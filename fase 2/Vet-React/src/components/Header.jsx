@@ -1,8 +1,11 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Badge, Button, Container, Nav, Navbar } from 'react-bootstrap'
+import { Badge, Button, Container, Nav, NavDropdown, Navbar } from 'react-bootstrap'
 import { useCarritoContext } from '../context/CarritoContext'
 import { useAuthContext } from '../context/AuthContext'
+import { productos } from '../utils/productos'
+
+const categorias = [...new Set(productos.map((p) => p.categoria))]
 
 function Header() {
     const [menuAbierto, setMenuAbierto] = useState(false)
@@ -69,6 +72,18 @@ function Header() {
                 <Navbar.Collapse id="header-navbar" className="order-xl-2">
                     <Nav className="mx-auto text-center gap-xl-3">
                         <Nav.Link as={Link} to="/catalogo" onClick={scrollToTop}>Catálogo</Nav.Link>
+
+                        <NavDropdown title="Categorías" id="menu-categorias">
+                            <NavDropdown.Item as={Link} to="/catalogo" onClick={scrollToTop}>Todas</NavDropdown.Item>
+                            {categorias.map((c) => (
+                                <NavDropdown.Item key={c} as={Link} to={`/catalogo?categoria=${c}`} onClick={scrollToTop}>
+                                    {c}
+                                </NavDropdown.Item>
+                            ))}
+                        </NavDropdown>
+
+                        <Nav.Link as={Link} to="/ofertas" onClick={scrollToTop}>Ofertas</Nav.Link>
+
                         {['Funcionario', 'Administrador'].includes(usuario?.role) && (
                             <Nav.Link as={Link} to="/admin" onClick={scrollToTop}>Administración</Nav.Link>
                         )}

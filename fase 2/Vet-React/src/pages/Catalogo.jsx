@@ -1,18 +1,18 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Badge, Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { useCarritoContext } from "../context/CarritoContext";
 import { productos } from "../utils/productos";
 
-// Lista de categorías sin repetir
 const categorias = [...new Set(productos.map((p) => p.categoria))];
 
 function Catalogo() {
     const { agregarAlCarrito } = useCarritoContext();
     const [busqueda, setBusqueda] = useState("");
-    const [categoria, setCategoria] = useState("");
 
-    // Solo quedan los productos que coinciden con el nombre y la categoría elegida
+    const [searchParams, setSearchParams] = useSearchParams();
+    const categoria = searchParams.get("categoria") || "";
+
     const productosFiltrados = productos.filter((p) => {
         const coincideNombre = p.nombre.toLowerCase().includes(busqueda.toLowerCase());
         const coincideCategoria = categoria === "" || p.categoria === categoria;
@@ -34,7 +34,10 @@ function Catalogo() {
                         />
                     </Col>
                     <Col md={4}>
-                        <Form.Select value={categoria} onChange={(e) => setCategoria(e.target.value)}>
+                        <Form.Select
+                            value={categoria}
+                            onChange={(e) => setSearchParams(e.target.value ? { categoria: e.target.value } : {})}
+                        >
                             <option value="">Todas las categorías</option>
                             {categorias.map((c) => (
                                 <option key={c} value={c}>{c}</option>
