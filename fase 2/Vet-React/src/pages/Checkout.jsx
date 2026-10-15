@@ -2,19 +2,43 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Alert, Button, Card, Col, Container, Form, Row, Table } from "react-bootstrap";
 import { useCarritoContext } from "../context/CarritoContext";
+import { useAuthContext } from "../context/AuthContext";
 import { validar, reglasCheckout } from "../utils/validaciones";
+
+// Busca los datos que el usuario dejó al registrarse
+function buscarDatosUsuario(nombre) {
+    try {
+        const usuarios = JSON.parse(localStorage.getItem("usuariosDB")) || [];
+        return usuarios.find((u) => u.nombre === nombre);
+    } catch {
+        return undefined;
+    }
+}
 
 function Checkout() {
     const { carrito, totalPrecio, vaciarCarrito } = useCarritoContext();
+    const { usuario } = useAuthContext();
+
+    // Si hay sesión iniciada, se completan los datos automáticamente
+    const guardado = (usuario && buscarDatosUsuario(usuario.nombre)) || {};
 
     const [datos, setDatos] = useState({
-        nombre: "", apellidos: "", correo: "",
-        calle: "", departamento: "", region: "", comuna: "", indicaciones: "",
+        nombre: guardado.nombre || "",
+        apellidos: "",
+        correo: guardado.email || "",
+        entrega: "Despacho a domicilio",
+        calle: guardado.direccion || "",
+        departamento: "",
+        region: "",
+        comuna: guardado.comuna || "",
+        indicaciones: "",
     });
     const [errores, setErrores] = useState({});
     const [resultado, setResultado] = useState(null); // null, "exito" o "error"
     const [pedido, setPedido] = useState(null);
     const [correoEnviado, setCorreoEnviado] = useState(false);
+
+    const esRetiro = datos.entrega === "Retiro en tienda";
 
     function cambiar(e) {
         setDatos({ ...datos, [e.target.name]: e.target.value });
@@ -22,7 +46,14 @@ function Checkout() {
 
     function pagar(e) {
         e.preventDefault();
-        const nuevosErrores = validar(datos, reglasCheckout);
+
+        // Si es retiro en tienda, solo se validan los datos del cliente
+        //No validar dirección.. será retiro en tienda por lo que no tiene sentido
+        const reglas = esRetiro
+            ? { nombre: reglasCheckout.nombre, apellidos: reglasCheckout.apellidos, correo: reglasCheckout.correo }
+            : reglasCheckout;
+
+        const nuevosErrores = validar(datos, reglas);
         setErrores(nuevosErrores);
         if (Object.keys(nuevosErrores).length > 0) return;
 
@@ -50,12 +81,16 @@ function Checkout() {
                             <h5 className="mt-4">Cliente</h5>
                             <p>{datos.nombre} {datos.apellidos} - {datos.correo}</p>
 
-                            <h5>Dirección de entrega</h5>
-                            <p>
-                                {datos.calle} {datos.departamento}, {datos.comuna}, {datos.region}
-                                <br />
-                                {datos.indicaciones}
-                            </p>
+                            <h5>Entrega: {datos.entrega}</h5>
+                            {esRetiro ? (
+                                <p>Retiro en Veterinaria San Marcos, Rancagua.</p>
+                            ) : (
+                                <p>
+                                    {datos.calle} {datos.departamento}, {datos.comuna}, {datos.region}
+                                    <br />
+                                    {datos.indicaciones}
+                                </p>
+                            )}
 
                             <Table responsive>
                                 <thead>
@@ -128,6 +163,10 @@ function Checkout() {
                 <h2 className="text-center mb-4">Checkout</h2>
                 <h4 className="text-end mb-3">Total a pagar: ${totalPrecio.toLocaleString("es-CL")}</h4>
 
+                {usuario && (
+                    <Alert variant="info">Completamos tus datos con la información de tu cuenta.</Alert>
+                )}
+
                 <Form onSubmit={pagar} noValidate>
                     <h5>Información del cliente</h5>
 
@@ -154,53 +193,66 @@ function Checkout() {
                         <Form.Control.Feedback type="invalid">{errores.correo}</Form.Control.Feedback>
                     </Form.Group>
 
-                    <h5 className="mt-3">Dirección de entrega</h5>
-
-                    <Row>
-                        <Col md={8}>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Calle</Form.Label>
-                                <Form.Control name="calle" value={datos.calle} onChange={cambiar} isInvalid={!!errores.calle} />
-                                <Form.Control.Feedback type="invalid">{errores.calle}</Form.Control.Feedback>
-                            </Form.Group>
-                        </Col>
-                        <Col md={4}>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Departamento (opcional)</Form.Label>
-                                <Form.Control name="departamento" value={datos.departamento} onChange={cambiar} isInvalid={!!errores.departamento} />
-                                <Form.Control.Feedback type="invalid">{errores.departamento}</Form.Control.Feedback>
-                            </Form.Group>
-                        </Col>
-                    </Row>
-
-                    <Row>
-                        <Col md={6}>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Región</Form.Label>
-                                <Form.Select name="region" value={datos.region} onChange={cambiar} isInvalid={!!errores.region}>
-                                    <option value="">Selecciona...</option>
-                                    <option>Región del Libertador General Bernardo O'Higgins</option>
-                                    <option>Región Metropolitana de Santiago</option>
-                                    <option>Región de Valparaíso</option>
-                                    <option>Región de Coquimbo</option>
-                                </Form.Select>
-                                <Form.Control.Feedback type="invalid">{errores.region}</Form.Control.Feedback>
-                            </Form.Group>
-                        </Col>
-                        <Col md={6}>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Comuna</Form.Label>
-                                <Form.Control name="comuna" value={datos.comuna} onChange={cambiar} isInvalid={!!errores.comuna} />
-                                <Form.Control.Feedback type="invalid">{errores.comuna}</Form.Control.Feedback>
-                            </Form.Group>
-                        </Col>
-                    </Row>
+                    <h5 className="mt-3">Opción de entrega</h5>
 
                     <Form.Group className="mb-3">
-                        <Form.Label>Indicaciones para la entrega (opcional)</Form.Label>
-                        <Form.Control as="textarea" rows={2} name="indicaciones" value={datos.indicaciones} onChange={cambiar} isInvalid={!!errores.indicaciones} />
-                        <Form.Control.Feedback type="invalid">{errores.indicaciones}</Form.Control.Feedback>
+                        <Form.Select name="entrega" value={datos.entrega} onChange={cambiar}>
+                            <option>Despacho a domicilio</option>
+                            <option>Retiro en tienda</option>
+                        </Form.Select>
                     </Form.Group>
+
+                    {/* La dirección solo se pide si es despacho a domicilio */}
+                    {!esRetiro && (
+                        <>
+                            <h5 className="mt-3">Dirección de entrega</h5>
+
+                            <Row>
+                                <Col md={8}>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Calle</Form.Label>
+                                        <Form.Control name="calle" value={datos.calle} onChange={cambiar} isInvalid={!!errores.calle} />
+                                        <Form.Control.Feedback type="invalid">{errores.calle}</Form.Control.Feedback>
+                                    </Form.Group>
+                                </Col>
+                                <Col md={4}>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Departamento (opcional)</Form.Label>
+                                        <Form.Control name="departamento" value={datos.departamento} onChange={cambiar} isInvalid={!!errores.departamento} />
+                                        <Form.Control.Feedback type="invalid">{errores.departamento}</Form.Control.Feedback>
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+
+                            <Row>
+                                <Col md={6}>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Región</Form.Label>
+                                        <Form.Select name="region" value={datos.region} onChange={cambiar} isInvalid={!!errores.region}>
+                                            <option value="">Selecciona...</option>
+                                            <option>Región del Libertador General Bernardo O'Higgins</option>
+                                            <option>Región Metropolitana de Santiago</option>
+                                            <option>Región de Valparaíso</option>
+                                        </Form.Select>
+                                        <Form.Control.Feedback type="invalid">{errores.region}</Form.Control.Feedback>
+                                    </Form.Group>
+                                </Col>
+                                <Col md={6}>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Comuna</Form.Label>
+                                        <Form.Control name="comuna" value={datos.comuna} onChange={cambiar} isInvalid={!!errores.comuna} />
+                                        <Form.Control.Feedback type="invalid">{errores.comuna}</Form.Control.Feedback>
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+
+                            <Form.Group className="mb-3">
+                                <Form.Label>Indicaciones para la entrega (opcional)</Form.Label>
+                                <Form.Control as="textarea" rows={2} name="indicaciones" value={datos.indicaciones} onChange={cambiar} isInvalid={!!errores.indicaciones} />
+                                <Form.Control.Feedback type="invalid">{errores.indicaciones}</Form.Control.Feedback>
+                            </Form.Group>
+                        </>
+                    )}
 
                     <div className="text-end">
                         <Button type="submit" variant="success">
