@@ -1,0 +1,62 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}
+
+/* catalogo.css */
+.producto-card {
+    height: 100%;
+}
+
+.producto-card img {
+    height: 180px;
+    object-fit: cover;
+}
+
+.badge-stock {
+    font-size: 0.8rem;
+}
+
+#aviso-toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1050;
+}
+
+
+/* producto.css */
+#detalle-producto img {
+    max-height: 400px;
+    object-fit: cover;
+    width: 100%;
+}
+
+/* carrito.css */
+#tabla-carrito td {
+    vertical-align: middle;
+}
+
+#tabla-carrito {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    width: max-content;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.img-carrito {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
