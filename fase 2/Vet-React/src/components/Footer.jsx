@@ -36,14 +36,17 @@ function Footer() {
             <Container>
                 <Row className="gy-1">
                     <Col xs={12} md={6} xl={4} className="d-flex flex-column align-items-center">
-                        <h6 className="my-1 fw-semibold">Horario</h6>
+                        <h6 className="my-1 fw-semibold">Horario Tienda</h6>
                         <p className="mb-1 text-start">
                             Lunes a viernes: 10:00 - 19:30<br />
                             Sábados y domingos: 10:00 - 16:00
                         </p>
-                        <h6 className="my-1 fw-semibold">Consulta veterinaria</h6>
+                        <h6 className="my-1 fw-semibold">Horario Consulta</h6>
+                        <p className="mb-1 text-start">
+                            Lunes a domingo: 10:00 - 13:00 y 14:00 - 17:00
+                        </p>
                         <p className="mb-1 text-start">Valor de la consulta ${PRECIO_CONSULTA.toLocaleString('es-CL')}</p>
-                        <Image src="/img/logo.png" alt="Logo" width={96} height={96} className="mt-2" />
+                        <Image src="/img/icons/logo.png" alt="Logo" width={96} height={96} className="mt-2" />
                     </Col>
 
                     <Col xs={12} md={6} xl={4} className="d-flex flex-column align-items-center">

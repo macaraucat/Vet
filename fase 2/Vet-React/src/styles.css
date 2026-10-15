@@ -114,6 +114,54 @@ main {
     overflow-x: auto;
 }
 
+/* HERO */
+.hero {
+    background: linear-gradient(135deg, #FAFAFA 55%, #E9F3F2 100%);
+    overflow: hidden;
+}
+
+.hero-tagline {
+    font-family: 'Inter', system-ui, sans-serif;
+    color: #145E5C;
+}
+
+.hero-pets-wrapper {
+    border-radius: 24px;
+    box-shadow: 0 20px 40px rgba(20, 94, 92, 0.15);
+}
+
+/* Bounce al cargar la página y al hacer hover */
+.hero-pets-img.bounce-on-load,
+.hero-pets-wrapper:hover .hero-pets-img {
+    animation: bounce 0.5s ease;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* SERVICIOS */
+.servicios h6 {
+    color: var(--verde);
+}
+
+.servicio-img {
+    width: 60%;
+    aspect-ratio: 1 / 1;
+}
+
+/* NOSOTROS */
+.team-img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 24px;
+}
+
+.ratio-3x2 {
+    --bs-aspect-ratio: calc(2 / 3 * 100%);
+}
+
 /* FOOTER */
 .footer-map,
 .footer-form {

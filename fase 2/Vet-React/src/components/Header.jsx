@@ -36,7 +36,7 @@ function Header() {
         >
             <Container>
                 <Navbar.Brand as={Link} to="/" onClick={scrollToTop} className="brand me-auto">
-                    <img src="/img/logo.png" alt="Logo Veterinaria San Marcos" className="logo" />
+                    <img src="/img/icons/logo.png" alt="Logo Veterinaria San Marcos" className="logo" />
                     <span className="site-title">Veterinaria San Marcos</span>
                 </Navbar.Brand>
 
@@ -47,17 +47,17 @@ function Header() {
                                 Hola, {primerNombre}
                             </span>
                             <Button variant="link" className="p-0 border-0" title="Cerrar sesión" onClick={cerrarSesion}>
-                                <img src="/img/logout.svg" alt="Cerrar sesión" className="icon" />
+                                <img src="/img/icons/logout.svg" alt="Cerrar sesión" className="icon" />
                             </Button>
                         </>
                     ) : (
                         <Link to="/login" title="Iniciar sesión" onClick={cerrarMenu}>
-                            <img src="/img/login.svg" alt="Iniciar sesión" className="icon" />
+                            <img src="/img/icons/login.svg" alt="Iniciar sesión" className="icon" />
                         </Link>
                     )}
 
                     <Link to="/carrito" title="Carrito" className="position-relative" onClick={cerrarMenu}>
-                        <img src="/img/carrito.svg" alt="Carrito" className="icon" />
+                        <img src="/img/icons/carrito.svg" alt="Carrito" className="icon" />
                         <Badge bg="danger" pill className="position-absolute top-0 start-100 translate-middle">
                             {totalItems}
                         </Badge>
