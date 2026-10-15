@@ -1,0 +1,132 @@
+/* Contenedor principal con sidebar + main-content */
+.admin-container {
+    display: flex;
+    height: calc(100vh - 222px); /* Header height */
+}
+
+.sidebar {
+    width: 190px;
+    background-color: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+    overflow-y: auto;
+}
+
+/* Secciones de navegación */
+.nav-section h6 {
+    padding: 0.75rem;
+    font-size: 12px;
+    font-weight: 700;
+    color: #495057;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background-color: #e9ecef;
+    border-bottom: 2px solid black;
+}
+
+.admin-nav a:hover {
+    color: #145E5C;
+    background-color: #e0e0e0;
+    border-bottom: none;
+    transform: none;
+    filter: none;
+}
+
+.nav-section a {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: #495057;
+    text-decoration: none;
+    font-size: 12px;
+    border: 1px solid black;
+    padding: 6px 12px;
+}
+
+/* Ítems del menú lateral que alternan las secciones de contenido */
+.nav-section h6.nav-item {
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.nav-section h6.nav-item:hover {
+    background-color: #e0e0e0;
+    color: #145E5C;
+}
+
+.nav-section h6.nav-item.active {
+    background-color: #145E5C;
+    color: white;
+}
+
+/* Secciones de contenido del panel: solo la activa se muestra */
+.admin-section {
+    display: none;
+}
+
+.admin-section.active {
+    display: block;
+}
+
+/* CONTENIDO PRINCIPAL */
+.main-content {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+/* MODAL */
+.modal-header {
+    background-color: #145E5C;
+    color: white;
+}
+
+.modal-title {
+    font-weight: 600;
+}
+
+.modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+/* TOOLBAR CRUD */
+.toolbar-usuarios,
+.toolbar-productos {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+/* TABLAS */
+.tabla-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.tabla-usuarios,
+.tabla-productos {
+    width: 100%;
+    min-width: 900px;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+.tabla-usuarios th,
+.tabla-usuarios td,
+.tabla-productos th,
+.tabla-productos td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+    font-size: 14px;
+}
+
+.tabla-usuarios thead,
+.tabla-productos thead {
+    background-color: #e9ecef;
+}
+
+.tabla-usuarios .col-check,
+.tabla-productos .col-check {
+    width: 32px;
+    text-align: center;
+}
