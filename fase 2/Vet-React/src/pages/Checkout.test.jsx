@@ -37,6 +37,14 @@ const llenarDatosCliente = async () => {
     await userEvent.type(correo, "ana@gmail.com");
 };
 
+const pagar = async (numeroAleatorio) => {
+    vi.spyOn(Math, "random").mockReturnValue(numeroAleatorio);
+    mostrarCheckout();
+    await elegirRetiro();
+    await llenarDatosCliente();
+    await userEvent.click(screen.getByRole("button", { name: /Pagar ahora/ }));
+};
+
 describe("Checkout", () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -87,24 +95,42 @@ describe("Checkout", () => {
         expect(screen.getByDisplayValue("Calle 1")).toBeInTheDocument();
     });
 
-    it("muestra la compra exitosa y vacía el carrito", async () => {
-        vi.spyOn(Math, "random").mockReturnValue(0.5);
+    it("no falla si los datos guardados están dañados", () => {
+        localStorage.setItem("usuariosDB", "esto no es json");
+        mocks.usuario = { nombre: "Ana" };
         mostrarCheckout();
-        await elegirRetiro();
-        await llenarDatosCliente();
-        await userEvent.click(screen.getByRole("button", { name: /Pagar ahora/ }));
+        expect(screen.getByText("Completamos tus datos con la información de tu cuenta.")).toBeInTheDocument();
+    });
+
+    it("muestra la compra exitosa y vacía el carrito", async () => {
+        await pagar(0.5);
         expect(screen.getByText(/Se ha realizado la compra/)).toBeInTheDocument();
         expect(mocks.vaciarCarrito).toHaveBeenCalledTimes(1);
     });
 
+    it("imprime la boleta", async () => {
+        const imprimir = vi.spyOn(window, "print").mockImplementation(() => {});
+        await pagar(0.5);
+        await userEvent.click(screen.getByRole("button", { name: "Imprimir boleta en PDF" }));
+        expect(imprimir).toHaveBeenCalledTimes(1);
+    });
+
+    it("confirma el envío de la boleta por email", async () => {
+        await pagar(0.5);
+        await userEvent.click(screen.getByRole("button", { name: "Enviar boleta por email" }));
+        expect(screen.getByText("Boleta enviada a ana@gmail.com")).toBeInTheDocument();
+    });
+
     it("muestra el error de pago y permite reintentar sin vaciar el carrito", async () => {
-        vi.spyOn(Math, "random").mockReturnValue(0.1);
-        mostrarCheckout();
-        await elegirRetiro();
-        await llenarDatosCliente();
-        await userEvent.click(screen.getByRole("button", { name: /Pagar ahora/ }));
+        await pagar(0.1);
         expect(screen.getByText(/No se pudo realizar el pago/)).toBeInTheDocument();
         expect(screen.getByRole("button", { name: "Volver a realizar el pago" })).toBeInTheDocument();
         expect(mocks.vaciarCarrito).not.toHaveBeenCalled();
+    });
+
+    it("vuelve al formulario al reintentar el pago", async () => {
+        await pagar(0.1);
+        await userEvent.click(screen.getByRole("button", { name: "Volver a realizar el pago" }));
+        expect(screen.getByRole("heading", { name: "Checkout" })).toBeInTheDocument();
     });
 });
