@@ -66,7 +66,7 @@ function Header() {
                         </Badge>
                     </Link>
 
-                    <Navbar.Toggle aria-controls="header-navbar" aria-label={menuAbierto ? 'Cerrar menú' : 'Abrir menú'} />
+                    <Navbar.Toggle aria-controls="header-navbar" label={menuAbierto ? 'Cerrar menú' : 'Abrir menú'} />
                 </div>
 
                 <Navbar.Collapse id="header-navbar" className="order-xl-2">
