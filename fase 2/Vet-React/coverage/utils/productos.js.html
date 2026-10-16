@@ -1,0 +1,169 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for utils/productos.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">utils</a> productos.js</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>4/4</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/0</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/0</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>4/4</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line high'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span></td><td class="text"><pre class="prettyprint lang-js">export const PRECIO_CONSULTA = 15000
+&nbsp;
+export const productos = [
+    { id: "ME001", categoria: "Antibióticos", nombre: "Amoxibay 250mg", detalle: "Amoxicilina · Blíster 10 comp.", especie: "Perro / Gato", precio: 4200, imagen: "/img/ME001.jpeg" },
+    { id: "ME002", categoria: "Antibióticos", nombre: "Enrox 50mg", detalle: "Enrofloxacino · Blíster 10 comp.", especie: "Perro / Gato", precio: 6800, imagen: "/img/ME002.jpeg" },
+    { id: "ME003", categoria: "Antibióticos", nombre: "Metrobay 250mg", detalle: "Metronidazol · Blíster 10 comp.", especie: "Perro / Gato", precio: 3900, imagen: "/img/ME003.jpeg" },
+    { id: "ME004", categoria: "Antiparasitarios", nombre: "Nexgard", detalle: "Afoxolaner · Masticable 1 unid.", especie: "Perro", precio: 9500, imagen: "/img/ME004.jpeg" },
+    { id: "ME005", categoria: "Antiparasitarios", nombre: "Bravecto", detalle: "Fluralaner · Masticable 1 unid.", especie: "Perro", precio: 18900, imagen: "/img/ME005.jpeg" },
+    { id: "ME006", categoria: "Antiparasitarios", nombre: "Revolution Plus", detalle: "Selamectina + Sarolaner · Pipeta 1 unid.", especie: "Gato", precio: 14500, imagen: "/img/ME006.jpeg" },
+    { id: "ME007", categoria: "Antiparasitarios", nombre: "Drontal Plus", detalle: "Praziquantel + Pamoato · Comprimido 1 unid.", especie: "Perro", precio: 3200, imagen: "/img/ME007.jpeg" },
+    { id: "ME008", categoria: "Antiparasitarios", nombre: "Milbemax Gato", detalle: "Milbemicina + Praziquantel · Comprimido 2 unid.", especie: "Gato", precio: 6800, imagen: "/img/ME008.jpeg" },
+    { id: "ME009", categoria: "Antiinflamatorios", nombre: "Meloxicam 1mg", detalle: "Meloxicam · Blíster 10 comp.", especie: "Perro / Gato", precio: 4500, imagen: "/img/ME009.jpeg" },
+    { id: "ME010", categoria: "Antiinflamatorios", nombre: "Carprofen 50mg", detalle: "Carprofeno · Blíster 10 comp.", especie: "Perro", precio: 9800, imagen: "/img/ME010.jpeg" },
+    { id: "ME011", categoria: "Dermatología", nombre: "Clorhexidina shampoo", detalle: "Clorhexidina 2% · Frasco 250ml", especie: "Perro / Gato", precio: 8900, imagen: "/img/ME011.jpeg" },
+    { id: "ME012", categoria: "Dermatología", nombre: "Malaseb shampoo", detalle: "Miconazol + Clorhexidina · Frasco 250ml", especie: "Perro / Gato", precio: 12500, imagen: "/img/ME012.jpeg" },
+    { id: "ME013", categoria: "Dermatología", nombre: "Apoquel 16mg", detalle: "Oclacitinib · Blíster 10 comp.", especie: "Perro", precio: 22000, imagen: "/img/ME013.jpeg" },
+    { id: "ME014", categoria: "Digestivo", nombre: "Probifor", detalle: "Bacillus clausii · Sobre 5ml x10", especie: "Perro / Gato", precio: 5600, imagen: "/img/ME014.jpeg" },
+    { id: "ME015", categoria: "Digestivo", nombre: "Omeprazol 10mg vet", detalle: "Omeprazol · Blíster 10 comp.", especie: "Perro / Gato", precio: 3800, imagen: "/img/ME015.jpeg" },
+    { id: "ME016", categoria: "Cardíaco", nombre: "Vetmedin 2.5mg", detalle: "Pimobendan · Blíster 10 comp.", especie: "Perro", precio: 28000, imagen: "/img/ME016.jpeg" },
+    { id: "ME017", categoria: "Analgésicos", nombre: "Tramadol 50mg vet", detalle: "Tramadol · Blíster 10 comp.", especie: "Perro", precio: 5200, imagen: "/img/ME017.png" },
+    { id: "ME018", categoria: "Vacunas", nombre: "Nobivac DHPPi", detalle: "Vacuna polivalente · Vial 1 dosis", especie: "Perro", precio: 8500, imagen: "/img/ME018.jpeg" },
+    { id: "ME019", categoria: "Vacunas", nombre: "Nobivac Rabies", detalle: "Vacuna antirrábica · Vial 1 dosis", especie: "Perro / Gato", precio: 5800, imagen: "/img/ME019.jpeg" },
+    { id: "ME020", categoria: "Vacunas", nombre: "Felocell CVR", detalle: "Vacuna triple felina · Vial 1 dosis", especie: "Gato", precio: 7200, imagen: "/img/ME020.jpeg" },
+    { id: "ME021", categoria: "Suplementos", nombre: "Omega vet 3-6-9", detalle: "Ácidos grasos omega · Frasco 100ml", especie: "Perro / Gato", precio: 9900, imagen: "/img/ME021.jpeg" },
+    { id: "ME022", categoria: "Suplementos", nombre: "Condrovet forte", detalle: "Condroitín + Glucosamina · Blíster 30 comp.", especie: "Perro", precio: 14500, imagen: "/img/ME022.jpeg" }
+];
+&nbsp;
+export const productosEnOferta = ["ME001", "ME005", "ME010", "ME013", "ME016", "ME021"]
+export const DESCUENTO_OFERTA = 0.2</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-10-16T15:05:45.244Z
+            </div>
+        <script src="../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
+    </body>
+</html>
+    

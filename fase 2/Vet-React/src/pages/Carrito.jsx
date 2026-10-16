@@ -1,29 +1,10 @@
-import { useState } from "react";
-import { Alert, Button, Container, Image, Table } from "react-bootstrap";
+import { Button, Container, Image, Table } from "react-bootstrap";
 import { useCarritoContext } from "../context/CarritoContext";
 import { Link, useNavigate } from "react-router-dom";
 
 function Carrito() {
     const { carrito, eliminarItem, vaciarCarrito, totalPrecio, cambiarCantidad } = useCarritoContext();
     const navigate = useNavigate();
-    const [pedidoConfirmado, setPedidoConfirmado] = useState("");
-
-    function finalizarCompra() {
-        const numeroPedido = Math.floor(100000 + Math.random() * 900000);
-        vaciarCarrito();
-        setPedidoConfirmado(`¡Pedido N.º ${numeroPedido} realizado con éxito! Te contactaremos para coordinar la entrega.`);
-    }
-
-    if (pedidoConfirmado) {
-        return (
-            <main>
-                <Container className="mb-5">
-                    <h2 className="text-center mb-4">Tu carrito de compras</h2>
-                    <Alert variant="success" className="text-center mt-4">{pedidoConfirmado}</Alert>
-                </Container>
-            </main>
-        );
-    }
 
     if (carrito.length === 0) {
         return (
