@@ -4,8 +4,6 @@ import { Container, Row, Col, Card, Form, Button, Alert, Nav } from 'react-boots
 import { useAuthContext } from '../context/AuthContext'
 import useFormulario from '../hooks/useFormulario'
 import { reglasLogin, reglasRegistro } from '../utils/validaciones'
-import './login.css'
-
 const loginInicial = { email: '', pass: '' }
 const registroInicial = { run: '', nombre: '', email: '', fechaNac: '', comuna: '', direccion: '', pass: '', pass2: '' }
 
