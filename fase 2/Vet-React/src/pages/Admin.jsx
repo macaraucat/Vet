@@ -1,28 +1,19 @@
 import { useEffect, useState } from 'react'
-import { Alert, Button, Form, Modal, Nav, Table } from 'react-bootstrap'
+import { Alert, Badge, Button, Card, Col, Container, Form, Modal, Nav, Row, Stack, Table } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import { useAuthContext } from '../context/AuthContext'
 import useAdmin from '../hooks/useAdmin'
 import './admin.css'
 
 const categorias = ['Antibióticos', 'Antiparasitarios', 'Antiinflamatorios', 'Dermatología', 'Digestivo', 'Cardíaco', 'Analgésicos', 'Vacunas', 'Suplementos', ]
-
+const precioCLP = new Intl.NumberFormat('es-CL')
 const roles = ['Administrador', 'Funcionario', 'Dueño de mascota']
-
 const secciones = [
     { id: 'productos', label: 'Gestión de Productos' },
     { id: 'usuarios', label: 'Gestión de Usuarios' },
     { id: 'citas', label: 'Citas'},
     { id: 'mensajes', label: 'Mensajes' },
 ]
-
-const precioCLP = new Intl.NumberFormat('es-CL')
-
-function fechaVisible(fecha) {
-    if (!fecha) return ''
-    const [year, month, day] = fecha.split('-')
-    return `${day}-${month}-${year}`
-}
 
 function Admin() {
     const { usuario } = useAuthContext()
@@ -46,38 +37,45 @@ function Admin() {
     const modalCita = admin.modal?.tipo === 'cita'
 
     return (
-        <main className="admin-container">
-            <Nav
-                activeKey={tabActual}
-                className="admin-sidebar admin-nav"
-                onSelect={(id) => {
-                    if (!id) return
-                    setTabActual(id)
-                    admin.setFeedback(null)
-                }}
-            >
-                {secciones.filter(({ id }) => id !== 'usuarios' || !esFuncionario).map(({ id, label }) => (
-                    <Nav.Item key={id}>
-                        <Nav.Link as="button" type="button" eventKey={id} className="tab">{label}</Nav.Link>
-                    </Nav.Item>
-                ))}
-            </Nav>
+        <Container as="main" fluid className="py-3 py-md-4">
+            <Row className="g-3">
+                <Col xs={12} md={3} xl={2} className="bg-light p-2 p-md-3 rounded">
+                    <Nav
+                        variant="pills"
+                        activeKey={tabActual}
+                        className="flex-row flex-md-column flex-nowrap gap-2 overflow-auto"
+                        onSelect={(id) => {
+                            if (!id) return
+                            setTabActual(id)
+                            admin.setFeedback(null)
+                        }}
+                    >
+                        {secciones.filter(({ id }) => id !== 'usuarios' || !esFuncionario).map(({ id, label }) => (
+                            <Nav.Item key={id}>
+                                <Nav.Link as="button" type="button" eventKey={id} className="text-start text-nowrap">{label}</Nav.Link>
+                            </Nav.Item>
+                        ))}
+                    </Nav>
+                </Col>
 
-            <section className="admin-main-content">
+                <Col xs={12} md={9} xl={10} className="admin-main-content">
                 {admin.feedback && <Alert variant={admin.feedback.variant} dismissible onClose={() => admin.setFeedback(null)}>{admin.feedback.message}</Alert>}
 
                 {tabActual === 'productos' && (
                     <section aria-labelledby="admin-productos-title">
-                        <h2 id="admin-productos-title">Gestión de Productos</h2>
-                        <div className="admin-toolbar">
-                            <Button variant="success" onClick={() => admin.abrirProducto('agregar')}>+ Agregar</Button>
-                            <Button variant="warning" onClick={() => admin.abrirProducto('modificar')}>Modificar</Button>
-                        </div>
-                        <div className="admin-table-wrapper">
-                            <Table bordered hover responsive className="admin-table align-middle">
+                        <Card className="shadow-sm">
+                            <Card.Header className="bg-white border-0 pb-0">
+                                <Card.Title as="h2" id="admin-productos-title" className="h4 text-success mb-0">Gestión de Productos</Card.Title>
+                            </Card.Header>
+                            <Card.Body>
+                                <Stack direction="horizontal" gap={2} className="mb-3">
+                                    <Button variant="success" onClick={() => admin.abrirProducto('agregar')}>+ Agregar</Button>
+                                    <Button variant="warning" onClick={() => admin.abrirProducto('modificar')}>Modificar</Button>
+                                </Stack>
+                            <Table bordered hover responsive className="align-middle mb-0">
                                 <thead>
                                     <tr>
-                                        <th className="admin-check-column" aria-label="Seleccionar un producto" />
+                                        <th className="text-center"><span className="visually-hidden">Seleccionar un producto</span></th>
                                         <th>SKU</th>
                                         <th>Nombre</th>
                                         <th>Descripción (opcional)</th>
@@ -89,11 +87,12 @@ function Admin() {
                                 <tbody>
                                     {admin.productosAdmin.map((producto) => (
                                         <tr key={producto.sku}>
-                                            <td className="admin-check-column">
+                                            <td className="text-center">
                                                 <Form.Check
                                                     type="radio"
                                                     name="producto-seleccionado"
                                                     aria-label={`Seleccionar ${producto.nombre}`}
+                                                    className="d-flex justify-content-center m-0"
                                                     checked={admin.productoSeleccionado === producto.sku}
                                                     onChange={() => admin.setProductoSeleccionado(producto.sku)}
                                                 />
@@ -108,22 +107,26 @@ function Admin() {
                                     ))}
                                 </tbody>
                             </Table>
-                        </div>
+                            </Card.Body>
+                        </Card>
                     </section>
                 )}
 
                 {tabActual === 'usuarios' && !esFuncionario && (
                     <section aria-labelledby="admin-usuarios-title">
-                        <h2 id="admin-usuarios-title">Gestión de Usuarios</h2>
-                        <div className="admin-toolbar">
-                            <Button variant="success" onClick={() => admin.abrirUsuario('agregar')}>+ Agregar</Button>
-                            <Button variant="warning" onClick={() => admin.abrirUsuario('modificar')}>Modificar</Button>
-                        </div>
-                        <div className="admin-table-wrapper">
-                            <Table bordered hover responsive className="admin-table align-middle">
+                        <Card className="shadow-sm">
+                            <Card.Header className="bg-white border-0 pb-0">
+                                <Card.Title as="h2" id="admin-usuarios-title" className="h4 text-success mb-0">Gestión de Usuarios</Card.Title>
+                            </Card.Header>
+                            <Card.Body>
+                                <Stack direction="horizontal" gap={2} className="mb-3">
+                                    <Button variant="success" onClick={() => admin.abrirUsuario('agregar')}>+ Agregar</Button>
+                                    <Button variant="warning" onClick={() => admin.abrirUsuario('modificar')}>Modificar</Button>
+                                </Stack>
+                            <Table bordered hover responsive className="align-middle mb-0">
                                 <thead>
                                     <tr>
-                                        <th className="admin-check-column" aria-label="Seleccionar un usuario" />
+                                        <th className="text-center"><span className="visually-hidden">Seleccionar un usuario</span></th>
                                         <th>RUN</th>
                                         <th>Nombre</th>
                                         <th>Apellidos</th>
@@ -137,11 +140,12 @@ function Admin() {
                                 <tbody>
                                     {admin.usuarios.map((user) => (
                                         <tr key={user.id}>
-                                            <td className="admin-check-column">
+                                            <td className="text-center">
                                                 <Form.Check
                                                     type="radio"
                                                     name="usuario-seleccionado"
                                                     aria-label={`Seleccionar a ${user.nombre} ${user.apellidos}`}
+                                                    className="d-flex justify-content-center m-0"
                                                     checked={admin.usuarioSeleccionado === user.id}
                                                     onChange={() => admin.setUsuarioSeleccionado(user.id)}
                                                 />
@@ -150,7 +154,7 @@ function Admin() {
                                             <td>{user.nombre}</td>
                                             <td>{user.apellidos}</td>
                                             <td>{user.email || '—'}</td>
-                                            <td>{fechaVisible(user.fechaNac) || '—'}</td>
+                                            <td>{user.fechaNac?.split('-').reverse().join('-') || '—'}</td>
                                             <td>{user.rol}</td>
                                             <td>{user.comuna || '—'}</td>
                                             <td>{user.direccion || '—'}</td>
@@ -158,28 +162,31 @@ function Admin() {
                                     ))}
                                 </tbody>
                             </Table>
-                        </div>
+                            </Card.Body>
+                        </Card>
                     </section>
                 )}
 
                 {tabActual === 'citas' && (
                     <section aria-labelledby="admin-citas-title">
-                        <h2 id="admin-citas-title">Gestión de Citas</h2>
-                        <div className="admin-toolbar">
-                            <Button variant="success" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Confirmada')}>Confirmar</Button>
-                            <Button variant="warning" disabled={admin.citaSeleccionada === null} onClick={admin.abrirCita}>Modificar</Button>
-                            <Button variant="danger" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Anulada')}>Anular</Button>
-                        </div>
-                        <div className="admin-table-wrapper">
-                            <Table bordered hover responsive className="admin-table admin-citas-table align-middle">
+                        <Card className="shadow-sm">
+                            <Card.Header className="bg-white border-0 pb-0">
+                                <Card.Title as="h2" id="admin-citas-title" className="h4 text-success mb-0">Gestión de Citas</Card.Title>
+                            </Card.Header>
+                            <Card.Body>
+                                <Stack direction="horizontal" gap={2} className="mb-3">
+                                    <Button variant="success" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Confirmada')}>Confirmar</Button>
+                                    <Button variant="warning" disabled={admin.citaSeleccionada === null} onClick={admin.abrirCita}>Modificar</Button>
+                                    <Button variant="danger" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Anulada')}>Anular</Button>
+                                </Stack>
+                            <Table bordered hover responsive className="align-middle mb-0">
                                 <thead>
                                     <tr>
-                                        <th className="admin-check-column" aria-label="Seleccionar una cita" />
+                                        <th className="text-center"><span className="visually-hidden">Seleccionar una cita</span></th>
                                         <th>Fecha</th>
                                         <th>Hora</th>
                                         <th>Nombre mascota</th>
                                         <th>Especie</th>
-                                        <th>Raza</th>
                                         <th>Edad</th>
                                         <th>Nombre tutor</th>
                                         <th>Estado cita</th>
@@ -188,42 +195,50 @@ function Admin() {
                                 <tbody>
                                     {admin.citas.map((cita) => (
                                         <tr key={cita.id}>
-                                            <td className="admin-check-column">
+                                            <td className="text-center">
                                                 <Form.Check
                                                     type="radio"
                                                     name="cita-seleccionada"
                                                     aria-label={`Seleccionar cita de ${cita.nombreMascota}`}
+                                                    className="d-flex justify-content-center m-0"
                                                     checked={admin.citaSeleccionada === cita.id}
                                                     onChange={() => admin.setCitaSeleccionada(cita.id)}
                                                 />
                                             </td>
-                                            <td>{fechaVisible(cita.fecha)}</td>
+                                            <td>{cita.fecha?.split('-').reverse().join('-') || ''}</td>
                                             <td>{cita.hora}</td>
                                             <td>{cita.nombreMascota}</td>
                                             <td>{cita.especie}</td>
-                                            <td>{cita.raza}</td>
                                             <td>{cita.edad}</td>
                                             <td>{cita.nombreTutor}</td>
                                             <td>
-                                                <span className={`badge ${cita.estado === 'Confirmada' ? 'text-bg-success' : cita.estado === 'Anulada' ? 'text-bg-secondary' : 'text-bg-warning'}`}>
+                                                <Badge bg={cita.estado === 'Confirmada' ? 'success' : cita.estado === 'Anulada' ? 'secondary' : 'warning'}>
                                                     {cita.estado}
-                                                </span>
+                                                </Badge>
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </Table>
-                        </div>
+                            </Card.Body>
+                        </Card>
                     </section>
                 )}
 
                 {tabActual === 'mensajes' && (
                     <section aria-labelledby="admin-mensajes-title">
-                        <h2 id="admin-mensajes-title">Mensajes</h2>
-                        <p>No hay mensajes nuevos por el momento.</p>
+                        <Card className="shadow-sm">
+                            <Card.Header className="bg-white border-0">
+                                <Card.Title as="h2" id="admin-mensajes-title" className="h4 text-success mb-0">Mensajes</Card.Title>
+                            </Card.Header>
+                            <Card.Body>
+                                <Alert variant="info" className="mb-0">No hay mensajes nuevos por el momento.</Alert>
+                            </Card.Body>
+                        </Card>
                     </section>
                 )}
-            </section>
+                </Col>
+            </Row>
 
             <Modal show={modalProducto} onHide={() => admin.setModal(null)} size="lg" aria-labelledby="admin-producto-modal-title">
                 <Form onSubmit={admin.guardarProducto}>
@@ -252,7 +267,7 @@ function Admin() {
                             <Form.Control required type="number" min="0" step="1" value={admin.productoForm.stock ?? ''} onChange={(event) => admin.setProductoForm({ ...admin.productoForm, stock: event.target.value })} placeholder="Cantidad en stock" />
                         </Form.Group>
                         <Form.Group>
-                            <Form.Label>Categorías</Form.Label>
+                            <Form.Label>Categoría</Form.Label>
                             <Form.Select required value={admin.productoForm.categoria || ''} onChange={(event) => admin.setProductoForm({ ...admin.productoForm, categoria: event.target.value })}>
                                 <option value="">Seleccionar categoría</option>
                                 {categorias.map((categoria) => <option key={categoria} value={categoria}>{categoria}</option>)}
@@ -340,10 +355,6 @@ function Admin() {
                                 {['Perro', 'Gato', 'Ave', 'Conejo'].map((especie) => <option key={especie} value={especie}>{especie}</option>)}
                             </Form.Select>
                         </Form.Group>
-                        <Form.Group className="mb-3" controlId="cita-raza">
-                            <Form.Label>Raza</Form.Label>
-                            <Form.Control required value={admin.citaForm.raza || ''} onChange={(event) => admin.setCitaForm({ ...admin.citaForm, raza: event.target.value })} />
-                        </Form.Group>
                         <Form.Group className="mb-3" controlId="cita-edad">
                             <Form.Label>Edad</Form.Label>
                             <Form.Control required type="number" min="0" step="1" value={admin.citaForm.edad ?? ''} onChange={(event) => admin.setCitaForm({ ...admin.citaForm, edad: event.target.value })} />
@@ -359,7 +370,7 @@ function Admin() {
                     </Modal.Footer>
                 </Form>
             </Modal>
-        </main>
+        </Container>
     )
 }
 

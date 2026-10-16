@@ -13,7 +13,6 @@ const citaInicial = {
     hora: '',
     nombreMascota: '',
     especie: '',
-    raza: '',
     edad: '',
 }
 
@@ -98,8 +97,7 @@ function Cita({ mostrar, onCerrar }) {
                         <p className="mb-1"><b>Fecha:</b> {fechaFormateada}</p>
                         <p className="mb-1"><b>Hora:</b> {citaVisible.hora} a {horaFin}</p>
                         <p className="mb-1">
-                            <b>Mascota:</b> {citaVisible.nombreMascota} ({citaVisible.especie}
-                            {citaVisible.raza.trim() ? `, ${citaVisible.raza}` : ''}, {citaVisible.edad} {citaVisible.edad === '1' ? 'año' : 'años'})
+                            <b>Mascota:</b> {citaVisible.nombreMascota} ({citaVisible.especie}, {citaVisible.edad} {citaVisible.edad === '1' ? 'año' : 'años'})
                         </p>
                         <p className="mb-0"><b>Tutor:</b> {usuario.nombre}</p>
                         <p className="mb-0"><b>Valor consulta:</b> ${PRECIO_CONSULTA.toLocaleString('es-CL')}</p>
@@ -148,11 +146,6 @@ function Cita({ mostrar, onCerrar }) {
                                 <option value="Conejo">Conejo</option>
                             </Form.Select>
                             <Form.Control.Feedback type="invalid">{errores.especie}</Form.Control.Feedback>
-                        </Form.Group>
-
-                        <Form.Group className="mb-3" controlId="cita-raza">
-                            <Form.Label><b>Raza</b> (opcional)</Form.Label>
-                            <Form.Control type="text" name="raza" placeholder="Ingresar raza" value={cita.raza} onChange={handleChange}/>
                         </Form.Group>
 
                         <Form.Group className="mb-4" controlId="cita-edad">

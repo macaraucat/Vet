@@ -57,7 +57,7 @@ describe('Header', () => {
             renderHeader()
             expect(screen.getByRole('link', { name: 'Catálogo' })).toHaveAttribute('href', '/catalogo')
             expect(screen.getByRole('link', { name: 'Nosotros' })).toHaveAttribute('href', '/#nosotros')
-            expect(screen.getByRole('link', { name: 'Blogs' })).toHaveAttribute('href', '/#blogs')
+            expect(screen.getByRole('link', { name: 'Blogs' })).toHaveAttribute('href', '/#noticias')
             expect(screen.getByRole('link', { name: 'Contacto' })).toHaveAttribute('href', '#contacto')
         })
 

@@ -88,7 +88,7 @@ function Header() {
                             <Nav.Link as={Link} to="/admin" onClick={scrollToTop}>Administración</Nav.Link>
                         )}
                         <Nav.Link as={Link} to="/#nosotros">Nosotros</Nav.Link>
-                        <Nav.Link as={Link} to="/#blogs">Blogs</Nav.Link>
+                        <Nav.Link as={Link} to="/#noticias">Blogs</Nav.Link>
                         <Nav.Link href="#contacto">Contacto</Nav.Link>
                     </Nav>
                 </Navbar.Collapse>

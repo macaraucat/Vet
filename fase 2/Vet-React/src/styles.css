@@ -207,6 +207,11 @@ main {
     color: var(--auth-accent);
 }
 
+/* ADMIN */
+.admin-main-content {
+    min-width: 0;
+}
+
 /* FOOTER */
 .footer-map,
 .footer-form {

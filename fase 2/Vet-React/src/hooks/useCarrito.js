@@ -36,7 +36,6 @@ export function useCarrito() {
             hora: cita.hora,
             nombreMascota: cita.nombreMascota,
             especie: cita.especie,
-            raza: cita.raza,
             edad: Number(cita.edad),
             tutor,
         }]);
