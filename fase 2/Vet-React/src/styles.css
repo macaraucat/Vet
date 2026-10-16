@@ -162,6 +162,51 @@ main {
     --bs-aspect-ratio: calc(2 / 3 * 100%);
 }
 
+/* FORMULARIO LOGIN Y REGISTRO */
+.auth {
+    --auth-accent: #145E5C;
+}
+
+.auth .form-control,
+.auth .form-select {
+    border: none;
+    border-bottom: 1px solid var(--auth-accent);
+    border-radius: 0;
+    box-shadow: none;
+    background-color: transparent;
+    padding: 2px 0;
+}
+
+.auth .form-control:hover,
+.auth .form-control:focus,
+.auth .form-select:hover,
+.auth .form-select:focus {
+    box-shadow: 0 2px rgba(20, 94, 92, 0.18);
+}
+
+.auth .login-tabs .nav-link {
+    color: var(--auth-accent);
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    font-weight: 600;
+    background-color: transparent;
+}
+
+.auth .login-tabs .nav-link:hover {
+    border-bottom-color: rgba(20, 94, 92, 0.3);
+}
+
+.auth .login-tabs .nav-link.active {
+    color: var(--auth-accent);
+    background-color: transparent;
+    border-bottom-color: var(--auth-accent);
+}
+
+.auth .form-label {
+    color: var(--auth-accent);
+}
+
 /* FOOTER */
 .footer-map,
 .footer-form {
