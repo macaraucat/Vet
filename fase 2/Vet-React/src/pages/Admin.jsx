@@ -3,7 +3,6 @@ import { Alert, Badge, Button, Card, Col, Container, Form, Modal, Nav, Row, Stac
 import { useNavigate } from 'react-router-dom'
 import { useAuthContext } from '../context/AuthContext'
 import useAdmin from '../hooks/useAdmin'
-import './admin.css'
 
 const categorias = ['Antibióticos', 'Antiparasitarios', 'Antiinflamatorios', 'Dermatología', 'Digestivo', 'Cardíaco', 'Analgésicos', 'Vacunas', 'Suplementos', ]
 const precioCLP = new Intl.NumberFormat('es-CL')
@@ -68,9 +67,14 @@ function Admin() {
                                 <Card.Title as="h2" id="admin-productos-title" className="h4 text-success mb-0">Gestión de Productos</Card.Title>
                             </Card.Header>
                             <Card.Body>
-                                <Stack direction="horizontal" gap={2} className="mb-3">
-                                    <Button variant="success" onClick={() => admin.abrirProducto('agregar')}>+ Agregar</Button>
-                                    <Button variant="warning" onClick={() => admin.abrirProducto('modificar')}>Modificar</Button>
+                                <Stack direction="horizontal" gap={2} className="admin-actions mb-3">
+                                    <Button className="admin-action-button" variant="success" onClick={() => admin.abrirProducto('agregar')}>+ Agregar</Button>
+                                    <Button className="admin-action-button" variant="warning" disabled={admin.productoSeleccionado === null} onClick={() => admin.abrirProducto('modificar')}>Modificar</Button>
+                                    <Button className="admin-action-button" variant="danger" disabled={admin.productoSeleccionado === null} onClick={() => {
+                                        if (window.confirm('¿Eliminar el producto seleccionado? Esta acción no se puede deshacer.')) {
+                                            admin.eliminarProducto()
+                                        }
+                                    }}>Eliminar</Button>
                                 </Stack>
                             <Table bordered hover responsive className="align-middle mb-0">
                                 <thead>
@@ -119,9 +123,14 @@ function Admin() {
                                 <Card.Title as="h2" id="admin-usuarios-title" className="h4 text-success mb-0">Gestión de Usuarios</Card.Title>
                             </Card.Header>
                             <Card.Body>
-                                <Stack direction="horizontal" gap={2} className="mb-3">
-                                    <Button variant="success" onClick={() => admin.abrirUsuario('agregar')}>+ Agregar</Button>
-                                    <Button variant="warning" onClick={() => admin.abrirUsuario('modificar')}>Modificar</Button>
+                                <Stack direction="horizontal" gap={2} className="admin-actions mb-3">
+                                    <Button className="admin-action-button" variant="success" onClick={() => admin.abrirUsuario('agregar')}>+ Agregar</Button>
+                                    <Button className="admin-action-button" variant="warning" disabled={admin.usuarioSeleccionado === null} onClick={() => admin.abrirUsuario('modificar')}>Modificar</Button>
+                                    <Button className="admin-action-button" variant="danger" disabled={admin.usuarioSeleccionado === null} onClick={() => {
+                                        if (window.confirm('¿Eliminar el usuario seleccionado? Esta acción no se puede deshacer.')) {
+                                            admin.eliminarUsuario()
+                                        }
+                                    }}>Eliminar</Button>
                                 </Stack>
                             <Table bordered hover responsive className="align-middle mb-0">
                                 <thead>
@@ -174,10 +183,10 @@ function Admin() {
                                 <Card.Title as="h2" id="admin-citas-title" className="h4 text-success mb-0">Gestión de Citas</Card.Title>
                             </Card.Header>
                             <Card.Body>
-                                <Stack direction="horizontal" gap={2} className="mb-3">
-                                    <Button variant="success" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Confirmada')}>Confirmar</Button>
-                                    <Button variant="warning" disabled={admin.citaSeleccionada === null} onClick={admin.abrirCita}>Modificar</Button>
-                                    <Button variant="danger" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Anulada')}>Anular</Button>
+                                <Stack direction="horizontal" gap={2} className="admin-actions mb-3">
+                                    <Button className="admin-action-button" variant="success" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Confirmada')}>Confirmar</Button>
+                                    <Button className="admin-action-button" variant="warning" disabled={admin.citaSeleccionada === null} onClick={admin.abrirCita}>Modificar</Button>
+                                    <Button className="admin-action-button" variant="danger" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Anulada')}>Anular</Button>
                                 </Stack>
                             <Table bordered hover responsive className="align-middle mb-0">
                                 <thead>
@@ -275,8 +284,8 @@ function Admin() {
                         </Form.Group>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={() => admin.setModal(null)}>Cancelar</Button>
-                        <Button variant="primary" type="submit">Guardar</Button>
+                        <Button className="admin-action-button" variant="secondary" onClick={() => admin.setModal(null)}>Cancelar</Button>
+                        <Button className="admin-action-button" variant="primary" type="submit">Guardar</Button>
                     </Modal.Footer>
                 </Form>
             </Modal>
@@ -324,8 +333,8 @@ function Admin() {
                         </Form.Group>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={() => admin.setModal(null)}>Cancelar</Button>
-                        <Button variant="primary" type="submit">Guardar</Button>
+                        <Button className="admin-action-button" variant="secondary" onClick={() => admin.setModal(null)}>Cancelar</Button>
+                        <Button className="admin-action-button" variant="primary" type="submit">Guardar</Button>
                     </Modal.Footer>
                 </Form>
             </Modal>
@@ -365,8 +374,8 @@ function Admin() {
                         </Form.Group>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={() => admin.setModal(null)}>Cancelar</Button>
-                        <Button variant="primary" type="submit">Guardar cambios</Button>
+                        <Button className="admin-action-button" variant="secondary" onClick={() => admin.setModal(null)}>Cancelar</Button>
+                        <Button className="admin-action-button" variant="primary" type="submit">Guardar cambios</Button>
                     </Modal.Footer>
                 </Form>
             </Modal>

@@ -212,6 +212,15 @@ main {
     min-width: 0;
 }
 
+.admin-actions {
+    flex-wrap: wrap;
+}
+
+.admin-action-button {
+    min-width: 7rem;
+    font-weight: 600;
+}
+
 /* FOOTER */
 .footer-map,
 .footer-form {

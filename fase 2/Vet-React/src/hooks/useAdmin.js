@@ -87,6 +87,13 @@ function useAdmin() {
         setModal(null)
     }
 
+    function eliminarProducto() {
+        if (productoSeleccionado === null) return
+        setProductosAdmin((actuales) => actuales.filter((producto) => producto.sku !== productoSeleccionado))
+        setProductoSeleccionado(null)
+        setFeedback({ variant: 'success', message: 'Producto eliminado correctamente.' })
+    }
+
     function abrirUsuario(modo) {
         if (modo === 'modificar') {
             const seleccionado = usuarios.find((user) => user.id === usuarioSeleccionado)
@@ -138,6 +145,13 @@ function useAdmin() {
         }
         setUsuarioSeleccionado(null)
         setModal(null)
+    }
+
+    function eliminarUsuario() {
+        if (usuarioSeleccionado === null) return
+        setUsuarios((actuales) => actuales.filter((user) => user.id !== usuarioSeleccionado))
+        setUsuarioSeleccionado(null)
+        setFeedback({ variant: 'success', message: 'Usuario eliminado correctamente.' })
     }
 
     function abrirCita() {
@@ -196,8 +210,10 @@ function useAdmin() {
         setFeedback,
         abrirProducto,
         guardarProducto,
+        eliminarProducto,
         abrirUsuario,
         guardarUsuario,
+        eliminarUsuario,
         abrirCita,
         guardarCita,
         actualizarEstadoCita,
