@@ -102,9 +102,15 @@ function Login() {
                                         </Form.Group>
 
                                         <Form.Group className="mb-3" controlId="registro-nombre">
-                                            <Form.Label><b>Nombre completo</b></Form.Label>
-                                            <Form.Control type="text" name="nombre" placeholder="Ingresar nombre completo" value={registro.nombre} onChange={actualizarCampoRegistro} isInvalid={!!erroresRegistro.nombre}/>
+                                            <Form.Label><b>Nombre</b></Form.Label>
+                                            <Form.Control type="text" name="nombre" placeholder="Ingresar nombre" value={registro.nombre} onChange={actualizarCampoRegistro} isInvalid={!!erroresRegistro.nombre}/>
                                             <Form.Control.Feedback type="invalid">{erroresRegistro.nombre}</Form.Control.Feedback>
+                                        </Form.Group>
+
+                                        <Form.Group className="mb-3" controlId="registro-epellidos">
+                                            <Form.Label><b>Apellidos</b></Form.Label>
+                                            <Form.Control type="text" name="apellidos" placeholder="Ingresar apellidos" value={registro.apellidos} onChange={actualizarCampoRegistro} isInvalid={!!erroresRegistro.apellidos}/>
+                                            <Form.Control.Feedback type="invalid">{erroresRegistro.apellidos}</Form.Control.Feedback>
                                         </Form.Group>
 
                                         <Form.Group className="mb-3" controlId="registro-email">

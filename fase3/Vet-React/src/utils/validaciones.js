@@ -37,7 +37,8 @@ export const reglasLogin = { email, pass }
 
 export const reglasRegistro = {
     run: [patron(/^[0-9]{7,8}[0-9K]$/, 'Ingrese un RUN válido sin puntos ni guion (ej: 19011022K).')],
-    nombre: [requerido('El nombre es obligatorio.'), maximo(50)],
+    nombre: [requerido('El nombre es obligatorio.'), maximo(30)],
+    apellidos: [requerido('Los apellidos son obligatorios'), maximo(30)].
     email,
     fechaNac: [requerido('La fecha de nacimiento es obligatoria.'), mayorDeEdad(18)],
     comuna: [requerido('Selecciona una comuna.')],

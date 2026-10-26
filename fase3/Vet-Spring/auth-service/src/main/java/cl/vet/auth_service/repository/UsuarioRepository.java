@@ -1,6 +1,6 @@
-package cl.vet.auth_service.Repository;
+package cl.vet.auth_service.repository;
 
-import cl.vet.auth_service.Model.Usuario;
+import cl.vet.auth_service.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
