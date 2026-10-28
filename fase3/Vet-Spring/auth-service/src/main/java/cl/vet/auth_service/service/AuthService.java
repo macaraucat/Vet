@@ -4,16 +4,13 @@ import cl.vet.auth_service.dto.AuthResponse;
 import cl.vet.auth_service.dto.LoginRequest;
 import cl.vet.auth_service.dto.RegistroRequest;
 import cl.vet.auth_service.dto.UsuarioResponse;
-import cl.vet.auth_service.exception.InvalidStateException;
-import cl.vet.auth_service.exception.UnauthorizedException;
+import cl.vet.common.exception.*;
 import cl.vet.auth_service.model.Rol;
 import cl.vet.auth_service.model.Usuario;
 import cl.vet.auth_service.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -48,9 +45,4 @@ public class AuthService {
         u.setRol(Rol.CLIENTE);
         return UsuarioResponse.from(repo.save(u));
     }
-
-    public List<UsuarioResponse> listarUsuarios(){
-        return repo.findAll().stream().map(UsuarioResponse::from).toList();
-    }
-
 }

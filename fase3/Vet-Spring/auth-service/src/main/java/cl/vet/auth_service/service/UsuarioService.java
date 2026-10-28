@@ -1,10 +1,10 @@
 package cl.vet.auth_service.service;
 
+import cl.vet.common.exception.InvalidStateException;
+import cl.vet.common.exception.ResourceNotFoundException;
+import cl.vet.auth_service.model.Usuario;
 import cl.vet.auth_service.dto.UsuarioResponse;
 import cl.vet.auth_service.dto.UsuarioRequest;
-import cl.vet.auth_service.exception.InvalidStateException;
-import cl.vet.auth_service.exception.ResourceNotFoundException;
-import cl.vet.auth_service.model.Usuario;
 import cl.vet.auth_service.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UsuarioService {
     private final UsuarioRepository repo;
     private final PasswordEncoder encoder;
 
@@ -30,17 +30,7 @@ public class UserService {
         if (req.password() == null || req.password().isBlank())
             throw new InvalidStateException("Debe asignar una contraseña al usuario.");
 
-        Usuario u = new Usuario();
-        u.setRun(req.run().trim().toUpperCase());
-        u.setNombre(req.nombre().trim());
-        u.setApellidos(req.apellidos().trim());
-        u.setEmail(req.email().trim().toLowerCase());
-        u.setFechaNac(req.fechaNac());
-        u.setRegion(req.region().trim());
-        u.setComuna(req.comuna().trim());
-        u.setDireccion(req.direccion().trim());
-        u.setPassword(encoder.encode(req.password()));
-        u.setRol(req.rol());
+        Usuario u = mapUsuarioFromRequest(req, null);
         return UsuarioResponse.from(repo.save(u));
     }
 
@@ -52,6 +42,19 @@ public class UserService {
         if (repo.existsByEmailIgnoreCaseAndIdNot(req.email(), id))
             throw new InvalidStateException("Este correo electrónico ya está registrado.");
 
+        Usuario updatedUser = mapUsuarioFromRequest(req, u);
+        return UsuarioResponse.from(repo.save(updatedUser));
+    }
+
+    public void eliminarUsuario(Long id) {
+        if (!repo.existsById(id))
+            throw new ResourceNotFoundException("Usuario no encontrado.");
+        repo.deleteById(id);
+    }
+
+    private Usuario mapUsuarioFromRequest(UsuarioRequest req, Usuario existingUser) {
+        Usuario u = existingUser != null ? existingUser : new Usuario();
+
         u.setRun(req.run().trim().toUpperCase());
         u.setNombre(req.nombre().trim());
         u.setApellidos(req.apellidos().trim());
@@ -61,15 +64,11 @@ public class UserService {
         u.setComuna(req.comuna().trim());
         u.setDireccion(req.direccion().trim());
         u.setRol(req.rol());
+
         if (req.password() != null && !req.password().isBlank()) {
             u.setPassword(encoder.encode(req.password()));
         }
-        return UsuarioResponse.from(repo.save(u));
-    }
 
-    public void eliminarUsuario(Long id) {
-        if (!repo.existsById(id))
-            throw new ResourceNotFoundException("Usuario no encontrado.");
-        repo.deleteById(id);
+        return u;
     }
 }

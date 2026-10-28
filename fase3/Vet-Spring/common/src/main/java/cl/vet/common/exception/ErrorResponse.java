@@ -1,4 +1,4 @@
-package cl.vet.auth_service.exception;
+package cl.vet.common.exception;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.http.HttpStatus;
@@ -16,9 +16,5 @@ public record ErrorResponse(
 
     public static ErrorResponse of(HttpStatus status, String message) {
         return new ErrorResponse(status.value(), status.getReasonPhrase(), message, null, LocalDateTime.now());
-    }
-
-    public static ErrorResponse of(HttpStatus status, String message, Map<String, String> campos) {
-        return new ErrorResponse(status.value(), status.getReasonPhrase(), message, campos, LocalDateTime.now());
     }
 }

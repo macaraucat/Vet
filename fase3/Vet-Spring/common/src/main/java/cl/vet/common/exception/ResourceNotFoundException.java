@@ -1,4 +1,4 @@
-package cl.vet.auth_service.exception;
+package cl.vet.common.exception;
 
 public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(String message) {

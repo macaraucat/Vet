@@ -2,7 +2,7 @@ package cl.vet.auth_service.controller;
 
 import cl.vet.auth_service.dto.UsuarioRequest;
 import cl.vet.auth_service.dto.UsuarioResponse;
-import cl.vet.auth_service.service.UserService;
+import cl.vet.auth_service.service.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,8 +13,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/auth/usuarios")
 @RequiredArgsConstructor
-public class UserController {
-    private final UserService service;
+public class UsuarioController {
+    private final UsuarioService service;
 
     @GetMapping
     public List<UsuarioResponse> listar() {

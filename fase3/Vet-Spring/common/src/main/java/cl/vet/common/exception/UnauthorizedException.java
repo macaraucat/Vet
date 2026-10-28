@@ -1,4 +1,4 @@
-package cl.vet.auth_service.exception;
+package cl.vet.common.exception;
 
 public class UnauthorizedException extends RuntimeException {
     public UnauthorizedException(String message) {
