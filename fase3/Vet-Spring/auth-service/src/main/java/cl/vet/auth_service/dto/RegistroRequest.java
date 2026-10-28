@@ -5,13 +5,13 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 
 public record RegistroRequest(
-        @NotBlank String run,
-        @NotBlank String nombre,
-        @NotBlank String apellidos,
-        @NotBlank @Email String email,
+        @NotBlank @Size(max = 9) String run,
+        @NotBlank @Size(max = 30) String nombre,
+        @NotBlank @Size(max = 30) String apellidos,
+        @NotBlank @Email @Size(max = 40) String email,
         @NotNull @Past LocalDate fechaNac,
-        @NotBlank String region,
-        @NotBlank String comuna,
-        @NotBlank String direccion,
-        @NotBlank @Size(min = 6) String password) {
+        @NotBlank @Size(max = 40) String region,
+        @NotBlank @Size(max = 30) String comuna,
+        @NotBlank @Size(max = 300) String direccion,
+        @NotBlank @Size(min = 4, max = 10) String password) {
 }

@@ -15,24 +15,30 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 12)
+    @Column(nullable = false, unique = true, length = 9)
     private String run;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 30)
     private String nombre;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 30)
     private String apellidos;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 40)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 60)
     private String password;
 
     private LocalDate fechaNac;
+
+    @Column(length = 40)
     private String region;
+
+    @Column(length = 30)
     private String comuna;
+
+    @Column(length = 300)
     private String direccion;
 
     @Enumerated(EnumType.STRING)
