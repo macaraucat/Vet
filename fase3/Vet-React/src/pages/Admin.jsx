@@ -5,41 +5,170 @@ import { useAuthContext } from '../context/AuthContext'
 import { REGIONES, REGION_COMUNAS } from '../utils/validaciones'
 import useAdmin from '../hooks/useAdmin'
 
-const categorias = ['Antibióticos', 'Antiparasitarios', 'Antiinflamatorios', 'Dermatología', 'Digestivo', 'Cardíaco', 'Analgésicos', 'Vacunas', 'Suplementos', ]
+const CATEGORIAS = ['Antibióticos', 'Antiparasitarios', 'Antiinflamatorios', 'Dermatología', 'Digestivo', 'Cardíaco', 'Analgésicos', 'Vacunas', 'Suplementos']
+const ROLES = ['ADMINISTRADOR', 'FUNCIONARIO', 'CLIENTE']
+const ESPECIES = ['Perro', 'Gato', 'Ave', 'Conejo']
+const ROLES_PANEL = ['FUNCIONARIO', 'ADMINISTRADOR']
+const COLOR_ESTADO = { Confirmada: 'success', Anulada: 'secondary' }
+
 const precioCLP = new Intl.NumberFormat('es-CL')
-const roles = [
-    { valor: 'ADMINISTRADOR', etiqueta: 'Administrador' },
-    { valor: 'FUNCIONARIO', etiqueta: 'Funcionario' },
-    { valor: 'CLIENTE', etiqueta: 'Dueño de mascota' },
-]
+const formatearFecha = (fecha) => fecha?.split('-').reverse().join('-')
 
 const secciones = [
     { id: 'productos', label: 'Gestión de Productos' },
     { id: 'usuarios', label: 'Gestión de Usuarios' },
-    { id: 'citas', label: 'Citas'},
+    { id: 'citas', label: 'Citas' },
     { id: 'mensajes', label: 'Mensajes' },
 ]
+
+const columnasProductos = [
+    { titulo: 'SKU', render: (p) => p.sku },
+    { titulo: 'Nombre', render: (p) => p.nombre },
+    { titulo: 'Descripción (opcional)', render: (p) => p.descripcion },
+    { titulo: 'Precio', render: (p) => `$${precioCLP.format(p.precio)}` },
+    { titulo: 'Stock', render: (p) => p.stock },
+    { titulo: 'Categoría', render: (p) => p.categoria },
+]
+
+const columnasUsuarios = [
+    { titulo: 'RUN', render: (u) => u.run || '—' },
+    { titulo: 'Nombre', render: (u) => u.nombre },
+    { titulo: 'Apellidos', render: (u) => u.apellidos },
+    { titulo: 'Correo electrónico', render: (u) => u.email || '—' },
+    { titulo: 'Fecha de nacimiento', render: (u) => formatearFecha(u.fechaNac) || '—' },
+    { titulo: 'Rol', render: (u) => u.rol },
+    { titulo: 'Comuna', render: (u) => u.comuna || '—' },
+    { titulo: 'Dirección', render: (u) => u.direccion || '—' },
+]
+
+const columnasCitas = [
+    { titulo: 'Fecha', render: (c) => formatearFecha(c.fecha) || '' },
+    { titulo: 'Hora', render: (c) => c.hora },
+    { titulo: 'Nombre mascota', render: (c) => c.nombreMascota },
+    { titulo: 'Especie', render: (c) => c.especie },
+    { titulo: 'Edad', render: (c) => c.edad },
+    { titulo: 'Nombre tutor', render: (c) => c.nombreTutor },
+    { titulo: 'Estado cita', render: (c) => <Badge bg={COLOR_ESTADO[c.estado] ?? 'warning'}>{c.estado}</Badge> },
+]
+
+function BotonAdmin(props) {
+    return <Button className="admin-action-button" {...props} />
+}
+
+function SeccionAdmin({ id, titulo, acciones, children }) {
+    return (
+        <section aria-labelledby={`admin-${id}-title`}>
+            <Card className="shadow-sm">
+                <Card.Header className="bg-white border-0 pb-0">
+                    <Card.Title as="h2" id={`admin-${id}-title`} className="h4 text-success mb-0">{titulo}</Card.Title>
+                </Card.Header>
+                <Card.Body>
+                    {acciones && <Stack direction="horizontal" gap={2} className="admin-actions mb-3">{acciones}</Stack>}
+                    {children}
+                </Card.Body>
+            </Card>
+        </section>
+    )
+}
+
+function TablaSeleccionable({ name, descripcion, columnas, filas, getId, getAriaLabel, seleccionado, onSeleccionar }) {
+    return (
+        <Table bordered hover responsive className="align-middle mb-0">
+            <thead>
+            <tr>
+                <th className="text-center"><span className="visually-hidden">{descripcion}</span></th>
+                {columnas.map(({ titulo }) => <th key={titulo}>{titulo}</th>)}
+            </tr>
+            </thead>
+            <tbody>
+            {filas.map((fila) => (
+                <tr key={getId(fila)}>
+                    <td className="text-center">
+                        <Form.Check
+                            type="radio"
+                            name={name}
+                            aria-label={getAriaLabel(fila)}
+                            className="d-flex justify-content-center m-0"
+                            checked={seleccionado === getId(fila)}
+                            onChange={() => onSeleccionar(getId(fila))}
+                        />
+                    </td>
+                    {columnas.map(({ titulo, render }) => <td key={titulo}>{render(fila)}</td>)}
+                </tr>
+            ))}
+            </tbody>
+        </Table>
+    )
+}
+
+function Campo({ id, label, value, onChange, className = 'mb-3', ...props }) {
+    return (
+        <Form.Group className={className} controlId={id}>
+            <Form.Label>{label}</Form.Label>
+            <Form.Control value={value ?? ''} onChange={(e) => onChange(e.target.value)} {...props} />
+        </Form.Group>
+    )
+}
+
+function CampoSelect({ id, label, value, onChange, placeholder, opciones, className = 'mb-3', ...props }) {
+    return (
+        <Form.Group className={className} controlId={id}>
+            <Form.Label>{label}</Form.Label>
+            <Form.Select value={value ?? ''} onChange={(e) => onChange(e.target.value)} {...props}>
+                <option value="">{placeholder}</option>
+                {opciones.map((opcion) => <option key={opcion} value={opcion}>{opcion}</option>)}
+            </Form.Select>
+        </Form.Group>
+    )
+}
+
+function ModalFormulario({ id, show, titulo, onHide, onSubmit, size, textoGuardar = 'Guardar', children }) {
+    return (
+        <Modal show={show} onHide={onHide} size={size} aria-labelledby={`${id}-title`}>
+            <Form onSubmit={onSubmit}>
+                <Modal.Header closeButton>
+                    <Modal.Title id={`${id}-title`}>{titulo}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>{children}</Modal.Body>
+                <Modal.Footer>
+                    <BotonAdmin variant="secondary" onClick={onHide}>Cancelar</BotonAdmin>
+                    <BotonAdmin variant="primary" type="submit">{textoGuardar}</BotonAdmin>
+                </Modal.Footer>
+            </Form>
+        </Modal>
+    )
+}
+
+async function confirmarYEjecutar(mensaje, accion) {
+    if (!window.confirm(mensaje)) return
+    try {
+        await accion()
+    } catch (error) {
+        console.error(error)
+    }
+}
 
 function Admin() {
     const { usuario } = useAuthContext()
     const navigate = useNavigate()
-    const esFuncionario = usuario?.role === 'FUNCIONARIO'
     const [tabActual, setTabActual] = useState('productos')
     const admin = useAdmin()
+    const esFuncionario = usuario?.role === 'FUNCIONARIO'
+    const tienePermiso = ROLES_PANEL.includes(usuario?.role)
 
     useEffect(() => {
-        if (!usuario) {
-            navigate('/login', { replace: true })
-        } else if (!['FUNCIONARIO', 'ADMINISTRADOR'].includes(usuario.role)) {
-            navigate('/', { replace: true })
-        }
-    }, [navigate, usuario])
+        if (!usuario) navigate('/login', { replace: true })
+        else if (!tienePermiso) navigate('/', { replace: true })
+    }, [navigate, usuario, tienePermiso])
 
-    if (!usuario || !['FUNCIONARIO', 'ADMINISTRADOR'].includes(usuario.role)) return null
+    if (!usuario || !tienePermiso) return null
 
-    const modalProducto = admin.modal?.tipo === 'producto'
-    const modalUsuario = admin.modal?.tipo === 'usuario'
-    const modalCita = admin.modal?.tipo === 'cita'
+    const cerrarModal = () => admin.setModal(null)
+    const esAgregar = admin.modal?.modo === 'agregar'
+    const setP = (cambios) => admin.setProductoForm({ ...admin.productoForm, ...cambios })
+    const setU = (cambios) => admin.setUsuarioForm({ ...admin.usuarioForm, ...cambios })
+    const setC = (cambios) => admin.setCitaForm({ ...admin.citaForm, ...cambios })
+    const { productoForm: pf, usuarioForm: uf, citaForm: cf } = admin
 
     return (
         <Container as="main" fluid className="py-3 py-md-4">
@@ -64,341 +193,131 @@ function Admin() {
                 </Col>
 
                 <Col xs={12} md={9} xl={10} className="admin-main-content">
-                    {admin.feedback && <Alert variant={admin.feedback.variant} dismissible onClose={() => admin.setFeedback(null)}>{admin.feedback.message}</Alert>}
+                    {admin.feedback && (
+                        <Alert variant={admin.feedback.variant} dismissible onClose={() => admin.setFeedback(null)}>
+                            {admin.feedback.message}
+                        </Alert>
+                    )}
 
                     {tabActual === 'productos' && (
-                        <section aria-labelledby="admin-productos-title">
-                            <Card className="shadow-sm">
-                                <Card.Header className="bg-white border-0 pb-0">
-                                    <Card.Title as="h2" id="admin-productos-title" className="h4 text-success mb-0">Gestión de Productos</Card.Title>
-                                </Card.Header>
-                                <Card.Body>
-                                    <Stack direction="horizontal" gap={2} className="admin-actions mb-3">
-                                        <Button className="admin-action-button" variant="success" onClick={() => admin.abrirProducto('agregar')}>+ Agregar</Button>
-                                        <Button className="admin-action-button" variant="warning" disabled={admin.productoSeleccionado === null} onClick={() => admin.abrirProducto('modificar')}>Modificar</Button>
-                                        <Button className="admin-action-button" variant="danger" disabled={admin.productoSeleccionado === null} onClick={() => {
-                                            if (window.confirm('¿Eliminar el producto seleccionado? Esta acción no se puede deshacer.')) {
-                                                admin.eliminarProducto()
-                                            }
-                                        }}>Eliminar</Button>
-                                    </Stack>
-                                    <Table bordered hover responsive className="align-middle mb-0">
-                                        <thead>
-                                        <tr>
-                                            <th className="text-center"><span className="visually-hidden">Seleccionar un producto</span></th>
-                                            <th>SKU</th>
-                                            <th>Nombre</th>
-                                            <th>Descripción (opcional)</th>
-                                            <th>Precio</th>
-                                            <th>Stock</th>
-                                            <th>Categoría</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {admin.productosAdmin.map((producto) => (
-                                            <tr key={producto.sku}>
-                                                <td className="text-center">
-                                                    <Form.Check
-                                                        type="radio"
-                                                        name="producto-seleccionado"
-                                                        aria-label={`Seleccionar ${producto.nombre}`}
-                                                        className="d-flex justify-content-center m-0"
-                                                        checked={admin.productoSeleccionado === producto.sku}
-                                                        onChange={() => admin.setProductoSeleccionado(producto.sku)}
-                                                    />
-                                                </td>
-                                                <td>{producto.sku}</td>
-                                                <td>{producto.nombre}</td>
-                                                <td>{producto.descripcion}</td>
-                                                <td>${precioCLP.format(producto.precio)}</td>
-                                                <td>{producto.stock}</td>
-                                                <td>{producto.categoria}</td>
-                                            </tr>
-                                        ))}
-                                        </tbody>
-                                    </Table>
-                                </Card.Body>
-                            </Card>
-                        </section>
+                        <SeccionAdmin
+                            id="productos"
+                            titulo="Gestión de Productos"
+                            acciones={<>
+                                <BotonAdmin variant="success" onClick={() => admin.abrirProducto('agregar')}>+ Agregar</BotonAdmin>
+                                <BotonAdmin variant="warning" disabled={admin.productoSeleccionado === null} onClick={() => admin.abrirProducto('modificar')}>Modificar</BotonAdmin>
+                                <BotonAdmin variant="danger" disabled={admin.productoSeleccionado === null}
+                                            onClick={() => confirmarYEjecutar('¿Eliminar el producto seleccionado? Esta acción no se puede deshacer.', admin.eliminarProducto)}>
+                                    Eliminar
+                                </BotonAdmin>
+                            </>}
+                        >
+                            <TablaSeleccionable
+                                name="producto-seleccionado"
+                                descripcion="Seleccionar un producto"
+                                columnas={columnasProductos}
+                                filas={admin.productosAdmin}
+                                getId={(p) => p.sku}
+                                getAriaLabel={(p) => `Seleccionar ${p.nombre}`}
+                                seleccionado={admin.productoSeleccionado}
+                                onSeleccionar={admin.setProductoSeleccionado}
+                            />
+                        </SeccionAdmin>
                     )}
 
                     {tabActual === 'usuarios' && !esFuncionario && (
-                        <section aria-labelledby="admin-usuarios-title">
-                            <Card className="shadow-sm">
-                                <Card.Header className="bg-white border-0 pb-0">
-                                    <Card.Title as="h2" id="admin-usuarios-title" className="h4 text-success mb-0">Gestión de Usuarios</Card.Title>
-                                </Card.Header>
-                                <Card.Body>
-                                    <Stack direction="horizontal" gap={2} className="admin-actions mb-3">
-                                        <Button className="admin-action-button" variant="success" onClick={admin.agregarUsuario}>+ Agregar</Button>
-                                        <Button className="admin-action-button" variant="warning" disabled={admin.usuarioSeleccionado === null} onClick={admin.modificarUsuario}>Modificar</Button>
-                                        <Button className="admin-action-button" variant="danger" disabled={admin.usuarioSeleccionado === null} onClick={() => {
-                                            if (window.confirm('¿Eliminar el usuario seleccionado? Esta acción no se puede deshacer.')) {
-                                                admin.eliminarUsuario()
-                                            }
-                                        }}>Eliminar</Button>
-                                    </Stack>
-                                    <Table bordered hover responsive className="align-middle mb-0">
-                                        <thead>
-                                        <tr>
-                                            <th className="text-center"><span className="visually-hidden">Seleccionar un usuario</span></th>
-                                            <th>RUN</th>
-                                            <th>Nombre</th>
-                                            <th>Apellidos</th>
-                                            <th>Correo electrónico</th>
-                                            <th>Fecha de nacimiento</th>
-                                            <th>Rol</th>
-                                            <th>Comuna</th>
-                                            <th>Dirección</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {admin.usuarios.map((user) => (
-                                            <tr key={user.id}>
-                                                <td className="text-center">
-                                                    <Form.Check
-                                                        type="radio"
-                                                        name="usuario-seleccionado"
-                                                        aria-label={`Seleccionar a ${user.nombre} ${user.apellidos}`}
-                                                        className="d-flex justify-content-center m-0"
-                                                        checked={admin.usuarioSeleccionado === user.id}
-                                                        onChange={() => admin.setUsuarioSeleccionado(user.id)}
-                                                    />
-                                                </td>
-                                                <td>{user.run || '—'}</td>
-                                                <td>{user.nombre}</td>
-                                                <td>{user.apellidos}</td>
-                                                <td>{user.email || '—'}</td>
-                                                <td>{user.fechaNac?.split('-').reverse().join('-') || '—'}</td>
-                                                <td>{user.rol}</td>
-                                                <td>{user.comuna || '—'}</td>
-                                                <td>{user.direccion || '—'}</td>
-                                            </tr>
-                                        ))}
-                                        </tbody>
-                                    </Table>
-                                </Card.Body>
-                            </Card>
-                        </section>
+                        <SeccionAdmin
+                            id="usuarios"
+                            titulo="Gestión de Usuarios"
+                            acciones={<>
+                                <BotonAdmin variant="success" onClick={admin.agregarUsuario}>+ Agregar</BotonAdmin>
+                                <BotonAdmin variant="warning" disabled={admin.usuarioSeleccionado === null} onClick={admin.modificarUsuario}>Modificar</BotonAdmin>
+                                <BotonAdmin variant="danger" disabled={admin.usuarioSeleccionado === null}
+                                            onClick={() => confirmarYEjecutar('¿Eliminar el usuario seleccionado? Esta acción no se puede deshacer.', admin.eliminarUsuario)}>
+                                    Eliminar
+                                </BotonAdmin>
+                            </>}
+                        >
+                            <TablaSeleccionable
+                                name="usuario-seleccionado"
+                                descripcion="Seleccionar un usuario"
+                                columnas={columnasUsuarios}
+                                filas={admin.usuarios}
+                                getId={(u) => u.id}
+                                getAriaLabel={(u) => `Seleccionar a ${u.nombre} ${u.apellidos}`}
+                                seleccionado={admin.usuarioSeleccionado}
+                                onSeleccionar={admin.setUsuarioSeleccionado}
+                            />
+                        </SeccionAdmin>
                     )}
 
                     {tabActual === 'citas' && (
-                        <section aria-labelledby="admin-citas-title">
-                            <Card className="shadow-sm">
-                                <Card.Header className="bg-white border-0 pb-0">
-                                    <Card.Title as="h2" id="admin-citas-title" className="h4 text-success mb-0">Gestión de Citas</Card.Title>
-                                </Card.Header>
-                                <Card.Body>
-                                    <Stack direction="horizontal" gap={2} className="admin-actions mb-3">
-                                        <Button className="admin-action-button" variant="success" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Confirmada')}>Confirmar</Button>
-                                        <Button className="admin-action-button" variant="warning" disabled={admin.citaSeleccionada === null} onClick={admin.abrirCita}>Modificar</Button>
-                                        <Button className="admin-action-button" variant="danger" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Anulada')}>Anular</Button>
-                                    </Stack>
-                                    <Table bordered hover responsive className="align-middle mb-0">
-                                        <thead>
-                                        <tr>
-                                            <th className="text-center"><span className="visually-hidden">Seleccionar una cita</span></th>
-                                            <th>Fecha</th>
-                                            <th>Hora</th>
-                                            <th>Nombre mascota</th>
-                                            <th>Especie</th>
-                                            <th>Edad</th>
-                                            <th>Nombre tutor</th>
-                                            <th>Estado cita</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {admin.citas.map((cita) => (
-                                            <tr key={cita.id}>
-                                                <td className="text-center">
-                                                    <Form.Check
-                                                        type="radio"
-                                                        name="cita-seleccionada"
-                                                        aria-label={`Seleccionar cita de ${cita.nombreMascota}`}
-                                                        className="d-flex justify-content-center m-0"
-                                                        checked={admin.citaSeleccionada === cita.id}
-                                                        onChange={() => admin.setCitaSeleccionada(cita.id)}
-                                                    />
-                                                </td>
-                                                <td>{cita.fecha?.split('-').reverse().join('-') || ''}</td>
-                                                <td>{cita.hora}</td>
-                                                <td>{cita.nombreMascota}</td>
-                                                <td>{cita.especie}</td>
-                                                <td>{cita.edad}</td>
-                                                <td>{cita.nombreTutor}</td>
-                                                <td>
-                                                    <Badge bg={cita.estado === 'Confirmada' ? 'success' : cita.estado === 'Anulada' ? 'secondary' : 'warning'}>
-                                                        {cita.estado}
-                                                    </Badge>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                        </tbody>
-                                    </Table>
-                                </Card.Body>
-                            </Card>
-                        </section>
+                        <SeccionAdmin
+                            id="citas"
+                            titulo="Gestión de Citas"
+                            acciones={<>
+                                <BotonAdmin variant="success" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Confirmada')}>Confirmar</BotonAdmin>
+                                <BotonAdmin variant="warning" disabled={admin.citaSeleccionada === null} onClick={admin.abrirCita}>Modificar</BotonAdmin>
+                                <BotonAdmin variant="danger" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Anulada')}>Anular</BotonAdmin>
+                            </>}
+                        >
+                            <TablaSeleccionable
+                                name="cita-seleccionada"
+                                descripcion="Seleccionar una cita"
+                                columnas={columnasCitas}
+                                filas={admin.citas}
+                                getId={(c) => c.id}
+                                getAriaLabel={(c) => `Seleccionar cita de ${c.nombreMascota}`}
+                                seleccionado={admin.citaSeleccionada}
+                                onSeleccionar={admin.setCitaSeleccionada}
+                            />
+                        </SeccionAdmin>
                     )}
 
                     {tabActual === 'mensajes' && (
-                        <section aria-labelledby="admin-mensajes-title">
-                            <Card className="shadow-sm">
-                                <Card.Header className="bg-white border-0">
-                                    <Card.Title as="h2" id="admin-mensajes-title" className="h4 text-success mb-0">Mensajes</Card.Title>
-                                </Card.Header>
-                                <Card.Body>
-                                    <Alert variant="info" className="mb-0">No hay mensajes nuevos por el momento.</Alert>
-                                </Card.Body>
-                            </Card>
-                        </section>
+                        <SeccionAdmin id="mensajes" titulo="Mensajes">
+                            <Alert variant="info" className="mb-0">No hay mensajes nuevos por el momento.</Alert>
+                        </SeccionAdmin>
                     )}
                 </Col>
             </Row>
 
-            <Modal show={modalProducto} onHide={() => admin.setModal(null)} size="lg" aria-labelledby="admin-producto-modal-title">
-                <Form onSubmit={admin.guardarProducto}>
-                    <Modal.Header closeButton>
-                        <Modal.Title id="admin-producto-modal-title">{admin.modal?.modo === 'agregar' ? 'Agregar Producto' : 'Modificar Producto'}</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Código producto (SKU)</Form.Label>
-                            <Form.Control required value={admin.productoForm.sku || ''} onChange={(event) => admin.setProductoForm({ ...admin.productoForm, sku: event.target.value })} placeholder="Ej: ME023" />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Nombre</Form.Label>
-                            <Form.Control required value={admin.productoForm.nombre || ''} onChange={(event) => admin.setProductoForm({ ...admin.productoForm, nombre: event.target.value })} placeholder="Ingresar nombre del producto" />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Descripción (opcional)</Form.Label>
-                            <Form.Control as="textarea" rows={2} value={admin.productoForm.descripcion || ''} onChange={(event) => admin.setProductoForm({ ...admin.productoForm, descripcion: event.target.value })} placeholder="Descripción del producto" />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Precio</Form.Label>
-                            <Form.Control required type="number" min="0" step="1" value={admin.productoForm.precio ?? ''} onChange={(event) => admin.setProductoForm({ ...admin.productoForm, precio: event.target.value })} placeholder="Ej: 4200" />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Stock</Form.Label>
-                            <Form.Control required type="number" min="0" step="1" value={admin.productoForm.stock ?? ''} onChange={(event) => admin.setProductoForm({ ...admin.productoForm, stock: event.target.value })} placeholder="Cantidad en stock" />
-                        </Form.Group>
-                        <Form.Group>
-                            <Form.Label>Categoría</Form.Label>
-                            <Form.Select required value={admin.productoForm.categoria || ''} onChange={(event) => admin.setProductoForm({ ...admin.productoForm, categoria: event.target.value })}>
-                                <option value="">Seleccionar categoría</option>
-                                {categorias.map((categoria) => <option key={categoria} value={categoria}>{categoria}</option>)}
-                            </Form.Select>
-                        </Form.Group>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button className="admin-action-button" variant="secondary" onClick={() => admin.setModal(null)}>Cancelar</Button>
-                        <Button className="admin-action-button" variant="primary" type="submit">Guardar</Button>
-                    </Modal.Footer>
-                </Form>
-            </Modal>
+            <ModalFormulario id="admin-producto-modal" size="lg" show={admin.modal?.tipo === 'producto'} onHide={cerrarModal} onSubmit={admin.guardarProducto}
+                             titulo={esAgregar ? 'Agregar Producto' : 'Modificar Producto'}>
+                <Campo id="producto-sku" label="Código producto (SKU)" required value={pf.sku} onChange={(v) => setP({ sku: v })} placeholder="Ej: ME023" />
+                <Campo id="producto-nombre" label="Nombre" required value={pf.nombre} onChange={(v) => setP({ nombre: v })} placeholder="Ingresar nombre del producto" />
+                <Campo id="producto-descripcion" label="Descripción (opcional)" as="textarea" rows={2} value={pf.descripcion} onChange={(v) => setP({ descripcion: v })} placeholder="Descripción del producto" />
+                <Campo id="producto-precio" label="Precio" required type="number" min="0" step="1" value={pf.precio} onChange={(v) => setP({ precio: v })} placeholder="Ej: 4200" />
+                <Campo id="producto-stock" label="Stock" required type="number" min="0" step="1" value={pf.stock} onChange={(v) => setP({ stock: v })} placeholder="Cantidad en stock" />
+                <CampoSelect id="producto-categoria" label="Categoría" required className="" value={pf.categoria} onChange={(v) => setP({ categoria: v })} placeholder="Seleccionar categoría" opciones={CATEGORIAS} />
+            </ModalFormulario>
 
-            <Modal show={modalUsuario} onHide={() => admin.setModal(null)} size="lg" aria-labelledby="admin-usuario-modal-title">
-                <Form onSubmit={admin.guardarUsuario}>
-                    <Modal.Header closeButton>
-                        <Modal.Title id="admin-usuario-modal-title">{admin.modal?.modo === 'agregar' ? 'Agregar Usuario' : 'Modificar Usuario'}</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <Form.Group className="mb-3">
-                            <Form.Label>RUN (sin dígito verificador)</Form.Label>
-                            <Form.Control required value={admin.usuarioForm.run || ''} onChange={(event) => admin.setUsuarioForm({ ...admin.usuarioForm, run: event.target.value })} placeholder="Ingresar RUN" />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Nombre</Form.Label>
-                            <Form.Control required value={admin.usuarioForm.nombre || ''} onChange={(event) => admin.setUsuarioForm({ ...admin.usuarioForm, nombre: event.target.value })} placeholder="Ingresar nombre" />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Apellidos</Form.Label>
-                            <Form.Control required value={admin.usuarioForm.apellidos || ''} onChange={(event) => admin.setUsuarioForm({ ...admin.usuarioForm, apellidos: event.target.value })} placeholder="Ingresar apellidos" />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Correo electrónico</Form.Label>
-                            <Form.Control required type="email" value={admin.usuarioForm.email || ''} onChange={(event) => admin.setUsuarioForm({ ...admin.usuarioForm, email: event.target.value })} placeholder="Ingresar correo electrónico" />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Fecha de nacimiento</Form.Label>
-                            <Form.Control required type="date" value={admin.usuarioForm.fechaNac || ''} onChange={(event) => admin.setUsuarioForm({ ...admin.usuarioForm, fechaNac: event.target.value })} />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Rol</Form.Label>
-                            <Form.Select required value={admin.usuarioForm.rol || ''} onChange={(event) => admin.setUsuarioForm({ ...admin.usuarioForm, rol: event.target.value })}>
-                                <option value="">Seleccionar rol</option>
-                                {roles.map(({ valor, etiqueta }) => <option key={valor} value={valor}>{etiqueta}</option>)}
-                            </Form.Select>
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Región</Form.Label>
-                            <Form.Select required value={admin.usuarioForm.region || ''} onChange={(event) => admin.setUsuarioForm({ ...admin.usuarioForm, region: event.target.value, comuna: '' })}>
-                                <option value="">Seleccionar región</option>
-                                {REGIONES.map((region) => <option key={region} value={region}>{region}</option>)}
-                            </Form.Select>
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Comuna</Form.Label>
-                            <Form.Select required value={admin.usuarioForm.comuna || ''} disabled={!admin.usuarioForm.region} onChange={(event) => admin.setUsuarioForm({ ...admin.usuarioForm, comuna: event.target.value })}>
-                                <option value="">{admin.usuarioForm.region ? 'Seleccionar comuna' : 'Primero selecciona una región'}</option>
-                                {(REGION_COMUNAS[admin.usuarioForm.region] ?? []).map((comuna) => <option key={comuna} value={comuna}>{comuna}</option>)}
-                            </Form.Select>
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Dirección</Form.Label>
-                            <Form.Control required value={admin.usuarioForm.direccion || ''} onChange={(event) => admin.setUsuarioForm({ ...admin.usuarioForm, direccion: event.target.value })} placeholder="Ingresar dirección" />
-                        </Form.Group>
-                        <Form.Group>
-                            <Form.Label>{admin.modal?.modo === 'agregar' ? 'Contraseña' : 'Nueva contraseña (opcional)'}</Form.Label>
-                            <Form.Control type="password" required={admin.modal?.modo === 'agregar'} value={admin.usuarioForm.password || ''} onChange={(event) => admin.setUsuarioForm({ ...admin.usuarioForm, password: event.target.value })} placeholder={admin.modal?.modo === 'agregar' ? 'Ingresar contraseña' : 'Dejar vacío para mantener la actual'} />
-                        </Form.Group>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button className="admin-action-button" variant="secondary" onClick={() => admin.setModal(null)}>Cancelar</Button>
-                        <Button className="admin-action-button" variant="primary" type="submit">Guardar</Button>
-                    </Modal.Footer>
-                </Form>
-            </Modal>
+            <ModalFormulario id="admin-usuario-modal" size="lg" show={admin.modal?.tipo === 'usuario'} onHide={cerrarModal} onSubmit={admin.guardarUsuario}
+                             titulo={esAgregar ? 'Agregar Usuario' : 'Modificar Usuario'}>
+                <Campo id="usuario-run" label="RUN (sin dígito verificador)" required maxLength={9} value={uf.run} onChange={(v) => setU({ run: v })} placeholder="Ingresar RUN" />
+                <Campo id="usuario-nombre" label="Nombre" required maxLength={30} value={uf.nombre} onChange={(v) => setU({ nombre: v })} placeholder="Ingresar nombre" />
+                <Campo id="usuario-apellidos" label="Apellidos" required maxLength={30} value={uf.apellidos} onChange={(v) => setU({ apellidos: v })} placeholder="Ingresar apellidos" />
+                <Campo id="usuario-email" label="Correo electrónico" required type="email" maxLength={40} value={uf.email} onChange={(v) => setU({ email: v })} placeholder="Ingresar correo electrónico" />
+                <Campo id="usuario-fecha" label="Fecha de nacimiento" required type="date" value={uf.fechaNac} onChange={(v) => setU({ fechaNac: v })} />
+                <CampoSelect id="usuario-rol" label="Rol" required value={uf.rol} onChange={(v) => setU({ rol: v })} placeholder="Seleccionar rol" opciones={ROLES} />
+                <CampoSelect id="usuario-region" label="Región" required value={uf.region} onChange={(v) => setU({ region: v, comuna: '' })} placeholder="Seleccionar región" opciones={REGIONES} />
+                <CampoSelect id="usuario-comuna" label="Comuna" required disabled={!uf.region} value={uf.comuna} onChange={(v) => setU({ comuna: v })}
+                             placeholder={uf.region ? 'Seleccionar comuna' : 'Primero selecciona una región'} opciones={REGION_COMUNAS[uf.region] ?? []} />
+                <Campo id="usuario-direccion" label="Dirección" required maxLength={300} value={uf.direccion} onChange={(v) => setU({ direccion: v })} placeholder="Ingresar dirección" />
+                <Campo id="usuario-password" className="" label={esAgregar ? 'Contraseña' : 'Nueva contraseña (opcional)'} type="password" maxLength={72} required={esAgregar}
+                       value={uf.password} onChange={(v) => setU({ password: v })}
+                       placeholder={esAgregar ? 'Ingresar contraseña' : 'Dejar vacío para mantener la actual'} />
+            </ModalFormulario>
 
-            <Modal show={modalCita} onHide={() => admin.setModal(null)} aria-labelledby="admin-cita-title">
-                <Form onSubmit={admin.guardarCita}>
-                    <Modal.Header closeButton>
-                        <Modal.Title id="admin-cita-title">Modificar Cita</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <Form.Group className="mb-3" controlId="cita-fecha">
-                            <Form.Label>Fecha</Form.Label>
-                            <Form.Control required type="date" value={admin.citaForm.fecha || ''} onChange={(event) => admin.setCitaForm({ ...admin.citaForm, fecha: event.target.value })} />
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="cita-hora">
-                            <Form.Label>Hora</Form.Label>
-                            <Form.Control required type="time" value={admin.citaForm.hora || ''} onChange={(event) => admin.setCitaForm({ ...admin.citaForm, hora: event.target.value })} />
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="cita-mascota">
-                            <Form.Label>Nombre mascota</Form.Label>
-                            <Form.Control required value={admin.citaForm.nombreMascota || ''} onChange={(event) => admin.setCitaForm({ ...admin.citaForm, nombreMascota: event.target.value })} />
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="cita-especie">
-                            <Form.Label>Especie</Form.Label>
-                            <Form.Select required value={admin.citaForm.especie || ''} onChange={(event) => admin.setCitaForm({ ...admin.citaForm, especie: event.target.value })}>
-                                <option value="">Seleccionar especie</option>
-                                {['Perro', 'Gato', 'Ave', 'Conejo'].map((especie) => <option key={especie} value={especie}>{especie}</option>)}
-                            </Form.Select>
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="cita-edad">
-                            <Form.Label>Edad</Form.Label>
-                            <Form.Control required type="number" min="0" step="1" value={admin.citaForm.edad ?? ''} onChange={(event) => admin.setCitaForm({ ...admin.citaForm, edad: event.target.value })} />
-                        </Form.Group>
-                        <Form.Group controlId="cita-tutor">
-                            <Form.Label>Nombre tutor</Form.Label>
-                            <Form.Control required value={admin.citaForm.nombreTutor || ''} onChange={(event) => admin.setCitaForm({ ...admin.citaForm, nombreTutor: event.target.value })} />
-                        </Form.Group>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button className="admin-action-button" variant="secondary" onClick={() => admin.setModal(null)}>Cancelar</Button>
-                        <Button className="admin-action-button" variant="primary" type="submit">Guardar cambios</Button>
-                    </Modal.Footer>
-                </Form>
-            </Modal>
+            <ModalFormulario id="admin-cita-modal" show={admin.modal?.tipo === 'cita'} onHide={cerrarModal} onSubmit={admin.guardarCita}
+                             titulo="Modificar Cita" textoGuardar="Guardar cambios">
+                <Campo id="cita-fecha" label="Fecha" required type="date" value={cf.fecha} onChange={(v) => setC({ fecha: v })} />
+                <Campo id="cita-hora" label="Hora" required type="time" value={cf.hora} onChange={(v) => setC({ hora: v })} />
+                <Campo id="cita-mascota" label="Nombre mascota" required value={cf.nombreMascota} onChange={(v) => setC({ nombreMascota: v })} />
+                <CampoSelect id="cita-especie" label="Especie" required value={cf.especie} onChange={(v) => setC({ especie: v })} placeholder="Seleccionar especie" opciones={ESPECIES} />
+                <Campo id="cita-edad" label="Edad" required type="number" min="0" step="1" value={cf.edad} onChange={(v) => setC({ edad: v })} />
+                <Campo id="cita-tutor" className="" label="Nombre tutor" required value={cf.nombreTutor} onChange={(v) => setC({ nombreTutor: v })} />
+            </ModalFormulario>
         </Container>
     )
 }

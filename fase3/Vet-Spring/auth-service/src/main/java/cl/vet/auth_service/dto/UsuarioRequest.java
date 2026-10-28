@@ -10,7 +10,7 @@ public record UsuarioRequest(
         @NotBlank @Size(max = 30) String apellidos,
         @NotBlank @Email @Size(max = 40) String email,
         @NotNull @Past LocalDate fechaNac,
-        @NotBlank @Size(max = 40) String region,
+        @NotBlank @Size(max = 60) String region,
         @NotBlank @Size(max = 30) String comuna,
         @NotBlank @Size(max = 300) String direccion,
         @NotNull Rol rol,

@@ -32,7 +32,7 @@ public class Usuario {
 
     private LocalDate fechaNac;
 
-    @Column(length = 40)
+    @Column(length = 60)
     private String region;
 
     @Column(length = 30)
