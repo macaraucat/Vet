@@ -3,9 +3,10 @@ import { Navigate } from 'react-router-dom'
 import { Container, Row, Col, Card, Form, Button, Alert, Nav } from 'react-bootstrap'
 import { useAuthContext } from '../context/AuthContext'
 import useFormulario from '../hooks/useFormulario'
-import { reglasLogin, reglasRegistro } from '../utils/validaciones'
+import { reglasLogin, reglasRegistro, REGIONES, REGION_COMUNAS } from '../utils/validaciones'
+
 const loginInicial = { email: '', pass: '' }
-const registroInicial = { run: '', nombre: '', email: '', fechaNac: '', comuna: '', direccion: '', pass: '', pass2: '' }
+const registroInicial = { run: '', nombre: '', apellidos: '', email: '', fechaNac: '', region: '', comuna: '', direccion: '', pass: '', pass2: '' }
 
 function Login() {
     const { usuario, login, registrar } = useAuthContext()
@@ -48,6 +49,9 @@ function Login() {
 
     const actualizarCampoRegistro = (event) => {
         setExito('')
+        if (event.target.name === 'region') {
+            actualizarRegistro({ target: { name: 'comuna', value: '' } })
+        }
         actualizarRegistro(event)
     }
 
@@ -107,7 +111,7 @@ function Login() {
                                             <Form.Control.Feedback type="invalid">{erroresRegistro.nombre}</Form.Control.Feedback>
                                         </Form.Group>
 
-                                        <Form.Group className="mb-3" controlId="registro-epellidos">
+                                        <Form.Group className="mb-3" controlId="registro-apellidos">
                                             <Form.Label><b>Apellidos</b></Form.Label>
                                             <Form.Control type="text" name="apellidos" placeholder="Ingresar apellidos" value={registro.apellidos} onChange={actualizarCampoRegistro} isInvalid={!!erroresRegistro.apellidos}/>
                                             <Form.Control.Feedback type="invalid">{erroresRegistro.apellidos}</Form.Control.Feedback>
@@ -125,18 +129,24 @@ function Login() {
                                             <Form.Control.Feedback type="invalid">{erroresRegistro.fechaNac}</Form.Control.Feedback>
                                         </Form.Group>
 
+                                        <Form.Group className="mb-3" controlId="registro-region">
+                                            <Form.Label><b>Región</b></Form.Label>
+                                            <Form.Select name="region" value={registro.region} onChange={actualizarCampoRegistro} isInvalid={!!erroresRegistro.region}>
+                                                <option value="" disabled>Seleccionar región</option>
+                                                {REGIONES.map((region) => (
+                                                    <option key={region} value={region}>{region}</option>
+                                                ))}
+                                            </Form.Select>
+                                            <Form.Control.Feedback type="invalid">{erroresRegistro.region}</Form.Control.Feedback>
+                                        </Form.Group>
+
                                         <Form.Group className="mb-3" controlId="registro-comuna">
                                             <Form.Label><b>Comuna</b></Form.Label>
-                                            <Form.Select name="comuna" value={registro.comuna} onChange={actualizarCampoRegistro} isInvalid={!!erroresRegistro.comuna}>
-                                                <option value="" disabled>Seleccionar comuna</option>
-                                                <option value="Rancagua">Rancagua</option>
-                                                <option value="San Fernando">San Fernando</option>
-                                                <option value="Rengo">Rengo</option>
-                                                <option value="San Vicente de Tagua Tagua">San Vicente de Tagua Tagua</option>
-                                                <option value="Santa Cruz">Santa Cruz</option>
-                                                <option value="Chimbarongo">Chimbarongo</option>
-                                                <option value="Graneros">Graneros</option>
-                                                <option value="Machalí">Machalí</option>
+                                            <Form.Select name="comuna" value={registro.comuna} onChange={actualizarCampoRegistro} isInvalid={!!erroresRegistro.comuna} disabled={!registro.region}>
+                                                <option value="" disabled>{registro.region ? 'Seleccionar comuna' : 'Primero selecciona una región'}</option>
+                                                {(REGION_COMUNAS[registro.region] ?? []).map((comuna) => (
+                                                    <option key={comuna} value={comuna}>{comuna}</option>
+                                                ))}
                                             </Form.Select>
                                             <Form.Control.Feedback type="invalid">{erroresRegistro.comuna}</Form.Control.Feedback>
                                         </Form.Group>

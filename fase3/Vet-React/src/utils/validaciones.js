@@ -1,10 +1,36 @@
 const dominiosPermitidos = ['@duoc.cl', '@profesor.duoc.cl', '@gmail.com']
 
+export const REGION_COMUNAS = {
+    'Arica y Parinacota': ['Arica', 'Camarones', 'Putre', 'General Lagos'],
+    'Tarapacá': ['Iquique', 'Alto Hospicio', 'Pozo Almonte', 'Huara', 'Pica', 'Camiña'],
+    'Antofagasta': ['Antofagasta', 'Calama', 'Tocopilla', 'Mejillones', 'Taltal', 'San Pedro de Atacama'],
+    'Atacama': ['Copiapó', 'Vallenar', 'Caldera', 'Chañaral', 'Tierra Amarilla', 'Alto del Carmen'],
+    'Coquimbo': ['La Serena', 'Coquimbo', 'Ovalle', 'Vicuña', 'Illapel', 'Salamanca', 'Los Vilos', 'Monte Patria'],
+    'Valparaíso': ['Valparaíso', 'Viña del Mar', 'Quilpué', 'Villa Alemana', 'San Antonio', 'Quillota', 'Los Andes', 'San Felipe'],
+    'Metropolitana de Santiago': ['Santiago', 'Puente Alto', 'Maipú', 'Las Condes', 'San Bernardo', 'Melipilla', 'Colina', 'Talagante'],
+    "Libertador General Bernardo O'Higgins": ['Rancagua', 'San Fernando', 'Rengo', 'San Vicente de Tagua Tagua', 'Santa Cruz', 'Chimbarongo', 'Graneros', 'Machalí'],
+    'Maule': ['Talca', 'Curicó', 'Linares', 'Constitución', 'Parral', 'San Clemente', 'Molina', 'Cauquenes'],
+    'Ñuble': ['Chillán', 'Chillán Viejo', 'San Carlos', 'Bulnes', 'Yungay', 'Coihueco', 'Quirihue', 'Pinto'],
+    'Biobío': ['Concepción', 'Talcahuano', 'Coronel', 'Los Ángeles', 'Chiguayante', 'San Pedro de la Paz', 'Lota', 'Arauco'],
+    'La Araucanía': ['Temuco', 'Padre Las Casas', 'Villarrica', 'Pucón', 'Angol', 'Collipulli', 'Lautaro', 'Victoria'],
+    'Los Ríos': ['Valdivia', 'La Unión', 'Río Bueno', 'Paillaco', 'Panguipulli', 'Lanco', 'Mariquina', 'Lago Ranco'],
+    'Los Lagos': ['Puerto Montt', 'Osorno', 'Puerto Varas', 'Ancud', 'Castro', 'Frutillar', 'Purranque', 'Quellón'],
+    'Aysén': ['Coyhaique', 'Puerto Aysén', 'Puerto Cisnes', 'Chile Chico', 'Cochrane', 'Tortel'],
+    'Magallanes y la Antártica Chilena': ['Punta Arenas', 'Puerto Natales', 'Porvenir', 'Torres del Paine', 'Primavera', 'San Gregorio'],
+}
+
+export const REGIONES = Object.keys(REGION_COMUNAS)
+
 const requerido = (mensaje) => (v) => (v.trim() ? '' : mensaje)
 const maximo = (n) => (v) => (v.length <= n ? '' : `Máximo ${n} caracteres.`)
 const entre = (min, max, mensaje) => (v) => (v.length >= min && v.length <= max ? '' : mensaje)
 const patron = (regex, mensaje) => (v) => (regex.test(v.trim().toUpperCase()) ? '' : mensaje)
 const igualA = (otroCampo, mensaje) => (v, todos) => (v === todos[otroCampo] ? '' : mensaje)
+
+const comunaDeRegion = (v, todos) =>
+    (REGION_COMUNAS[todos.region] || []).includes(v)
+        ? ''
+        : 'La comuna seleccionada no pertenece a la región elegida.'
 
 const correoPermitido = (v) =>
     dominiosPermitidos.some((d) => v.trim().toLowerCase().endsWith(d))
@@ -38,10 +64,11 @@ export const reglasLogin = { email, pass }
 export const reglasRegistro = {
     run: [patron(/^[0-9]{7,8}[0-9K]$/, 'Ingrese un RUN válido sin puntos ni guion (ej: 19011022K).')],
     nombre: [requerido('El nombre es obligatorio.'), maximo(30)],
-    apellidos: [requerido('Los apellidos son obligatorios'), maximo(30)].
+    apellidos: [requerido('Los apellidos son obligatorios'), maximo(30)],
     email,
     fechaNac: [requerido('La fecha de nacimiento es obligatoria.'), mayorDeEdad(18)],
-    comuna: [requerido('Selecciona una comuna.')],
+    region: [requerido('Selecciona una región.')],
+    comuna: [requerido('Selecciona una comuna.'), comunaDeRegion],
     direccion: [requerido('La dirección es obligatoria.'), maximo(300)],
     pass,
     pass2: [igualA('pass', 'Las contraseñas no coinciden.')],
