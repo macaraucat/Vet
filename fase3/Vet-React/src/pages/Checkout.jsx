@@ -39,7 +39,19 @@ function Checkout() {
     const esRetiro = datos.entrega === "Retiro en tienda";
 
     function cambiar(e) {
-        setDatos({ ...datos, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+
+        if (name === "region") {
+            setDatos((prev) => ({ ...prev, region: value, comuna: "" }));
+            setErrores((prev) => {
+                const restantes = { ...prev };
+                delete restantes.comuna;
+                return restantes;
+            });
+            return;
+        }
+
+        setDatos({ ...datos, [name]: value });
     }
 
     function pagar(e) {
