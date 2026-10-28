@@ -31,7 +31,7 @@ function Login() {
     const { valores: registro, errores: erroresRegistro, errorGeneral: errorRegistro, handleChange: actualizarRegistro, handleSubmit: enviarRegistro, limpiarErrores: limpiarErroresRegistro } = formularioRegistro
 
     if (usuario) {
-        const puedeAdministrar = ['Funcionario', 'Administrador'].includes(usuario.role)
+        const puedeAdministrar = ['FUNCIONARIO', 'ADMINISTRADOR'].includes(usuario.role)
         return <Navigate to={puedeAdministrar ? '/admin' : '/'} replace />
     }
 

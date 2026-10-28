@@ -2,11 +2,17 @@ import { useEffect, useState } from 'react'
 import { Alert, Badge, Button, Card, Col, Container, Form, Modal, Nav, Row, Stack, Table } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import { useAuthContext } from '../context/AuthContext'
+import { REGIONES, REGION_COMUNAS } from '../utils/validaciones'
 import useAdmin from '../hooks/useAdmin'
 
 const categorias = ['Antibióticos', 'Antiparasitarios', 'Antiinflamatorios', 'Dermatología', 'Digestivo', 'Cardíaco', 'Analgésicos', 'Vacunas', 'Suplementos', ]
 const precioCLP = new Intl.NumberFormat('es-CL')
-const roles = ['Administrador', 'Funcionario', 'Dueño de mascota']
+const roles = [
+    { valor: 'ADMINISTRADOR', etiqueta: 'Administrador' },
+    { valor: 'FUNCIONARIO', etiqueta: 'Funcionario' },
+    { valor: 'CLIENTE', etiqueta: 'Dueño de mascota' },
+]
+
 const secciones = [
     { id: 'productos', label: 'Gestión de Productos' },
     { id: 'usuarios', label: 'Gestión de Usuarios' },
@@ -17,19 +23,19 @@ const secciones = [
 function Admin() {
     const { usuario } = useAuthContext()
     const navigate = useNavigate()
-    const esFuncionario = usuario?.role === 'Funcionario'
+    const esFuncionario = usuario?.role === 'FUNCIONARIO'
     const [tabActual, setTabActual] = useState('productos')
     const admin = useAdmin()
 
     useEffect(() => {
         if (!usuario) {
             navigate('/login', { replace: true })
-        } else if (!['Funcionario', 'Administrador'].includes(usuario.role)) {
+        } else if (!['FUNCIONARIO', 'ADMINISTRADOR'].includes(usuario.role)) {
             navigate('/', { replace: true })
         }
     }, [navigate, usuario])
 
-    if (!usuario || !['Funcionario', 'Administrador'].includes(usuario.role)) return null
+    if (!usuario || !['FUNCIONARIO', 'ADMINISTRADOR'].includes(usuario.role)) return null
 
     const modalProducto = admin.modal?.tipo === 'producto'
     const modalUsuario = admin.modal?.tipo === 'usuario'
@@ -58,194 +64,194 @@ function Admin() {
                 </Col>
 
                 <Col xs={12} md={9} xl={10} className="admin-main-content">
-                {admin.feedback && <Alert variant={admin.feedback.variant} dismissible onClose={() => admin.setFeedback(null)}>{admin.feedback.message}</Alert>}
+                    {admin.feedback && <Alert variant={admin.feedback.variant} dismissible onClose={() => admin.setFeedback(null)}>{admin.feedback.message}</Alert>}
 
-                {tabActual === 'productos' && (
-                    <section aria-labelledby="admin-productos-title">
-                        <Card className="shadow-sm">
-                            <Card.Header className="bg-white border-0 pb-0">
-                                <Card.Title as="h2" id="admin-productos-title" className="h4 text-success mb-0">Gestión de Productos</Card.Title>
-                            </Card.Header>
-                            <Card.Body>
-                                <Stack direction="horizontal" gap={2} className="admin-actions mb-3">
-                                    <Button className="admin-action-button" variant="success" onClick={() => admin.abrirProducto('agregar')}>+ Agregar</Button>
-                                    <Button className="admin-action-button" variant="warning" disabled={admin.productoSeleccionado === null} onClick={() => admin.abrirProducto('modificar')}>Modificar</Button>
-                                    <Button className="admin-action-button" variant="danger" disabled={admin.productoSeleccionado === null} onClick={() => {
-                                        if (window.confirm('¿Eliminar el producto seleccionado? Esta acción no se puede deshacer.')) {
-                                            admin.eliminarProducto()
-                                        }
-                                    }}>Eliminar</Button>
-                                </Stack>
-                            <Table bordered hover responsive className="align-middle mb-0">
-                                <thead>
-                                    <tr>
-                                        <th className="text-center"><span className="visually-hidden">Seleccionar un producto</span></th>
-                                        <th>SKU</th>
-                                        <th>Nombre</th>
-                                        <th>Descripción (opcional)</th>
-                                        <th>Precio</th>
-                                        <th>Stock</th>
-                                        <th>Categoría</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {admin.productosAdmin.map((producto) => (
-                                        <tr key={producto.sku}>
-                                            <td className="text-center">
-                                                <Form.Check
-                                                    type="radio"
-                                                    name="producto-seleccionado"
-                                                    aria-label={`Seleccionar ${producto.nombre}`}
-                                                    className="d-flex justify-content-center m-0"
-                                                    checked={admin.productoSeleccionado === producto.sku}
-                                                    onChange={() => admin.setProductoSeleccionado(producto.sku)}
-                                                />
-                                            </td>
-                                            <td>{producto.sku}</td>
-                                            <td>{producto.nombre}</td>
-                                            <td>{producto.descripcion}</td>
-                                            <td>${precioCLP.format(producto.precio)}</td>
-                                            <td>{producto.stock}</td>
-                                            <td>{producto.categoria}</td>
+                    {tabActual === 'productos' && (
+                        <section aria-labelledby="admin-productos-title">
+                            <Card className="shadow-sm">
+                                <Card.Header className="bg-white border-0 pb-0">
+                                    <Card.Title as="h2" id="admin-productos-title" className="h4 text-success mb-0">Gestión de Productos</Card.Title>
+                                </Card.Header>
+                                <Card.Body>
+                                    <Stack direction="horizontal" gap={2} className="admin-actions mb-3">
+                                        <Button className="admin-action-button" variant="success" onClick={() => admin.abrirProducto('agregar')}>+ Agregar</Button>
+                                        <Button className="admin-action-button" variant="warning" disabled={admin.productoSeleccionado === null} onClick={() => admin.abrirProducto('modificar')}>Modificar</Button>
+                                        <Button className="admin-action-button" variant="danger" disabled={admin.productoSeleccionado === null} onClick={() => {
+                                            if (window.confirm('¿Eliminar el producto seleccionado? Esta acción no se puede deshacer.')) {
+                                                admin.eliminarProducto()
+                                            }
+                                        }}>Eliminar</Button>
+                                    </Stack>
+                                    <Table bordered hover responsive className="align-middle mb-0">
+                                        <thead>
+                                        <tr>
+                                            <th className="text-center"><span className="visually-hidden">Seleccionar un producto</span></th>
+                                            <th>SKU</th>
+                                            <th>Nombre</th>
+                                            <th>Descripción (opcional)</th>
+                                            <th>Precio</th>
+                                            <th>Stock</th>
+                                            <th>Categoría</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </Table>
-                            </Card.Body>
-                        </Card>
-                    </section>
-                )}
+                                        </thead>
+                                        <tbody>
+                                        {admin.productosAdmin.map((producto) => (
+                                            <tr key={producto.sku}>
+                                                <td className="text-center">
+                                                    <Form.Check
+                                                        type="radio"
+                                                        name="producto-seleccionado"
+                                                        aria-label={`Seleccionar ${producto.nombre}`}
+                                                        className="d-flex justify-content-center m-0"
+                                                        checked={admin.productoSeleccionado === producto.sku}
+                                                        onChange={() => admin.setProductoSeleccionado(producto.sku)}
+                                                    />
+                                                </td>
+                                                <td>{producto.sku}</td>
+                                                <td>{producto.nombre}</td>
+                                                <td>{producto.descripcion}</td>
+                                                <td>${precioCLP.format(producto.precio)}</td>
+                                                <td>{producto.stock}</td>
+                                                <td>{producto.categoria}</td>
+                                            </tr>
+                                        ))}
+                                        </tbody>
+                                    </Table>
+                                </Card.Body>
+                            </Card>
+                        </section>
+                    )}
 
-                {tabActual === 'usuarios' && !esFuncionario && (
-                    <section aria-labelledby="admin-usuarios-title">
-                        <Card className="shadow-sm">
-                            <Card.Header className="bg-white border-0 pb-0">
-                                <Card.Title as="h2" id="admin-usuarios-title" className="h4 text-success mb-0">Gestión de Usuarios</Card.Title>
-                            </Card.Header>
-                            <Card.Body>
-                                <Stack direction="horizontal" gap={2} className="admin-actions mb-3">
-                                    <Button className="admin-action-button" variant="success" onClick={() => admin.abrirUsuario('agregar')}>+ Agregar</Button>
-                                    <Button className="admin-action-button" variant="warning" disabled={admin.usuarioSeleccionado === null} onClick={() => admin.abrirUsuario('modificar')}>Modificar</Button>
-                                    <Button className="admin-action-button" variant="danger" disabled={admin.usuarioSeleccionado === null} onClick={() => {
-                                        if (window.confirm('¿Eliminar el usuario seleccionado? Esta acción no se puede deshacer.')) {
-                                            admin.eliminarUsuario()
-                                        }
-                                    }}>Eliminar</Button>
-                                </Stack>
-                            <Table bordered hover responsive className="align-middle mb-0">
-                                <thead>
-                                    <tr>
-                                        <th className="text-center"><span className="visually-hidden">Seleccionar un usuario</span></th>
-                                        <th>RUN</th>
-                                        <th>Nombre</th>
-                                        <th>Apellidos</th>
-                                        <th>Correo electrónico</th>
-                                        <th>Fecha de nacimiento</th>
-                                        <th>Rol</th>
-                                        <th>Comuna</th>
-                                        <th>Dirección</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {admin.usuarios.map((user) => (
-                                        <tr key={user.id}>
-                                            <td className="text-center">
-                                                <Form.Check
-                                                    type="radio"
-                                                    name="usuario-seleccionado"
-                                                    aria-label={`Seleccionar a ${user.nombre} ${user.apellidos}`}
-                                                    className="d-flex justify-content-center m-0"
-                                                    checked={admin.usuarioSeleccionado === user.id}
-                                                    onChange={() => admin.setUsuarioSeleccionado(user.id)}
-                                                />
-                                            </td>
-                                            <td>{user.run || '—'}</td>
-                                            <td>{user.nombre}</td>
-                                            <td>{user.apellidos}</td>
-                                            <td>{user.email || '—'}</td>
-                                            <td>{user.fechaNac?.split('-').reverse().join('-') || '—'}</td>
-                                            <td>{user.rol}</td>
-                                            <td>{user.comuna || '—'}</td>
-                                            <td>{user.direccion || '—'}</td>
+                    {tabActual === 'usuarios' && !esFuncionario && (
+                        <section aria-labelledby="admin-usuarios-title">
+                            <Card className="shadow-sm">
+                                <Card.Header className="bg-white border-0 pb-0">
+                                    <Card.Title as="h2" id="admin-usuarios-title" className="h4 text-success mb-0">Gestión de Usuarios</Card.Title>
+                                </Card.Header>
+                                <Card.Body>
+                                    <Stack direction="horizontal" gap={2} className="admin-actions mb-3">
+                                        <Button className="admin-action-button" variant="success" onClick={admin.agregarUsuario}>+ Agregar</Button>
+                                        <Button className="admin-action-button" variant="warning" disabled={admin.usuarioSeleccionado === null} onClick={admin.modificarUsuario}>Modificar</Button>
+                                        <Button className="admin-action-button" variant="danger" disabled={admin.usuarioSeleccionado === null} onClick={() => {
+                                            if (window.confirm('¿Eliminar el usuario seleccionado? Esta acción no se puede deshacer.')) {
+                                                admin.eliminarUsuario()
+                                            }
+                                        }}>Eliminar</Button>
+                                    </Stack>
+                                    <Table bordered hover responsive className="align-middle mb-0">
+                                        <thead>
+                                        <tr>
+                                            <th className="text-center"><span className="visually-hidden">Seleccionar un usuario</span></th>
+                                            <th>RUN</th>
+                                            <th>Nombre</th>
+                                            <th>Apellidos</th>
+                                            <th>Correo electrónico</th>
+                                            <th>Fecha de nacimiento</th>
+                                            <th>Rol</th>
+                                            <th>Comuna</th>
+                                            <th>Dirección</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </Table>
-                            </Card.Body>
-                        </Card>
-                    </section>
-                )}
+                                        </thead>
+                                        <tbody>
+                                        {admin.usuarios.map((user) => (
+                                            <tr key={user.id}>
+                                                <td className="text-center">
+                                                    <Form.Check
+                                                        type="radio"
+                                                        name="usuario-seleccionado"
+                                                        aria-label={`Seleccionar a ${user.nombre} ${user.apellidos}`}
+                                                        className="d-flex justify-content-center m-0"
+                                                        checked={admin.usuarioSeleccionado === user.id}
+                                                        onChange={() => admin.setUsuarioSeleccionado(user.id)}
+                                                    />
+                                                </td>
+                                                <td>{user.run || '—'}</td>
+                                                <td>{user.nombre}</td>
+                                                <td>{user.apellidos}</td>
+                                                <td>{user.email || '—'}</td>
+                                                <td>{user.fechaNac?.split('-').reverse().join('-') || '—'}</td>
+                                                <td>{user.rol}</td>
+                                                <td>{user.comuna || '—'}</td>
+                                                <td>{user.direccion || '—'}</td>
+                                            </tr>
+                                        ))}
+                                        </tbody>
+                                    </Table>
+                                </Card.Body>
+                            </Card>
+                        </section>
+                    )}
 
-                {tabActual === 'citas' && (
-                    <section aria-labelledby="admin-citas-title">
-                        <Card className="shadow-sm">
-                            <Card.Header className="bg-white border-0 pb-0">
-                                <Card.Title as="h2" id="admin-citas-title" className="h4 text-success mb-0">Gestión de Citas</Card.Title>
-                            </Card.Header>
-                            <Card.Body>
-                                <Stack direction="horizontal" gap={2} className="admin-actions mb-3">
-                                    <Button className="admin-action-button" variant="success" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Confirmada')}>Confirmar</Button>
-                                    <Button className="admin-action-button" variant="warning" disabled={admin.citaSeleccionada === null} onClick={admin.abrirCita}>Modificar</Button>
-                                    <Button className="admin-action-button" variant="danger" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Anulada')}>Anular</Button>
-                                </Stack>
-                            <Table bordered hover responsive className="align-middle mb-0">
-                                <thead>
-                                    <tr>
-                                        <th className="text-center"><span className="visually-hidden">Seleccionar una cita</span></th>
-                                        <th>Fecha</th>
-                                        <th>Hora</th>
-                                        <th>Nombre mascota</th>
-                                        <th>Especie</th>
-                                        <th>Edad</th>
-                                        <th>Nombre tutor</th>
-                                        <th>Estado cita</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {admin.citas.map((cita) => (
-                                        <tr key={cita.id}>
-                                            <td className="text-center">
-                                                <Form.Check
-                                                    type="radio"
-                                                    name="cita-seleccionada"
-                                                    aria-label={`Seleccionar cita de ${cita.nombreMascota}`}
-                                                    className="d-flex justify-content-center m-0"
-                                                    checked={admin.citaSeleccionada === cita.id}
-                                                    onChange={() => admin.setCitaSeleccionada(cita.id)}
-                                                />
-                                            </td>
-                                            <td>{cita.fecha?.split('-').reverse().join('-') || ''}</td>
-                                            <td>{cita.hora}</td>
-                                            <td>{cita.nombreMascota}</td>
-                                            <td>{cita.especie}</td>
-                                            <td>{cita.edad}</td>
-                                            <td>{cita.nombreTutor}</td>
-                                            <td>
-                                                <Badge bg={cita.estado === 'Confirmada' ? 'success' : cita.estado === 'Anulada' ? 'secondary' : 'warning'}>
-                                                    {cita.estado}
-                                                </Badge>
-                                            </td>
+                    {tabActual === 'citas' && (
+                        <section aria-labelledby="admin-citas-title">
+                            <Card className="shadow-sm">
+                                <Card.Header className="bg-white border-0 pb-0">
+                                    <Card.Title as="h2" id="admin-citas-title" className="h4 text-success mb-0">Gestión de Citas</Card.Title>
+                                </Card.Header>
+                                <Card.Body>
+                                    <Stack direction="horizontal" gap={2} className="admin-actions mb-3">
+                                        <Button className="admin-action-button" variant="success" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Confirmada')}>Confirmar</Button>
+                                        <Button className="admin-action-button" variant="warning" disabled={admin.citaSeleccionada === null} onClick={admin.abrirCita}>Modificar</Button>
+                                        <Button className="admin-action-button" variant="danger" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Anulada')}>Anular</Button>
+                                    </Stack>
+                                    <Table bordered hover responsive className="align-middle mb-0">
+                                        <thead>
+                                        <tr>
+                                            <th className="text-center"><span className="visually-hidden">Seleccionar una cita</span></th>
+                                            <th>Fecha</th>
+                                            <th>Hora</th>
+                                            <th>Nombre mascota</th>
+                                            <th>Especie</th>
+                                            <th>Edad</th>
+                                            <th>Nombre tutor</th>
+                                            <th>Estado cita</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </Table>
-                            </Card.Body>
-                        </Card>
-                    </section>
-                )}
+                                        </thead>
+                                        <tbody>
+                                        {admin.citas.map((cita) => (
+                                            <tr key={cita.id}>
+                                                <td className="text-center">
+                                                    <Form.Check
+                                                        type="radio"
+                                                        name="cita-seleccionada"
+                                                        aria-label={`Seleccionar cita de ${cita.nombreMascota}`}
+                                                        className="d-flex justify-content-center m-0"
+                                                        checked={admin.citaSeleccionada === cita.id}
+                                                        onChange={() => admin.setCitaSeleccionada(cita.id)}
+                                                    />
+                                                </td>
+                                                <td>{cita.fecha?.split('-').reverse().join('-') || ''}</td>
+                                                <td>{cita.hora}</td>
+                                                <td>{cita.nombreMascota}</td>
+                                                <td>{cita.especie}</td>
+                                                <td>{cita.edad}</td>
+                                                <td>{cita.nombreTutor}</td>
+                                                <td>
+                                                    <Badge bg={cita.estado === 'Confirmada' ? 'success' : cita.estado === 'Anulada' ? 'secondary' : 'warning'}>
+                                                        {cita.estado}
+                                                    </Badge>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        </tbody>
+                                    </Table>
+                                </Card.Body>
+                            </Card>
+                        </section>
+                    )}
 
-                {tabActual === 'mensajes' && (
-                    <section aria-labelledby="admin-mensajes-title">
-                        <Card className="shadow-sm">
-                            <Card.Header className="bg-white border-0">
-                                <Card.Title as="h2" id="admin-mensajes-title" className="h4 text-success mb-0">Mensajes</Card.Title>
-                            </Card.Header>
-                            <Card.Body>
-                                <Alert variant="info" className="mb-0">No hay mensajes nuevos por el momento.</Alert>
-                            </Card.Body>
-                        </Card>
-                    </section>
-                )}
+                    {tabActual === 'mensajes' && (
+                        <section aria-labelledby="admin-mensajes-title">
+                            <Card className="shadow-sm">
+                                <Card.Header className="bg-white border-0">
+                                    <Card.Title as="h2" id="admin-mensajes-title" className="h4 text-success mb-0">Mensajes</Card.Title>
+                                </Card.Header>
+                                <Card.Body>
+                                    <Alert variant="info" className="mb-0">No hay mensajes nuevos por el momento.</Alert>
+                                </Card.Body>
+                            </Card>
+                        </section>
+                    )}
                 </Col>
             </Row>
 
@@ -320,16 +326,30 @@ function Admin() {
                             <Form.Label>Rol</Form.Label>
                             <Form.Select required value={admin.usuarioForm.rol || ''} onChange={(event) => admin.setUsuarioForm({ ...admin.usuarioForm, rol: event.target.value })}>
                                 <option value="">Seleccionar rol</option>
-                                {roles.map((rol) => <option key={rol} value={rol}>{rol}</option>)}
+                                {roles.map(({ valor, etiqueta }) => <option key={valor} value={valor}>{etiqueta}</option>)}
                             </Form.Select>
                         </Form.Group>
                         <Form.Group className="mb-3">
-                            <Form.Label>Región y comuna</Form.Label>
-                            <Form.Control required value={admin.usuarioForm.comuna || ''} onChange={(event) => admin.setUsuarioForm({ ...admin.usuarioForm, comuna: event.target.value })} placeholder="Ej: O'Higgins - Rancagua" />
+                            <Form.Label>Región</Form.Label>
+                            <Form.Select required value={admin.usuarioForm.region || ''} onChange={(event) => admin.setUsuarioForm({ ...admin.usuarioForm, region: event.target.value, comuna: '' })}>
+                                <option value="">Seleccionar región</option>
+                                {REGIONES.map((region) => <option key={region} value={region}>{region}</option>)}
+                            </Form.Select>
                         </Form.Group>
-                        <Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Comuna</Form.Label>
+                            <Form.Select required value={admin.usuarioForm.comuna || ''} disabled={!admin.usuarioForm.region} onChange={(event) => admin.setUsuarioForm({ ...admin.usuarioForm, comuna: event.target.value })}>
+                                <option value="">{admin.usuarioForm.region ? 'Seleccionar comuna' : 'Primero selecciona una región'}</option>
+                                {(REGION_COMUNAS[admin.usuarioForm.region] ?? []).map((comuna) => <option key={comuna} value={comuna}>{comuna}</option>)}
+                            </Form.Select>
+                        </Form.Group>
+                        <Form.Group className="mb-3">
                             <Form.Label>Dirección</Form.Label>
                             <Form.Control required value={admin.usuarioForm.direccion || ''} onChange={(event) => admin.setUsuarioForm({ ...admin.usuarioForm, direccion: event.target.value })} placeholder="Ingresar dirección" />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>{admin.modal?.modo === 'agregar' ? 'Contraseña' : 'Nueva contraseña (opcional)'}</Form.Label>
+                            <Form.Control type="password" required={admin.modal?.modo === 'agregar'} value={admin.usuarioForm.password || ''} onChange={(event) => admin.setUsuarioForm({ ...admin.usuarioForm, password: event.target.value })} placeholder={admin.modal?.modo === 'agregar' ? 'Ingresar contraseña' : 'Dejar vacío para mantener la actual'} />
                         </Form.Group>
                     </Modal.Body>
                     <Modal.Footer>

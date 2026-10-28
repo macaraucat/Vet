@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { productos } from '../utils/productos'
+
+const API_URL = 'http://localhost:8080/auth/usuarios'
 
 const stockInicial = [45, 30, 28, 60, 40, 35, 80, 50, 55, 30, 25, 20, 18, 40, 35, 15, 22, 48, 60, 36, 30, 25]
 
@@ -12,14 +14,6 @@ const productosIniciales = productos.map((producto, index) => ({
     categoria: producto.categoria,
 }))
 
-const usuariosIniciales = [
-    { id: '154567823', run: '154567823', nombre: 'Sofía', apellidos: 'Astorga Zapata', email: 'sastorga@sanmarcos.cl', fechaNac: '1980-10-03', rol: 'Administrador', comuna: 'Machalí', direccion: 'Pasaje Los Nogales 12' },
-    { id: '152873490', run: '152873490', nombre: 'Laura', apellidos: 'Claro Hernández', email: 'lclaro@sanmarcos.cl', fechaNac: '1980-05-30', rol: 'Funcionario', comuna: 'Rancagua', direccion: 'Av. Cachapoal 780' },
-    { id: '162345893', run: '162345893', nombre: 'Carmen', apellidos: 'Martínez Larraín', email: 'cmartinez@sanmarcos.cl', fechaNac: '1985-12-20', rol: 'Funcionario', comuna: 'San Fernando', direccion: 'Calle Manuel Rodríguez 345' },
-    { id: '178901230', run: '178901230', nombre: 'Ignacio', apellidos: 'Solar Guzmán', email: 'isolar@sanmarcos.cl', fechaNac: '1990-08-15', rol: 'Funcionario', comuna: 'Rengo', direccion: 'Calle Arturo Prat 238' },
-    { id: '160803216', run: '145673216', nombre: 'Jorge', apellidos: 'Vial Peña', email: 'jvial@sanmarcos.cl', fechaNac: '1984-11-06', rol: 'Funcionario', comuna: 'Chépica', direccion: 'Pasaje Los Aromos 89' },
-]
-
 const citasIniciales = [
     { id: 1, fecha: '2026-10-15', hora: '10:00', nombreMascota: 'Luna', especie: 'Perro', raza: 'Golden Retriever', edad: 4, nombreTutor: 'Camila Rojas', estado: 'Pendiente' },
     { id: 2, fecha: '2026-10-16', hora: '11:00', nombreMascota: 'Michi', especie: 'Gato', raza: 'Doméstico de pelo corto', edad: 2, nombreTutor: 'Javier Soto', estado: 'Confirmada' },
@@ -30,7 +24,8 @@ const citasIniciales = [
 
 function useAdmin() {
     const [productosAdmin, setProductosAdmin] = useState(productosIniciales)
-    const [usuarios, setUsuarios] = useState(usuariosIniciales)
+    const [usuarios, setUsuarios] = useState([])
+    const [cargandoUsuarios, setCargandoUsuarios] = useState(true)
     const [citas, setCitas] = useState(citasIniciales)
     const [productoSeleccionado, setProductoSeleccionado] = useState(null)
     const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null)
@@ -94,64 +89,100 @@ function useAdmin() {
         setFeedback({ variant: 'success', message: 'Producto eliminado correctamente.' })
     }
 
-    function abrirUsuario(modo) {
-        if (modo === 'modificar') {
-            const seleccionado = usuarios.find((user) => user.id === usuarioSeleccionado)
-            if (!seleccionado) {
-                setFeedback({ variant: 'warning', message: 'Seleccione un único usuario para modificar.' })
-                return
-            }
-            setUsuarioForm({ ...seleccionado })
-        } else {
-            setUsuarioForm({ id: '', run: '', nombre: '', apellidos: '', email: '', fechaNac: '', rol: '', comuna: '', direccion: '' })
-        }
-        setFeedback(null)
-        setModal({
-            tipo: 'usuario',
-            modo,
-            ...(modo === 'modificar' ? { idOriginal: usuarioSeleccionado } : {}),
-        })
+    function authHeaders() {
+        const token = localStorage.getItem('token')
+        return token ? { Authorization: `Bearer ${token}` } : {}
     }
 
-    function guardarUsuario(event) {
+    async function cargarUsuarios() {
+        setCargandoUsuarios(true)
+        try {
+            const res = await fetch(API_URL, { headers: authHeaders() })
+            if (!res.ok) throw new Error('Error al consultar usuarios')
+            const datos = await res.json()
+            setUsuarios(datos)
+        } catch {
+            setFeedback({ variant: 'danger', message: 'No se pudieron cargar los usuarios desde el servidor.' })
+        } finally {
+            setCargandoUsuarios(false)
+        }
+    }
+
+    useEffect(() => {
+        cargarUsuarios()
+    }, [])
+
+    function agregarUsuario() {
+        setUsuarioForm({ run: '', nombre: '', apellidos: '', email: '', fechaNac: '', region: '', comuna: '', direccion: '', rol: '', password: '' })
+        setFeedback(null)
+        setModal({ tipo: 'usuario', modo: 'agregar' })
+    }
+
+    function modificarUsuario() {
+        const seleccionado = usuarios.find((user) => user.id === usuarioSeleccionado)
+        if (!seleccionado) {
+            setFeedback({ variant: 'warning', message: 'Seleccione un único usuario para modificar.' })
+            return
+        }
+        setUsuarioForm({ ...seleccionado, password: '' })
+        setFeedback(null)
+        setModal({ tipo: 'usuario', modo: 'modificar', idOriginal: usuarioSeleccionado })
+    }
+
+    async function guardarUsuario(event) {
         event.preventDefault()
-        const datos = {
-            ...usuarioForm,
-            id: modal.modo === 'modificar' ? modal.idOriginal : usuarioForm.run.trim(),
+        const esModificar = modal.modo === 'modificar'
+        const body = {
             run: usuarioForm.run.trim(),
             nombre: usuarioForm.nombre.trim(),
             apellidos: usuarioForm.apellidos.trim(),
             email: usuarioForm.email.trim(),
+            fechaNac: usuarioForm.fechaNac,
+            region: usuarioForm.region,
             comuna: usuarioForm.comuna.trim(),
             direccion: usuarioForm.direccion.trim(),
-        }
-        const runEnUso = usuarios.some((user) => user.run === datos.run && (modal.modo === 'agregar' || user.id !== modal.idOriginal))
-        if (runEnUso) {
-            setFeedback({ variant: 'warning', message: 'Ya existe un usuario con ese RUN.' })
-            return
-        }
-        const correoEnUso = usuarios.some((user) => user.email.toLowerCase() === datos.email.toLowerCase() && (modal.modo === 'agregar' || user.id !== modal.idOriginal))
-        if (correoEnUso) {
-            setFeedback({ variant: 'warning', message: 'Ya existe un usuario con ese correo electrónico.' })
-            return
+            rol: usuarioForm.rol,
+            password: usuarioForm.password || '',
         }
 
-        if (modal.modo === 'agregar') {
-            setUsuarios((actuales) => [...actuales, datos])
-            setFeedback({ variant: 'success', message: 'Usuario agregado correctamente.' })
-        } else {
-            setUsuarios((actuales) => actuales.map((user) => user.id === modal.idOriginal ? datos : user))
-            setFeedback({ variant: 'success', message: 'Usuario modificado correctamente.' })
+        try {
+            const res = await fetch(esModificar ? `${API_URL}/${modal.idOriginal}` : API_URL, {
+                method: esModificar ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json', ...authHeaders() },
+                body: JSON.stringify(body),
+            })
+            if (!res.ok) {
+                const error = await res.json().catch(() => null)
+                setFeedback({ variant: 'danger', message: error?.message || 'No se pudo guardar el usuario.' })
+                return
+            }
+            setFeedback({ variant: 'success', message: esModificar ? 'Usuario modificado correctamente.' : 'Usuario agregado correctamente.' })
+            setUsuarioSeleccionado(null)
+            setModal(null)
+            await cargarUsuarios()
+        } catch {
+            setFeedback({ variant: 'danger', message: 'Error de conexión con el servidor.' })
         }
-        setUsuarioSeleccionado(null)
-        setModal(null)
     }
 
-    function eliminarUsuario() {
+    async function eliminarUsuario() {
         if (usuarioSeleccionado === null) return
-        setUsuarios((actuales) => actuales.filter((user) => user.id !== usuarioSeleccionado))
-        setUsuarioSeleccionado(null)
-        setFeedback({ variant: 'success', message: 'Usuario eliminado correctamente.' })
+        try {
+            const res = await fetch(`${API_URL}/${usuarioSeleccionado}`, {
+                method: 'DELETE',
+                headers: authHeaders(),
+            })
+            if (!res.ok) {
+                const error = await res.json().catch(() => null)
+                setFeedback({ variant: 'danger', message: error?.message || 'No se pudo eliminar el usuario.' })
+                return
+            }
+            setUsuarioSeleccionado(null)
+            setFeedback({ variant: 'success', message: 'Usuario eliminado correctamente.' })
+            await cargarUsuarios()
+        } catch {
+            setFeedback({ variant: 'danger', message: 'Error de conexión con el servidor.' })
+        }
     }
 
     function abrirCita() {
@@ -191,6 +222,8 @@ function useAdmin() {
     return {
         productosAdmin,
         usuarios,
+        cargandoUsuarios,
+        cargarUsuarios,
         citas,
         productoSeleccionado,
         setProductoSeleccionado,
@@ -211,9 +244,10 @@ function useAdmin() {
         abrirProducto,
         guardarProducto,
         eliminarProducto,
-        abrirUsuario,
+        agregarUsuario,
         guardarUsuario,
         eliminarUsuario,
+        modificarUsuario,
         abrirCita,
         guardarCita,
         actualizarEstadoCita,
