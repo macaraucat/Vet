@@ -8,10 +8,9 @@ import cl.vet.auth_service.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @org.springframework.web.bind.annotation.RestController
 @RequestMapping("/auth")
@@ -26,7 +25,13 @@ public class AuthController {
 
     @PostMapping("/registro")
     @ResponseStatus(HttpStatus.CREATED)
-    public UsuarioResponse registro(@Valid @RequestBody RegistroRequest req) {
+    public UsuarioResponse registro(@Valid @RequestBody RegistroRequest req){
         return service.registrar(req);
     }
+
+    @GetMapping("/usuarios")
+    public List<UsuarioResponse> listarUsuarios(){
+        return service.listarUsuarios();
+    }
+
 }

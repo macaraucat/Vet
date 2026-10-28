@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -27,7 +29,7 @@ public class AuthService {
         return new AuthResponse(jwt.generarToken(u), "Bearer", UsuarioResponse.from(u));
     }
 
-    public UsuarioResponse registrar(RegistroRequest req) {
+    public UsuarioResponse registrar(RegistroRequest req){
         if (repo.existsByEmailIgnoreCase(req.email()))
             throw new InvalidStateException("Este correo electrónico ya está registrado.");
         if (repo.existsByRun(req.run()))
@@ -45,6 +47,10 @@ public class AuthService {
         u.setPassword(encoder.encode(req.password()));
         u.setRol(Rol.CLIENTE);
         return UsuarioResponse.from(repo.save(u));
+    }
+
+    public List<UsuarioResponse> listarUsuarios(){
+        return repo.findAll().stream().map(UsuarioResponse::from).toList();
     }
 
 }
