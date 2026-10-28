@@ -1,0 +1,6 @@
+/home/macarau/Descargas/Vet/fase3/Vet-Spring/common/src/main/java/cl/vet/common/exception/BadRequestException.java
+/home/macarau/Descargas/Vet/fase3/Vet-Spring/common/src/main/java/cl/vet/common/exception/ErrorResponse.java
+/home/macarau/Descargas/Vet/fase3/Vet-Spring/common/src/main/java/cl/vet/common/exception/GlobalExceptionHandler.java
+/home/macarau/Descargas/Vet/fase3/Vet-Spring/common/src/main/java/cl/vet/common/exception/InvalidStateException.java
+/home/macarau/Descargas/Vet/fase3/Vet-Spring/common/src/main/java/cl/vet/common/exception/ResourceNotFoundException.java
+/home/macarau/Descargas/Vet/fase3/Vet-Spring/common/src/main/java/cl/vet/common/exception/UnauthorizedException.java

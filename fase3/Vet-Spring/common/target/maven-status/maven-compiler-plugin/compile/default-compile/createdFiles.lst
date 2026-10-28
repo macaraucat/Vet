@@ -1,0 +1,6 @@
+cl/vet/common/exception/GlobalExceptionHandler.class
+cl/vet/common/exception/ResourceNotFoundException.class
+cl/vet/common/exception/InvalidStateException.class
+cl/vet/common/exception/BadRequestException.class
+cl/vet/common/exception/ErrorResponse.class
+cl/vet/common/exception/UnauthorizedException.class
