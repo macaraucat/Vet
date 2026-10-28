@@ -87,7 +87,7 @@ export const reglasCheckout = {
     calle: [requerido('La calle es obligatoria.'), maximo(100)],
     departamento: [maximo(20)],
     region: [requerido('Selecciona una región.')],
-    comuna: [requerido('La comuna es obligatoria.'), maximo(50)],
+    comuna: [requerido('La comuna es obligatoria.'), comunaDeRegion],
     indicaciones: [maximo(300)],
 }
 

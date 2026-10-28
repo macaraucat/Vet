@@ -221,10 +221,10 @@ function Checkout() {
                                     <Form.Group className="mb-3">
                                         <Form.Label>Región</Form.Label>
                                         <Form.Select name="region" value={datos.region} onChange={cambiar} isInvalid={!!errores.region}>
-                                            <option value="">Selecciona...</option>
-                                            <option>Región del Libertador General Bernardo O'Higgins</option>
-                                            <option>Región Metropolitana de Santiago</option>
-                                            <option>Región de Valparaíso</option>
+                                            <option value="">Seleccionar región</option>
+                                            {REGIONES.map((region) => (
+                                                <option key={region} value={region}>{region}</option>
+                                            ))}
                                         </Form.Select>
                                         <Form.Control.Feedback type="invalid">{errores.region}</Form.Control.Feedback>
                                     </Form.Group>
@@ -232,7 +232,12 @@ function Checkout() {
                                 <Col md={6}>
                                     <Form.Group className="mb-3">
                                         <Form.Label>Comuna</Form.Label>
-                                        <Form.Control name="comuna" value={datos.comuna} onChange={cambiar} isInvalid={!!errores.comuna} />
+                                        <Form.Select name="comuna" value={datos.comuna} onChange={cambiar} isInvalid={!!errores.comuna} disabled={!datos.region}>
+                                            <option value="">{datos.region ? "Seleccionar comuna" : "Primero selecciona una región"}</option>
+                                            {(REGION_COMUNAS[datos.region] ?? []).map((comuna) => (
+                                                <option key={comuna} value={comuna}>{comuna}</option>
+                                            ))}
+                                        </Form.Select>
                                         <Form.Control.Feedback type="invalid">{errores.comuna}</Form.Control.Feedback>
                                     </Form.Group>
                                 </Col>
