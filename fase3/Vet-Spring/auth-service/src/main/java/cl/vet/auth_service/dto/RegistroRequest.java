@@ -13,5 +13,5 @@ public record RegistroRequest(
         @NotBlank @Size(max = 40) String region,
         @NotBlank @Size(max = 30) String comuna,
         @NotBlank @Size(max = 300) String direccion,
-        @Size(min = 4, max = 10) String password) {
+        @NotBlank @Size(min = 4, max = 72) String password) {
 }

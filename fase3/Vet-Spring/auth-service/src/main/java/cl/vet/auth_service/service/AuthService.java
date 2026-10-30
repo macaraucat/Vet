@@ -1,13 +1,9 @@
 package cl.vet.auth_service.service;
 
-import cl.vet.auth_service.dto.AuthResponse;
-import cl.vet.auth_service.dto.LoginRequest;
-import cl.vet.auth_service.dto.RegistroRequest;
-import cl.vet.auth_service.dto.UsuarioResponse;
-import cl.vet.common.exception.*;
-import cl.vet.auth_service.model.Rol;
-import cl.vet.auth_service.model.Usuario;
-import cl.vet.auth_service.repository.UsuarioRepository;
+import cl.vet.auth_service.client.UsuarioClient;
+import cl.vet.auth_service.dto.*;
+import cl.vet.common.exception.UnauthorizedException;
+import cl.vet.common.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,34 +11,31 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    private final UsuarioRepository repo;
+
+    private static final String TIPO_TOKEN = "Bearer";
+
+    private final UsuarioClient usuario;
     private final PasswordEncoder encoder;
     private final JwtService jwt;
 
-    public AuthResponse login(LoginRequest req){
-        Usuario u = repo.findByEmailIgnoreCase(req.email().trim())
-                .filter(x -> x.isActivo() && encoder.matches(req.password(), x.getPassword()))
-                .orElseThrow(() -> new UnauthorizedException("Correo o contraseña incorrectos."));
-        return new AuthResponse(jwt.generarToken(u), "Bearer", UsuarioResponse.from(u));
+    public AuthResponse login(LoginRequest request) {
+        UsuarioClientDTO u = usuario.findByEmail(request.email())
+                .orElseThrow(() -> new UnauthorizedException("Credenciales inválidas"));
+
+        if (!encoder.matches(request.password(), u.passwordHash())) {
+            throw new UnauthorizedException("Credenciales inválidas");
+        }
+        return emitirToken(u);
     }
 
-    public UsuarioResponse registrar(RegistroRequest req){
-        if (repo.existsByEmailIgnoreCase(req.email()))
-            throw new InvalidStateException("Este correo electrónico ya está registrado.");
-        if (repo.existsByRun(req.run()))
-            throw new InvalidStateException("Este RUN ya está registrado.");
+    public AuthResponse registrar(RegistroRequest req) {
+        UsuarioClientRequest nuevo = UsuarioClientRequest.desde(req, encoder.encode(req.password()));
+        UsuarioClientDTO creado = usuario.crear(nuevo);
+        return emitirToken(creado);
+    }
 
-        Usuario u = new Usuario();
-        u.setRun(req.run().toUpperCase());
-        u.setNombre(req.nombre().trim());
-        u.setApellidos(req.apellidos().trim());
-        u.setEmail(req.email().trim().toLowerCase());
-        u.setFechaNac(req.fechaNac());
-        u.setRegion(req.region());
-        u.setComuna(req.comuna());
-        u.setDireccion(req.direccion().trim());
-        u.setPassword(encoder.encode(req.password()));
-        u.setRol(Rol.CLIENTE);
-        return UsuarioResponse.from(repo.save(u));
+    private AuthResponse emitirToken(UsuarioClientDTO u) {
+        String token = jwt.generarToken(u.email(), u.id(), u.rol().name());
+        return new AuthResponse(token, TIPO_TOKEN);
     }
 }
