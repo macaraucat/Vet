@@ -1,41 +1,26 @@
 package cl.vet.auth_service.client;
 
-import cl.vet.auth_service.dto.UsuarioClientDTO;
-import cl.vet.auth_service.dto.UsuarioClientRequest;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
+import cl.vet.auth_service.config.UserFeignConfig;
+import cl.vet.common.dto.UsuarioInternoRequest;
+import cl.vet.common.dto.UsuarioInternoResponse;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import java.time.Duration;
 import java.util.Optional;
 
-@Component
-public class UsuarioClient {
+@FeignClient(
+        name = "user-service",
+        url = "${user.service.url}",
+        configuration = UserFeignConfig.class,
+        dismiss404 = true)
+public interface UsuarioClient {
 
-    private final WebClient webClient;
+    @GetMapping("/api/usuarios/internal/email/{email}")
+    Optional<UsuarioInternoResponse> buscarPorEmail(@PathVariable("email") String email);
 
-    public UsuarioClient(@Qualifier("userWebClient") WebClient webClient) {
-        this.webClient = webClient;
-    }
-
-    public Optional<UsuarioClientDTO> findByEmail(String email) {
-        return webClient.get()
-                .uri("/api/usuarios/internal/email/{email}", email)
-                .retrieve()
-                .bodyToMono(UsuarioClientDTO.class)
-                .onErrorComplete(WebClientResponseException.NotFound.class)   // 404 → Mono vacío
-                .map(Optional::of)
-                .defaultIfEmpty(Optional.empty())
-                .block(Duration.ofSeconds(2));
-    }
-
-    public UsuarioClientDTO crear(UsuarioClientRequest request) {
-        return webClient.post()
-                .uri("/api/usuarios/internal")
-                .bodyValue(request)
-                .retrieve()
-                .bodyToMono(UsuarioClientDTO.class)
-                .block(Duration.ofSeconds(3));
-    }
+    @PostMapping("/api/usuarios/internal")
+    UsuarioInternoResponse crear(@RequestBody UsuarioInternoRequest request);
 }

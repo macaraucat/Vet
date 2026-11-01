@@ -17,11 +17,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity   // permite @PreAuthorize("hasRole('ADMINISTRADOR')") en los microservicios
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Value("${security.rutas-publicas:}")
-    private String[] rutasPublicas;   // ej: /auth/**,/actuator/**,/error
+    private String[] rutasPublicas;
 
     @Bean
     public PasswordEncoder passwordEncoder() {

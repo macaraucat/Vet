@@ -24,11 +24,10 @@ public class JwtAuthentication extends OncePerRequestFilter {
     private final JwtService jwt;
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request,
-                                    @NonNull HttpServletResponse response,
+    protected void doFilterInternal(@NonNull HttpServletRequest req, @NonNull HttpServletResponse resp,
                                     @NonNull FilterChain chain) throws ServletException, IOException {
 
-        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+        String header = req.getHeader(HttpHeaders.AUTHORIZATION);
         if (header != null && header.startsWith(BEARER)) {
             try {
                 Claims c = jwt.extraerClaims(header.substring(BEARER.length()));
@@ -41,12 +40,12 @@ public class JwtAuthentication extends OncePerRequestFilter {
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                         c.getSubject(), null,
                         List.of(new SimpleGrantedAuthority("ROLE_" + rol)));
-                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
                 SecurityContextHolder.getContext().setAuthentication(auth);
             } catch (JwtException | IllegalArgumentException e) {
                 SecurityContextHolder.clearContext();
             }
         }
-        chain.doFilter(request, response);
+        chain.doFilter(req, resp);
     }
 }

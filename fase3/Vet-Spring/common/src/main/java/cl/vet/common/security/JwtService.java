@@ -1,5 +1,6 @@
 package cl.vet.common.security;
 
+import cl.vet.common.model.Rol;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -12,25 +13,22 @@ import java.util.Date;
 
 @Service
 public class JwtService {
-
     private final SecretKey key;
-    private final long expiracion;
+    private final long exp;
 
-    public JwtService(@Value("${jwt.secret}") String secret,
-                      @Value("${jwt.expiration}") long expiracion) {
+    public JwtService(@Value("${jwt.secret}") String secret, @Value("${jwt.expiration}") long exp) {
         this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
-        this.expiracion = expiracion;
+        this.exp = exp;
     }
 
-    // auth-service llama a este
-    public String generarToken(String email, Long id, String rol) {
+    public String generarToken(String email, Long id, Rol rol) {
         Date ahora = new Date();
         return Jwts.builder()
                 .subject(email)
                 .claim("id", id)
-                .claim("rol", rol)
+                .claim("rol", rol.name())
                 .issuedAt(ahora)
-                .expiration(new Date(ahora.getTime() + expiracion))
+                .expiration(new Date(ahora.getTime() + exp))
                 .signWith(key)
                 .compact();
     }

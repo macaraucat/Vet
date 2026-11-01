@@ -1,7 +1,10 @@
 package cl.vet.auth_service.service;
 
 import cl.vet.auth_service.client.UsuarioClient;
-import cl.vet.auth_service.dto.*;
+import cl.vet.auth_service.dto.AuthResponse;
+import cl.vet.auth_service.dto.LoginRequest;
+import cl.vet.auth_service.dto.RegistroRequest;
+import cl.vet.common.dto.UsuarioInternoResponse;
 import cl.vet.common.exception.UnauthorizedException;
 import cl.vet.common.security.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +17,12 @@ public class AuthService {
 
     private static final String TIPO_TOKEN = "Bearer";
 
-    private final UsuarioClient usuario;
+    private final UsuarioClient usuarios;
     private final PasswordEncoder encoder;
     private final JwtService jwt;
 
     public AuthResponse login(LoginRequest request) {
-        UsuarioClientDTO u = usuario.findByEmail(request.email())
+        UsuarioInternoResponse u = usuarios.buscarPorEmail(request.email())
                 .orElseThrow(() -> new UnauthorizedException("Credenciales inválidas"));
 
         if (!encoder.matches(request.password(), u.passwordHash())) {
@@ -29,13 +32,12 @@ public class AuthService {
     }
 
     public AuthResponse registrar(RegistroRequest req) {
-        UsuarioClientRequest nuevo = UsuarioClientRequest.desde(req, encoder.encode(req.password()));
-        UsuarioClientDTO creado = usuario.crear(nuevo);
+        UsuarioInternoResponse creado = usuarios.crear(req.aUsuarioInterno(encoder.encode(req.password())));
         return emitirToken(creado);
     }
 
-    private AuthResponse emitirToken(UsuarioClientDTO u) {
-        String token = jwt.generarToken(u.email(), u.id(), u.rol().name());
+    private AuthResponse emitirToken(UsuarioInternoResponse u) {
+        String token = jwt.generarToken(u.email(), u.id(), u.rol());
         return new AuthResponse(token, TIPO_TOKEN);
     }
 }
