@@ -294,7 +294,7 @@ function Admin() {
 
             <ModalFormulario id="admin-usuario-modal" size="lg" show={admin.modal?.tipo === 'usuario'} onHide={cerrarModal} onSubmit={admin.guardarUsuario}
                              titulo={esAgregar ? 'Agregar Usuario' : 'Modificar Usuario'}>
-                <Campo id="usuario-run" label="RUN (sin dígito verificador)" required maxLength={9} value={uf.run} onChange={(v) => setU({ run: v })} placeholder="Ingresar RUN" />
+                <Campo id="usuario-run" label="RUN (sin puntos ni guion)" required maxLength={9} value={uf.run} onChange={(v) => setU({ run: v })} placeholder="Ingresar RUN" />
                 <Campo id="usuario-nombre" label="Nombre" required maxLength={30} value={uf.nombre} onChange={(v) => setU({ nombre: v })} placeholder="Ingresar nombre" />
                 <Campo id="usuario-apellidos" label="Apellidos" required maxLength={30} value={uf.apellidos} onChange={(v) => setU({ apellidos: v })} placeholder="Ingresar apellidos" />
                 <Campo id="usuario-email" label="Correo electrónico" required type="email" maxLength={40} value={uf.email} onChange={(v) => setU({ email: v })} placeholder="Ingresar correo electrónico" />
@@ -304,7 +304,7 @@ function Admin() {
                 <CampoSelect id="usuario-comuna" label="Comuna" required disabled={!uf.region} value={uf.comuna} onChange={(v) => setU({ comuna: v })}
                              placeholder={uf.region ? 'Seleccionar comuna' : 'Primero selecciona una región'} opciones={REGION_COMUNAS[uf.region] ?? []} />
                 <Campo id="usuario-direccion" label="Dirección" required maxLength={100} value={uf.direccion} onChange={(v) => setU({ direccion: v })} placeholder="Ingresar dirección" />
-                <Campo id="usuario-password" className="" label={esAgregar ? 'Contraseña' : 'Nueva contraseña (opcional)'} type="password" maxLength={72} required={esAgregar}
+                <Campo id="usuario-password" className="" label={esAgregar ? 'Contraseña' : 'Nueva contraseña (opcional)'} type="password" maxLength={10} required={esAgregar}
                        value={uf.password} onChange={(v) => setU({ password: v })}
                        placeholder={esAgregar ? 'Ingresar contraseña' : 'Dejar vacío para mantener la actual'} />
             </ModalFormulario>

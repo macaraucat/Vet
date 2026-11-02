@@ -2,16 +2,15 @@ package cl.vet.user_service.service;
 
 import cl.vet.common.dto.UsuarioInternoRequest;
 import cl.vet.common.dto.UsuarioInternoResponse;
+import cl.vet.common.exception.*;
 import cl.vet.user_service.dto.*;
 import cl.vet.user_service.model.Usuario;
 import cl.vet.user_service.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @Service
@@ -33,7 +32,7 @@ public class UsuarioService {
     @Transactional
     public UsuarioResponse crear(UsuarioRequest r) {
         if (r.password() == null || r.password().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La contraseña es obligatoria.");
+            throw new BadRequestException("La contraseña es obligatoria.");
         }
         String run = normalizarRun(r.run());
         String email = normalizarEmail(r.email());
@@ -46,22 +45,29 @@ public class UsuarioService {
     }
 
     @Transactional
-    public UsuarioResponse actualizar(Long id, UsuarioRequest r) {
+    public UsuarioResponse actualizar(Long id, UsuarioRequest req, String emailActual) {
         Usuario u = buscar(id);
-        String run = normalizarRun(r.run());
-        String email = normalizarEmail(r.email());
+        if (u.getEmail().equals(emailActual) && req.rol() != u.getRol()) {
+            throw new InvalidStateException("No puedes cambiar tu propio rol.");
+        }
+        String run = normalizarRun(req.run());
+        String email = normalizarEmail(req.email());
         validarUnicos(run, email, id);
 
-        aplicar(u, r, run, email);
-        if (r.password() != null && !r.password().isBlank()) {
-            u.setPasswordHash(encoder.encode(r.password()));
+        aplicar(u, req, run, email);
+        if (req.password() != null && !req.password().isBlank()) {
+            u.setPasswordHash(encoder.encode(req.password()));
         }
         return UsuarioResponse.desde(repo.save(u));
     }
 
     @Transactional
-    public void eliminar(Long id) {
-        repo.delete(buscar(id));
+    public void eliminar(Long id, String emailActual) {
+        Usuario u = buscar(id);
+        if (u.getEmail().equals(emailActual)) {
+            throw new InvalidStateException("No puedes eliminar tu propia cuenta.");
+        }
+        repo.delete(u);
     }
 
     // Uso interno (auth-service)
@@ -69,7 +75,7 @@ public class UsuarioService {
     public UsuarioInternoResponse buscarPorEmail(String email) {
         return repo.findByEmail(normalizarEmail(email))
                 .map(this::aRespuestaInterna)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado."));
     }
 
     @Transactional
@@ -104,7 +110,7 @@ public class UsuarioService {
     // helpers
     private Usuario buscar(Long id) {
         return repo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado."));
     }
 
     private void aplicar(Usuario u, UsuarioRequest r, String run, String email) {
@@ -122,11 +128,11 @@ public class UsuarioService {
     private void validarUnicos(String run, String email, Long idActual) {
         boolean emailEnUso = idActual == null ? repo.existsByEmail(email) : repo.existsByEmailAndIdNot(email, idActual);
         if (emailEnUso) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un usuario con ese correo electrónico.");
+            throw new InvalidStateException("Ya existe un usuario con ese correo electrónico.");
         }
         boolean runEnUso = idActual == null ? repo.existsByRun(run) : repo.existsByRunAndIdNot(run, idActual);
         if (runEnUso) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un usuario con ese RUN.");
+            throw new InvalidStateException("Ya existe un usuario con ese RUN.");
         }
     }
 
