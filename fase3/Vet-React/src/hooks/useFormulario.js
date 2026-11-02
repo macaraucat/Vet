@@ -5,6 +5,7 @@ function useFormulario(valoresIniciales, reglas, alEnviar) {
     const [valores, setValores] = useState(valoresIniciales)
     const [errores, setErrores] = useState({})
     const [errorGeneral, setErrorGeneral] = useState('')
+    const [enviando, setEnviando] = useState(false)
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -23,20 +24,28 @@ function useFormulario(valoresIniciales, reglas, alEnviar) {
         setErrorGeneral('')
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
+        if (enviando) return
+        limpiarErrores()
+
         const reglasActuales = typeof reglas === 'function' ? reglas(valores) : reglas
         const nuevos = validar(valores, reglasActuales)
         setErrores(nuevos)
         setErrorGeneral('')
         if (Object.keys(nuevos).length > 0) return
 
-        const error = alEnviar(valores)
-        if (error) setErrorGeneral(error)
-        else setValores(valoresIniciales)
+        setEnviando(true)
+        try {
+            const error = await alEnviar(valores)
+            if (error) setErrorGeneral(error)
+            else setValores(valoresIniciales)
+        } finally {
+            setEnviando(false)
+        }
     }
 
-    return { valores, errores, errorGeneral, handleChange, handleSubmit, limpiarErrores }
+    return { valores, errores, errorGeneral, enviando, handleChange, handleSubmit, limpiarErrores }
 }
 
 export default useFormulario

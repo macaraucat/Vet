@@ -1,69 +1,88 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
+import { apiLogin, apiRegistro, guardarToken, obtenerToken, borrarToken } from '../services/authApi'
 
 const AuthContext = createContext(null)
 
-const usuariosPredefinidos = [
-    { nombre: 'Admin', email: 'admin@gmail.com', pass: 'admin123', role: 'Administrador' },
-    { nombre: 'Funcionario', email: 'func@gmail.com', pass: 'func123', role: 'Funcionario' },
-]
-
-function cargarUsuarios() {
+function decodificarToken(token) {
     try {
-        const guardados = JSON.parse(localStorage.getItem('usuariosDB'))
-        if (Array.isArray(guardados)) return guardados
+        const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
+        const json = decodeURIComponent(
+            atob(base64)
+                .split('')
+                .map((c) => '%' + c.charCodeAt(0).toString(16).padStart(2, '0'))
+                .join('')
+        )
+        const claims = JSON.parse(json)
+
+        if (claims.exp && claims.exp * 1000 < Date.now()) return null
+
+        return {
+            id: claims.id,
+            email: claims.sub,
+            nombre: claims.nombre ?? claims.sub.split('@')[0],
+            role: claims.rol,
+            exp: claims.exp,
+        }
     } catch {
+        return null
     }
-    localStorage.setItem('usuariosDB', JSON.stringify(usuariosPredefinidos))
-    return usuariosPredefinidos
 }
 
 function cargarSesion() {
-    const nombre = localStorage.getItem('usuarioActivo')
-    if (!nombre) return null
-    return { nombre, role: localStorage.getItem('tipoUsuario') || 'Cliente' }
+    const token = obtenerToken()
+    if (!token) return null
+
+    const sesion = decodificarToken(token)
+    if (!sesion) borrarToken()
+    return sesion
 }
 
 export function AuthProvider({ children }) {
     const [usuario, setUsuario] = useState(cargarSesion)
 
-    function login(email, pass) {
-        const correo = email.trim().toLowerCase()
-        const encontrado = cargarUsuarios().find((u) => u.email === correo && u.pass === pass)
+    useEffect(() => {
+        if (!usuario?.exp) return
+        const cerrarSesion = () => { borrarToken(); setUsuario(null) }
+        const restante = usuario.exp * 1000 - Date.now()
+        const timer = setTimeout(cerrarSesion, Math.min(Math.max(restante, 0), 2_147_483_647))
+        return () => clearTimeout(timer)
+    }, [usuario])
 
-        if (!encontrado) return { ok: false, error: 'Correo o contraseña incorrectos.' }
+    async function login(email, pass) {
+        try {
+            const { token } = await apiLogin(email.trim().toLowerCase(), pass)
+            const sesion = decodificarToken(token)
+            if (!sesion) return { ok: false, error: 'No se pudo iniciar sesión. Intenta nuevamente.' }
 
-        localStorage.setItem('usuarioActivo', encontrado.nombre)
-        localStorage.setItem('tipoUsuario', encontrado.role)
-        setUsuario({ nombre: encontrado.nombre, role: encontrado.role })
-        return { ok: true }
+            guardarToken(token)
+            setUsuario(sesion)
+            return { ok: true }
+        } catch (e) {
+            return { ok: false, error: e.message }
+        }
     }
 
-    function registrar(datos) {
-        const usuarios = cargarUsuarios()
-        const correo = datos.email.trim().toLowerCase()
-
-        if (usuarios.some((u) => u.email === correo)) {
-            return { ok: false, error: 'Este correo electrónico ya está registrado.' }
+    async function registrar(datos) {
+        try {
+            await apiRegistro({
+                run: datos.run.trim().toUpperCase(),
+                nombre: datos.nombre.trim(),
+                apellidos: datos.apellidos.trim(),
+                email: datos.email.trim().toLowerCase(),
+                fechaNac: datos.fechaNac,
+                region: datos.region,
+                comuna: datos.comuna,
+                direccion: datos.direccion.trim(),
+                password: datos.pass,
+            })
+            return { ok: true }
+        } catch (e) {
+            return { ok: false, error: e.message }
         }
-
-        const nuevo = {
-            run: datos.run.toUpperCase(),
-            nombre: datos.nombre.trim(),
-            email: correo,
-            fechaNac: datos.fechaNac,
-            comuna: datos.comuna,
-            direccion: datos.direccion.trim(),
-            pass: datos.pass,
-            role: 'Cliente',
-        }
-
-        localStorage.setItem('usuariosDB', JSON.stringify([...usuarios, nuevo]))
-        return { ok: true }
     }
 
     function logout() {
-        localStorage.removeItem('usuarioActivo')
-        localStorage.removeItem('tipoUsuario')
+        borrarToken()
         setUsuario(null)
     }
 

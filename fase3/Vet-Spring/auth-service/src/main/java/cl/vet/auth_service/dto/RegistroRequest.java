@@ -14,11 +14,10 @@ public record RegistroRequest(
         @NotNull @Past LocalDate fechaNac,
         @NotBlank @Size(max = 40) String region,
         @NotBlank @Size(max = 30) String comuna,
-        @NotBlank @Size(max = 300) String direccion,
+        @NotBlank @Size(max = 100) String direccion,
         @NotBlank @Size(min = 4, max = 72) String password) {
 
     public UsuarioInternoRequest aUsuarioInterno(String passwordHash) {
-        return new UsuarioInternoRequest(run, nombre, apellidos, email, fechaNac,
-                region, comuna, direccion, passwordHash, Rol.CLIENTE);
+        return new UsuarioInternoRequest(run, nombre, apellidos, email, fechaNac, region, comuna, direccion, passwordHash, Rol.CLIENTE);
     }
 }

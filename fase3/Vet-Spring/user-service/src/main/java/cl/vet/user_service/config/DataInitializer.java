@@ -11,11 +11,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
-/**
- * Crea el administrador y el funcionario iniciales si la tabla está vacía.
- * Sin esto nadie podría entrar al panel para crear otros usuarios.
- * SOLO PARA DESARROLLO: cambia estas credenciales antes de desplegar.
- */
 @Component
 @RequiredArgsConstructor
 public class DataInitializer {
@@ -37,8 +32,8 @@ public class DataInitializer {
         u.setApellidos("Sistema");
         u.setEmail(email);
         u.setFechaNac(LocalDate.of(1990, 1, 1));
-        u.setRegion("Metropolitana de Santiago");
-        u.setComuna("Santiago");
+        u.setRegion("Libertador General Bernardo O'Higgins");
+        u.setComuna("Rancagua");
         u.setDireccion("Sin dirección");
         u.setPasswordHash(encoder.encode(pass));
         u.setRol(rol);

@@ -95,6 +95,7 @@ public class UsuarioService {
     private UsuarioInternoResponse aRespuestaInterna(Usuario u) {
         return new UsuarioInternoResponse(
                 u.getId(),
+                u.getNombre(),
                 u.getEmail(),
                 u.getPasswordHash(),
                 u.getRol());

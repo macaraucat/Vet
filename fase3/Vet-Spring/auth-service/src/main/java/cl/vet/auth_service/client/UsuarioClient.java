@@ -11,11 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Optional;
 
-@FeignClient(
-        name = "user-service",
-        url = "${user.service.url}",
-        configuration = UserFeignConfig.class,
-        dismiss404 = true)
+@FeignClient(name = "user-service", url = "${user.service.url}", configuration = UserFeignConfig.class, dismiss404 = true)
 public interface UsuarioClient {
 
     @GetMapping("/api/usuarios/internal/email/{email}")

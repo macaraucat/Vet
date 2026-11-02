@@ -27,23 +27,20 @@ public class UsuarioInternoController {
     }
 
     @GetMapping("/email/{email}")
-    public UsuarioInternoResponse porEmail(@RequestHeader(value = HEADER, required = false) String key,
-                                           @PathVariable String email) {
+    public UsuarioInternoResponse porEmail(@RequestHeader(value = HEADER, required = false) String key, @PathVariable String email) {
         verificar(key);
         return service.buscarPorEmail(email);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UsuarioInternoResponse crear(@RequestHeader(value = HEADER, required = false) String key,
-                                        @Valid @RequestBody UsuarioInternoRequest req) {
+    public UsuarioInternoResponse crear(@RequestHeader(value = HEADER, required = false) String key, @Valid @RequestBody UsuarioInternoRequest req) {
         verificar(key);
         return service.crearInterno(req);
     }
 
     private void verificar(String key) {
-        boolean ok = key != null && MessageDigest.isEqual(
-                apiKey.getBytes(StandardCharsets.UTF_8), key.getBytes(StandardCharsets.UTF_8));
+        boolean ok = key != null && MessageDigest.isEqual(apiKey.getBytes(StandardCharsets.UTF_8), key.getBytes(StandardCharsets.UTF_8));
         if (!ok) {
             throw new UnauthorizedException("Clave interna inválida");
         }

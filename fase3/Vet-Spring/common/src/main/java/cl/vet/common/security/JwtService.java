@@ -21,12 +21,13 @@ public class JwtService {
         this.exp = exp;
     }
 
-    public String generarToken(String email, Long id, Rol rol) {
+    public String generarToken(String email, Long id, Rol rol, String nombre) {
         Date ahora = new Date();
         return Jwts.builder()
                 .subject(email)
                 .claim("id", id)
                 .claim("rol", rol.name())
+                .claim("nombre", nombre)
                 .issuedAt(ahora)
                 .expiration(new Date(ahora.getTime() + exp))
                 .signWith(key)

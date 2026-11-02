@@ -69,7 +69,7 @@ export const reglasRegistro = {
     fechaNac: [requerido('La fecha de nacimiento es obligatoria.'), mayorDeEdad(18)],
     region: [requerido('Selecciona una región.')],
     comuna: [requerido('Selecciona una comuna.'), comunaDeRegion],
-    direccion: [requerido('La dirección es obligatoria.'), maximo(300)],
+    direccion: [requerido('La dirección es obligatoria.'), maximo(100)],
     pass,
     pass2: [igualA('pass', 'Las contraseñas no coinciden.')],
 }
@@ -101,7 +101,7 @@ export function crearReglasCita({ hoy, horariosDisponibles }) {
             requerido('Selecciona un horario disponible.'),
             horarioDisponible(horariosDisponibles),
         ],
-        nombreMascota: [requerido('Ingresa el nombre de la mascota.')],
+        mascota: [requerido('Ingresa el nombre de la mascota.')],
         especie: [requerido('Selecciona una especie.')],
         edad: [
             requerido('Ingresa una edad válida (en años).'),

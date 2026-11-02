@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Button, Card, Col, Container, Image, Row } from 'react-bootstrap'
-import useNoticias from '../hooks/useNoticias'
+import { Alert, Button, Card, Col, Container, Form, Image, Modal, Row } from 'react-bootstrap'
 import { useAuthContext } from '../context/AuthContext'
-import Cita from './Cita'
+import { useCarritoContext } from '../context/CarritoContext'
+import useFormulario from '../hooks/useFormulario'
+import { crearReglasCita } from '../utils/validaciones'
+
+const HORARIOS = ['10:00', '11:00', '12:00', '14:00', '15:00', '16:00']
+const ESPECIES = ['Perro', 'Gato', 'Ave', 'Conejo']
+const citaInicial = { fecha: '', hora: '', mascota: '', especie: '', edad: '' }
 
 const SERVICIOS = [
     { nombre: 'Consultas', icono: 'consultas' },
@@ -14,26 +19,91 @@ const SERVICIOS = [
     { nombre: 'Medicamentos', icono: 'medicamentos' },
 ]
 
+const NOTICIAS = [
+    {
+        titulo: 'Una cirugía de emergencia con final feliz',
+        corto: 'Firulais llegó en estado crítico por un accidente, fue operado de urgencia y, tras semanas de cuidados y acompañamiento familiar, se recuperó por completo.',
+        extendido: 'Firulais llegó a nuestra clínica en estado crítico tras un accidente, con signos vitales alterados y una lesión que requería intervención inmediata. Nuestro equipo médico actuó rápido: en menos de una hora ya estaba en cirugía, estabilizado y bajo constante monitoreo. Los días posteriores fueron clave, con curaciones diarias, controles de dolor y mucho acompañamiento de su familia, que no se separó de él en ningún momento. Hoy, varias semanas después, Firulais corre, juega y mueve la cola como si nada hubiera pasado, un recordatorio de por qué actuar a tiempo puede marcar toda la diferencia.',
+        img: '/img/firulais.jpg',
+        alt: 'Firulais',
+    },
+    {
+        titulo: 'Problemas dentales en conejos',
+        corto: 'Sus dientes crecen continuamente; desequilibrios en la dieta o alineación pueden causar problemas graves. Revisiones periódicas y dieta rica en fibra ayudan a prevenirlos.',
+        extendido: 'Los conejos son pacientes poco comunes en la consulta diaria, pero cada vez llegan más a nuestra clínica, y sus dientes suelen ser la razón principal. A diferencia de perros y gatos, sus dientes crecen de forma continua durante toda su vida, así que cualquier desequilibrio en su dieta o alineación dental puede derivar en molestias serias. Señales como babeo, pérdida de apetito o cambios en el pelaje alrededor del hocico son motivo suficiente para pedir hora. Con revisiones periódicas y una dieta rica en fibra, la mayoría de estos problemas se puede prevenir antes de que se conviertan en una urgencia.',
+        img: '/img/conejo.jpg',
+        alt: 'Conejo',
+    },
+]
+
+function fechaLocal(date) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+}
+
+function obtenerHoraFin(hora) {
+    return `${String(Number(hora.slice(0, 2)) + 1).padStart(2, '0')}:00`
+}
+
+function obtenerBloquesDisponibles(fecha, hoy) {
+    if (!fecha) return []
+    if (fecha !== hoy) return HORARIOS
+    return HORARIOS.filter((hora) => Number(hora.slice(0, 2)) > new Date().getHours())
+}
+
+function Campo({ name, label, valores, errores, children }) {
+    return (
+        <Form.Group className="mb-3" controlId={`cita-${name}`}>
+            <Form.Label><b>{label}</b></Form.Label>
+            {children}
+            <Form.Control.Feedback type="invalid">{errores[name]}</Form.Control.Feedback>
+        </Form.Group>
+    )
+}
+
 function Index() {
-    const { noticias, expandido, toggleExpandir } = useNoticias()
+    const [expandido, setExpandido] = useState({})
+    const { usuario } = useAuthContext()
+    const { agregarCitaAlCarrito } = useCarritoContext()
     const [animar, setAnimar] = useState(false)
+    const [mostrarCita, setMostrarCita] = useState(false)
+    const [confirmada, setConfirmada] = useState(false)
     const location = useLocation()
     const navigate = useNavigate()
-    const { usuario } = useAuthContext()
-    const [mostrarCita, setMostrarCita] = useState(false)
 
     useEffect(() => {
         const timer = setTimeout(() => setAnimar(true), 0)
         return () => clearTimeout(timer)
-    }, []);
+    }, [])
 
     useEffect(() => {
         if (!location.hash) return
-
         document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: 'smooth' })
     }, [location.hash, location.pathname])
 
-    const esCliente = usuario && usuario.role === 'Cliente'
+    const hoy = fechaLocal(new Date())
+    const { valores: cita, errores, handleChange: cambiarCampo, handleSubmit, limpiarErrores } = useFormulario(
+        citaInicial,
+        (valores) => crearReglasCita({ hoy, horariosDisponibles: obtenerBloquesDisponibles(valores.fecha, hoy) }),
+        (valores) => {
+            agregarCitaAlCarrito(valores, usuario.nombre)
+            setConfirmada(true)
+            return null
+        },
+    )
+
+    const bloquesDisponibles = obtenerBloquesDisponibles(cita.fecha, hoy)
+    const sinHorarios = !cita.fecha || bloquesDisponibles.length === 0 || !!errores.fecha
+    const esCliente = usuario?.role === 'CLIENTE'
+
+    const toggleExpandir = (i) => {
+        setExpandido((prev) => ({ ...prev, [i]: !prev[i] }))
+    }
+
+    const handleChange = (event) => {
+        const { name } = event.target
+        cambiarCampo(event)
+        if (name === 'fecha') cambiarCampo({ target: { name: 'hora', value: '' } })
+    }
 
     const agendarCita = () => {
         if (!esCliente) {
@@ -41,6 +111,12 @@ function Index() {
             return
         }
         setMostrarCita(true)
+    }
+
+    const cerrarCita = () => {
+        setMostrarCita(false)
+        setConfirmada(false)
+        limpiarErrores()
     }
 
     return (
@@ -81,7 +157,7 @@ function Index() {
             <section id="nosotros" className="nosotros container">
                 <h2 className="text-center mb-4">Sobre nosotros</h2>
                 <p>Veterinaria San Marcos es una clínica veterinaria ubicada en Rancagua, Región del Libertador General Bernardo O'Higgins, fundada en 2009. Contamos con un equipo integral dedicado a brindar una atención cercana y profesional, para tus mascotas. A lo largo de estos años, hemos visto crecer la confianza de nuestros clientes, lo que nos motiva a seguir mejorando cada aspecto de nuestra atención, desde la comodidad de nuestras instalaciones hasta la calidez con la que recibimos a cada mascota y su familia.</p>
-                <Image src="/img/team.jpg" alt="Team" className="team-img mx-auto d-block my-4"/>
+                <Image src="/img/team.jpg" alt="Team" className="team-img mx-auto d-block my-4" />
                 <h3>Nuestro equipo:</h3>
                 <p>
                     <b>Laura Claro Hernández:</b> Médica Veterinaria, Universidad de Concepción. Diplomado en Cirugía de Pequeños Animales (Universidad de Chile). Directora clínica y fundadora de Veterinaria San Marcos, con más de 15 años de trayectoria en medicina y cirugía de perros y gatos.<hr />
@@ -95,7 +171,7 @@ function Index() {
             <section id="noticias" className="noticias container">
                 <h2>Noticias importantes</h2>
                 <Row className="g-3 my-1">
-                    {noticias.map((n, i) => (
+                    {NOTICIAS.map((n, i) => (
                         <Col key={n.titulo} xs={12} md={6}>
                             <Card className="h-100 border-0 bg-body-secondary rounded-4">
                                 <Card.Body className="d-flex flex-column p-4">
@@ -114,7 +190,54 @@ function Index() {
                 </Row>
             </section>
 
-            <Cita mostrar={mostrarCita} onCerrar={() => setMostrarCita(false)} />
+            <Modal show={mostrarCita} onHide={cerrarCita} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Agendar cita</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {confirmada ? (
+                        <Alert variant="success" className="mb-0">
+                            ¡Cita confirmada! Recibirás un correo electrónico con la información en los próximos minutos.
+                        </Alert>
+                    ) : (
+                        <Form className="cita-form" onSubmit={handleSubmit} noValidate>
+                            <Campo name="fecha" label="Fecha" valores={cita} errores={errores}>
+                                <Form.Control type="date" name="fecha" min={hoy} value={cita.fecha} onChange={handleChange} isInvalid={!!errores.fecha} />
+                            </Campo>
+
+                            <Campo name="hora" label="Hora" valores={cita} errores={errores}>
+                                <Form.Select name="hora" value={cita.hora} onChange={handleChange} disabled={sinHorarios} isInvalid={!!errores.hora}>
+                                    <option value="" disabled>
+                                        {bloquesDisponibles.length === 0 && cita.fecha && !errores.fecha ? 'No quedan horarios este día' : 'Seleccionar hora'}
+                                    </option>
+                                    {bloquesDisponibles.map((hora) => (
+                                        <option key={hora} value={hora}>{hora} a {obtenerHoraFin(hora)}</option>
+                                    ))}
+                                </Form.Select>
+                            </Campo>
+
+                            <Campo name="mascota" label="Nombre mascota" valores={cita} errores={errores}>
+                                <Form.Control type="text" name="mascota" value={cita.mascota} onChange={handleChange} isInvalid={!!errores.mascota} />
+                            </Campo>
+
+                            <Campo name="especie" label="Especie" valores={cita} errores={errores}>
+                                <Form.Select name="especie" value={cita.especie} onChange={handleChange} isInvalid={!!errores.especie}>
+                                    <option value="" disabled>Seleccionar especie</option>
+                                    {ESPECIES.map((especie) => <option key={especie} value={especie}>{especie}</option>)}
+                                </Form.Select>
+                            </Campo>
+
+                            <Campo name="edad" label="Edad mascota (años)" valores={cita} errores={errores}>
+                                <Form.Control type="number" name="edad" min="0" step="1" value={cita.edad} onChange={handleChange} isInvalid={!!errores.edad} />
+                            </Campo>
+
+                            <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <Button variant="success" type="submit">Agendar cita</Button>
+                            </div>
+                        </Form>
+                    )}
+                </Modal.Body>
+            </Modal>
         </main>
     )
 }

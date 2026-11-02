@@ -13,7 +13,7 @@ public record UsuarioRequest(
         @NotNull @Past LocalDate fechaNac,
         @NotBlank @Size(max = 40) String region,
         @NotBlank @Size(max = 30) String comuna,
-        @NotBlank @Size(max = 300) String direccion,
+        @NotBlank @Size(max = 100) String direccion,
         @NotNull Rol rol,
         @Pattern(regexp = "^(.{4,72})?$", message = "La contraseña debe tener entre 4 y 72 caracteres.")
         String password) {

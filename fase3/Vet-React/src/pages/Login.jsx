@@ -13,13 +13,13 @@ function Login() {
     const [tab, setTab] = useState('login')
     const [exito, setExito] = useState('')
 
-    const formularioLogin = useFormulario(loginInicial, reglasLogin, (valores) => {
-        const resultado = login(valores.email.trim(), valores.pass)
+    const formularioLogin = useFormulario(loginInicial, reglasLogin, async (valores) => {
+        const resultado = await login(valores.email.trim(), valores.pass)
         return resultado.ok ? null : resultado.error
     })
 
-    const formularioRegistro = useFormulario(registroInicial, reglasRegistro, (valores) => {
-        const resultado = registrar(valores)
+    const formularioRegistro = useFormulario(registroInicial, reglasRegistro, async (valores) => {
+        const resultado = await registrar(valores)
         if (!resultado.ok) return resultado.error
 
         setExito('¡Registro completado! Ahora puedes iniciar sesión.')
@@ -27,8 +27,8 @@ function Login() {
         return null
     })
 
-    const { valores: credenciales, errores: erroresLogin, errorGeneral: errorLogin, handleChange: actualizarLogin, handleSubmit: enviarLogin, limpiarErrores: limpiarErroresLogin } = formularioLogin
-    const { valores: registro, errores: erroresRegistro, errorGeneral: errorRegistro, handleChange: actualizarRegistro, handleSubmit: enviarRegistro, limpiarErrores: limpiarErroresRegistro } = formularioRegistro
+    const { valores: credenciales, errores: erroresLogin, errorGeneral: errorLogin, enviando: enviandoLogin, handleChange: actualizarLogin, handleSubmit: enviarLogin, limpiarErrores: limpiarErroresLogin } = formularioLogin
+    const { valores: registro, errores: erroresRegistro, errorGeneral: errorRegistro, enviando: enviandoRegistro, handleChange: actualizarRegistro, handleSubmit: enviarRegistro, limpiarErrores: limpiarErroresRegistro } = formularioRegistro
 
     if (usuario) {
         const puedeAdministrar = ['FUNCIONARIO', 'ADMINISTRADOR'].includes(usuario.role)
@@ -94,7 +94,9 @@ function Login() {
                                         )}
 
                                         <div className="d-grid gap-2">
-                                            <Button variant="success" type="submit">Iniciar sesión</Button>
+                                            <Button variant="success" type="submit" disabled={enviandoLogin}>
+                                                {enviandoLogin ? 'Ingresando...' : 'Iniciar sesión'}
+                                            </Button>
                                         </div>
                                     </Form>
                                 ) : (
@@ -174,7 +176,9 @@ function Login() {
                                         )}
 
                                         <div className="d-grid gap-2">
-                                            <Button variant="success" type="submit">Registrar cuenta</Button>
+                                            <Button variant="success" type="submit" disabled={enviandoRegistro}>
+                                                {enviandoRegistro ? 'Registrando...' : 'Registrar cuenta'}
+                                            </Button>
                                         </div>
                                     </Form>
                                 )}

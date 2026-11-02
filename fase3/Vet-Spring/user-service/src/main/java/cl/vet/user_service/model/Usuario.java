@@ -38,7 +38,7 @@ public class Usuario {
     @Column(nullable = false, length = 30)
     private String comuna;
 
-    @Column(nullable = false, length = 300)
+    @Column(nullable = false, length = 100)
     private String direccion;
 
     @Column(nullable = false)

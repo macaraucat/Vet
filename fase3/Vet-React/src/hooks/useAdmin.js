@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { productos } from '../utils/productos'
+import { useAuthContext } from '../context/AuthContext'
+import { obtenerToken } from '../services/authApi'
 
-const API_URL = 'http://localhost:8080/auth/usuarios'
-
+const API_URL = `${import.meta.env.VITE_USERS_URL ?? 'http://localhost:8080'}/api/usuarios`
 const stockInicial = [45, 30, 28, 60, 40, 35, 80, 50, 55, 30, 25, 20, 18, 40, 35, 15, 22, 48, 60, 36, 30, 25]
 
 const productosIniciales = productos.map((producto, index) => ({
@@ -23,17 +24,19 @@ const citasIniciales = [
 ]
 
 function useAdmin() {
-    const [productosAdmin, setProductosAdmin] = useState(productosIniciales)
-    const [usuarios, setUsuarios] = useState([])
+    const { usuario, logout } = useAuthContext()
+    const esAdministrador = usuario?.role === 'ADMINISTRADOR'
     const [cargandoUsuarios, setCargandoUsuarios] = useState(true)
-    const [citas, setCitas] = useState(citasIniciales)
-    const [productoSeleccionado, setProductoSeleccionado] = useState(null)
-    const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null)
-    const [citaSeleccionada, setCitaSeleccionada] = useState(null)
-    const [citaForm, setCitaForm] = useState({})
-    const [modal, setModal] = useState(null)
-    const [productoForm, setProductoForm] = useState({})
     const [usuarioForm, setUsuarioForm] = useState({})
+    const [usuarios, setUsuarios] = useState([])
+    const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null)
+    const [productosAdmin, setProductosAdmin] = useState(productosIniciales)
+    const [productoForm, setProductoForm] = useState({})
+    const [productoSeleccionado, setProductoSeleccionado] = useState(null)
+    const [citaForm, setCitaForm] = useState({})
+    const [citas, setCitas] = useState(citasIniciales)
+    const [citaSeleccionada, setCitaSeleccionada] = useState(null)
+    const [modal, setModal] = useState(null)
     const [feedback, setFeedback] = useState(null)
 
     function abrirProducto(modo) {
@@ -89,15 +92,23 @@ function useAdmin() {
         setFeedback({ variant: 'success', message: 'Producto eliminado correctamente.' })
     }
 
-    function authHeaders() {
-        const token = localStorage.getItem('token')
-        return token ? { Authorization: `Bearer ${token}` } : {}
+    async function apiUsuarios(url, opciones = {}) {
+        const token = obtenerToken()
+        const res = await fetch(url, {
+            ...opciones,
+            headers: {
+                ...(opciones.body ? { 'Content-Type': 'application/json' } : {}),
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+        })
+        if (res.status === 401) logout()
+        return res
     }
 
     async function cargarUsuarios() {
         setCargandoUsuarios(true)
         try {
-            const res = await fetch(API_URL, { headers: authHeaders() })
+            const res = await apiUsuarios(API_URL)
             if (!res.ok) throw new Error('Error al consultar usuarios')
             const datos = await res.json()
             setUsuarios(datos)
@@ -109,8 +120,9 @@ function useAdmin() {
     }
 
     useEffect(() => {
-        cargarUsuarios()
-    }, [])
+        if (esAdministrador) cargarUsuarios()
+        else setCargandoUsuarios(false)
+    }, [esAdministrador])
 
     function agregarUsuario() {
         setUsuarioForm({ run: '', nombre: '', apellidos: '', email: '', fechaNac: '', region: '', comuna: '', direccion: '', rol: '', password: '' })
@@ -146,9 +158,8 @@ function useAdmin() {
         }
 
         try {
-            const res = await fetch(esModificar ? `${API_URL}/${modal.idOriginal}` : API_URL, {
+            const res = await apiUsuarios(esModificar ? `${API_URL}/${modal.idOriginal}` : API_URL, {
                 method: esModificar ? 'PUT' : 'POST',
-                headers: { 'Content-Type': 'application/json', ...authHeaders() },
                 body: JSON.stringify(body),
             })
             if (!res.ok) {
@@ -168,10 +179,7 @@ function useAdmin() {
     async function eliminarUsuario() {
         if (usuarioSeleccionado === null) return
         try {
-            const res = await fetch(`${API_URL}/${usuarioSeleccionado}`, {
-                method: 'DELETE',
-                headers: authHeaders(),
-            })
+            const res = await apiUsuarios(`${API_URL}/${usuarioSeleccionado}`, { method: 'DELETE' })
             if (!res.ok) {
                 const error = await res.json().catch(() => null)
                 setFeedback({ variant: 'danger', message: error?.message || 'No se pudo eliminar el usuario.' })
