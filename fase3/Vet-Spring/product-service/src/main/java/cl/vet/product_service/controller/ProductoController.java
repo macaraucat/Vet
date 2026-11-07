@@ -16,7 +16,15 @@ public class ProductoController {
     private final ProductoService service;
 
     @GetMapping
-    public List<Producto> listar() {
+    public List<Producto> listar(
+            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) String nombre) {
+        if (categoria != null) {
+            return service.buscarPorCategoria(categoria);
+        }
+        if (nombre != null) {
+            return service.buscarPorNombre(nombre);
+        }
         return service.listar();
     }
 
@@ -32,8 +40,8 @@ public class ProductoController {
     }
 
     @PutMapping("/{id}")
-    public Producto actualizar(@PathVariable Long id, @RequestBody Producto producto) {
-        return service.actualizar(id, producto);
+    public Producto actualizar(@PathVariable Long id, @RequestBody Producto datos) {
+        return service.actualizar(id, datos);
     }
 
     @DeleteMapping("/{id}")

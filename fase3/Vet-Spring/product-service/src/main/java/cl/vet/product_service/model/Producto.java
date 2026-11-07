@@ -31,4 +31,7 @@ public class Producto {
 
     @Column(length = 200)
     private String imagen;
+
+    @Column(length = 30)
+    private String categoria;
 }

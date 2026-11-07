@@ -33,10 +33,19 @@ public class ProductoService {
         producto.setEspecie(datos.getEspecie());
         producto.setPrecio(datos.getPrecio());
         producto.setImagen(datos.getImagen());
+        producto.setCategoria(datos.getCategoria());
         return repository.save(producto);
     }
 
     public void eliminar(Long id) {
         repository.deleteById(id);
+    }
+
+    public List<Producto> buscarPorCategoria(String categoria) {
+        return repository.findByCategoria(categoria);
+    }
+
+    public List<Producto> buscarPorNombre(String nombre) {
+        return repository.findByNombreContainingIgnoreCase(nombre);
     }
 }
