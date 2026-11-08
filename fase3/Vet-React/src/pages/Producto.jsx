@@ -1,12 +1,25 @@
 import { useParams, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { Badge, Button, Col, Container, Image, Row } from "react-bootstrap";
 import { useCarritoContext } from "../context/CarritoContext";
-import { productos } from "../utils/productos";
+import { obtenerProductoPorId } from "../services/productosApi";
 
 function Producto() {
     const { id } = useParams();
     const { agregarAlCarrito } = useCarritoContext();
-    const producto = productos.find((p) => p.id === id);
+    const [producto, setProducto] = useState(null);
+    const [cargando, setCargando] = useState(true);
+
+    useEffect(() => {
+        obtenerProductoPorId(id)
+            .then(setProducto)
+            .catch(() => setProducto(null))
+            .finally(() => setCargando(false));
+    }, [id]);
+
+    if (cargando) {
+        return <main><Container className="py-5"><p>Cargando...</p></Container></main>;
+    }
 
     if (!producto) {
         return (

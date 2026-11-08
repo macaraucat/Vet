@@ -1,23 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Badge, Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { useCarritoContext } from "../context/CarritoContext";
-import { productos } from "../utils/productos";
-
-const categorias = [...new Set(productos.map((p) => p.categoria))];
+import { obtenerProductos } from "../services/productosApi";
 
 function Catalogo() {
     const { agregarAlCarrito } = useCarritoContext();
     const [busqueda, setBusqueda] = useState("");
+    const [productos, setProductos] = useState([]);
+    const [cargando, setCargando] = useState(true);
+    const [error, setError] = useState("");
 
     const [searchParams, setSearchParams] = useSearchParams();
     const categoria = searchParams.get("categoria") || "";
+
+    useEffect(() => {
+        obtenerProductos()
+            .then(setProductos)
+            .catch(() => setError("No se pudieron cargar los productos."))
+            .finally(() => setCargando(false));
+    }, []);
+
+    const categorias = [...new Set(productos.map((p) => p.categoria))];
 
     const productosFiltrados = productos.filter((p) => {
         const coincideNombre = p.nombre.toLowerCase().includes(busqueda.toLowerCase());
         const coincideCategoria = categoria === "" || p.categoria === categoria;
         return coincideNombre && coincideCategoria;
     });
+
+    if (cargando) {
+        return <main><Container className="mb-5"><p className="text-center">Cargando productos...</p></Container></main>;
+    }
+
+    if (error) {
+        return <main><Container className="mb-5"><p className="text-center text-danger">{error}</p></Container></main>;
+    }
 
     return (
         <main>

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Alert, Button, Card, Col, Container, Form, Row, Table } from "react-bootstrap";
 import { useCarritoContext } from "../context/CarritoContext";
 import { useAuthContext } from "../context/AuthContext";
-import { validar, reglasCheckout } from "../utils/validaciones";
+import { validar, reglasCheckout, REGIONES, REGION_COMUNAS } from "../utils/validaciones";
 
 function buscarDatosUsuario(nombre) {
     try {
