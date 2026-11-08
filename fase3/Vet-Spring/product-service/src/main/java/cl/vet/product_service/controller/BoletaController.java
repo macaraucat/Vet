@@ -6,6 +6,7 @@ import cl.vet.product_service.model.DetalleBoleta;
 import cl.vet.product_service.service.BoletaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,16 +25,19 @@ public class BoletaController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public List<Boleta> listar() {
         return service.listar();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public Boleta buscarPorId(@PathVariable Long id) {
         return service.buscarPorId(id);
     }
 
     @GetMapping("/{id}/detalle")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public List<DetalleBoleta> detalle(@PathVariable Long id) {
         return service.detalleDe(id);
     }
