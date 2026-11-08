@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
 @RestController
-@RequestMapping("/api/usuarios/internal")
+@RequestMapping("/api/v1/users/internal")
 public class UsuarioInternoController {
 
     private static final String HEADER = "X-Internal-Key";
@@ -26,7 +26,7 @@ public class UsuarioInternoController {
         this.apiKey = apiKey;
     }
 
-    @GetMapping("/email/{email}")
+    @GetMapping("/{email}")
     public UsuarioInternoResponse porEmail(@RequestHeader(value = HEADER, required = false) String key, @PathVariable String email) {
         verificar(key);
         return service.buscarPorEmail(email);
