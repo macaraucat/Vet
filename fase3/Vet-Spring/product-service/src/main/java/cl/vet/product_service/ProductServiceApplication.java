@@ -3,7 +3,7 @@ package cl.vet.product_service;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "cl.vet")
 public class ProductServiceApplication {
 
 	static void main(String[] args) {
