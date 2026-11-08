@@ -4,6 +4,8 @@ import { Alert, Button, Card, Col, Container, Form, Row, Table } from "react-boo
 import { useCarritoContext } from "../context/CarritoContext";
 import { useAuthContext } from "../context/AuthContext";
 import { validar, reglasCheckout, REGIONES, REGION_COMUNAS } from "../utils/validaciones";
+import { crearBoleta } from "../services/boletasApi";
+
 
 function buscarDatosUsuario(nombre) {
     try {
@@ -54,7 +56,7 @@ function Checkout() {
         setDatos({ ...datos, [name]: value });
     }
 
-    function pagar(e) {
+    async function pagar(e) {
         e.preventDefault();
 
         const reglas = esRetiro
@@ -65,12 +67,23 @@ function Checkout() {
         setErrores(nuevosErrores);
         if (Object.keys(nuevosErrores).length > 0) return;
 
-        const numero = Math.floor(100000 + Math.random() * 900000);
         const pagoCorrecto = Math.random() > 0.2;
 
-        setPedido({ numero, items: carrito, total: totalPrecio });
-        setResultado(pagoCorrecto ? "exito" : "error");
-        if (pagoCorrecto) vaciarCarrito();
+        if (pagoCorrecto) {
+            try {
+                const boleta = await crearBoleta(usuario?.id ?? 0, carrito);
+                setPedido({ numero: boleta.id, items: carrito, total: totalPrecio });
+                setResultado("exito");
+                vaciarCarrito();
+            } catch {
+                setPedido({ numero: 0, items: carrito, total: totalPrecio });
+                setResultado("error");
+            }
+        } else {
+            const numero = Math.floor(100000 + Math.random() * 900000);
+            setPedido({ numero, items: carrito, total: totalPrecio });
+            setResultado("error");
+        }
     }
 
     if (resultado) {
