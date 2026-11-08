@@ -1,9 +1,26 @@
+import { useState, useEffect } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import TarjetaProducto from "../components/TarjetaProducto";
-import { productos, productosEnOferta, DESCUENTO_OFERTA } from "../utils/productos";
+import { obtenerProductos } from "../services/productosApi";
+
+const productosEnOferta = ["ME001", "ME005", "ME010", "ME013", "ME016", "ME021"];
+const DESCUENTO_OFERTA = 0.2;
 
 function Ofertas() {
-    const ofertas = productos.filter((p) => productosEnOferta.includes(p.id));
+    const [productos, setProductos] = useState([]);
+    const [cargando, setCargando] = useState(true);
+
+    useEffect(() => {
+        obtenerProductos()
+            .then(setProductos)
+            .finally(() => setCargando(false));
+    }, []);
+
+    const ofertas = productos.filter((p) => productosEnOferta.includes(p.codigo));
+
+    if (cargando) {
+        return <main><Container className="mb-5"><p className="text-center">Cargando...</p></Container></main>;
+    }
 
     return (
         <main>
