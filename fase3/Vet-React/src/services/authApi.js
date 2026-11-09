@@ -1,15 +1,9 @@
-const AUTH_URL = import.meta.env.VITE_AUTH_URL ?? 'http://localhost:8081'
-const TOKEN_KEY = 'token'
-const REFRESH_KEY = 'refreshToken'
+import { peticion } from './apiClient'
+import { obtenerToken } from './sesion'
 
-export const guardarToken = (token) => localStorage.setItem(TOKEN_KEY, token)
-export const obtenerToken = () => localStorage.getItem(TOKEN_KEY)
-export const guardarRefreshToken = (token) => localStorage.setItem(REFRESH_KEY, token)
-export const obtenerRefreshToken = () => localStorage.getItem(REFRESH_KEY)
-export const borrarSesion = () => {
-    localStorage.removeItem(TOKEN_KEY)
-    localStorage.removeItem(REFRESH_KEY)
-}
+export {
+    guardarToken, obtenerToken, guardarRefreshToken, obtenerRefreshToken, borrarSesion,
+} from './sesion'
 
 const MENSAJES_POR_ESTADO = {
     400: 'Los datos enviados no son válidos.',
@@ -18,28 +12,15 @@ const MENSAJES_POR_ESTADO = {
 }
 
 export async function apiMe() {
-    const token = obtenerToken()
-    if (!token) throw new Error('Sin sesión activa.')
+    if (!obtenerToken()) throw new Error('Sin sesión activa.')
 
-    const respuesta = await fetch(`${AUTH_URL}/api/v1/users/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-    })
+    const respuesta = await peticion('/api/v1/users/me', { autenticada: true })
     if (!respuesta.ok) throw new Error('Sesión inválida.')
     return respuesta.json()
 }
 
 async function post(ruta, cuerpo) {
-    let respuesta
-    try {
-        respuesta = await fetch(`${AUTH_URL}${ruta}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(cuerpo),
-        })
-    } catch {
-        throw new Error('No se pudo conectar con el servidor. Intenta nuevamente.')
-    }
-
+    const respuesta = await peticion(ruta, { method: 'POST', cuerpo })
     if (!respuesta.ok) {
         throw new Error(MENSAJES_POR_ESTADO[respuesta.status] ?? 'Ocurrió un error inesperado en el servidor.')
     }

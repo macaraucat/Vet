@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { productos } from '../utils/productos'
 import { useAuthContext } from '../context/AuthContext'
-import { obtenerToken } from '../services/authApi'
+import { peticion } from '../services/apiClient'
 
-const API_URL = `${import.meta.env.VITE_USERS_URL ?? 'http://localhost:8080'}/api/v1/users`
+const RUTA_USUARIOS = '/api/v1/users'
+
 const stockInicial = [45, 30, 28, 60, 40, 35, 80, 50, 55, 30, 25, 20, 18, 40, 35, 15, 22, 48, 60, 36, 30, 25]
 
 const productosIniciales = productos.map((producto, index) => ({
@@ -92,15 +93,8 @@ function useAdmin() {
         setFeedback({ variant: 'success', message: 'Producto eliminado correctamente.' })
     }
 
-    async function apiUsuarios(url, opciones = {}) {
-        const token = obtenerToken()
-        const res = await fetch(url, {
-            ...opciones,
-            headers: {
-                ...(opciones.body ? { 'Content-Type': 'application/json' } : {}),
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
-        })
+    async function apiUsuarios(ruta, opciones = {}) {
+        const res = await peticion(ruta, { ...opciones, autenticada: true })
         if (res.status === 401) logout()
         return res
     }
@@ -108,7 +102,7 @@ function useAdmin() {
     async function cargarUsuarios() {
         setCargandoUsuarios(true)
         try {
-            const res = await apiUsuarios(API_URL)
+            const res = await apiUsuarios(RUTA_USUARIOS)
             if (!res.ok) throw new Error('Error al consultar usuarios')
             const datos = await res.json()
             setUsuarios(datos)
@@ -158,9 +152,9 @@ function useAdmin() {
         }
 
         try {
-            const res = await apiUsuarios(esModificar ? `${API_URL}/${modal.idOriginal}` : API_URL, {
+            const res = await apiUsuarios(esModificar ? `${RUTA_USUARIOS}/${modal.idOriginal}` : RUTA_USUARIOS, {
                 method: esModificar ? 'PUT' : 'POST',
-                body: JSON.stringify(body),
+                cuerpo: body,
             })
             if (!res.ok) {
                 const error = await res.json().catch(() => null)
@@ -179,7 +173,7 @@ function useAdmin() {
     async function eliminarUsuario() {
         if (usuarioSeleccionado === null) return
         try {
-            const res = await apiUsuarios(`${API_URL}/${usuarioSeleccionado}`, { method: 'DELETE' })
+            const res = await apiUsuarios(`${RUTA_USUARIOS}/${usuarioSeleccionado}`, { method: 'DELETE' })
             if (!res.ok) {
                 const error = await res.json().catch(() => null)
                 setFeedback({ variant: 'danger', message: error?.message || 'No se pudo eliminar el usuario.' })

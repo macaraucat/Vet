@@ -84,7 +84,7 @@ function Header() {
 
                         <Nav.Link as={Link} to="/ofertas" onClick={scrollToTop}>Ofertas</Nav.Link>
 
-                        {['Funcionario', 'Administrador'].includes(usuario?.role) && (
+                        {['FUNCIONARIO', 'ADMINISTRADOR'].includes(usuario?.role) && (
                             <Nav.Link as={Link} to="/admin" onClick={scrollToTop}>Administración</Nav.Link>
                         )}
                         <Nav.Link as={Link} to="/#nosotros">Nosotros</Nav.Link>
