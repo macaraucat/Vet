@@ -42,7 +42,6 @@ const secciones = [
     { id: 'perfil', label: 'Perfil' },
 ]
 
-// ... (las configuraciones de columnasProductos, columnasUsuarios, columnasCitas, ESTILO_BOTON, etc., se mantienen igual)
 const columnasProductos = [
     { titulo: 'SKU', render: (p) => p.sku },
     { titulo: 'Nombre', render: (p) => p.nombre },
@@ -107,7 +106,6 @@ function SeccionAdmin({ id, titulo, acciones, children }) {
     )
 }
 
-// ... (TablaSeleccionable, Campo, CampoSelect, ModalFormulario, confirmarYEjecutar, TarjetaKPI, PerfilUsuario se mantienen igual)
 function TablaSeleccionable({ name, descripcion, columnas, filas, getId, getAriaLabel, seleccionado, onSeleccionar }) {
     return (
         <Table bordered hover responsive className="align-middle mb-0 admin-tabla">
@@ -240,7 +238,6 @@ function PerfilUsuario({ onLogout }) {
     )
 }
 
-// --- COMPONENTE DEL MENÚ LATERAL REUTILIZABLE ---
 function SidebarMenu({ tabActual, setTabActual, seccionesVisibles, admin }) {
     return (
         <Nav
@@ -303,12 +300,11 @@ function Admin() {
     const handleTabClick = (id) => {
         setTabActual(id)
         admin.setFeedback(null)
-        setMostrarSidebar(false) // Cierra el menú en móvil al hacer clic
+        setMostrarSidebar(false)
     }
 
     return (
         <div className="admin-layout">
-            {/* Botón menú móvil */}
             <div className="d-md-none bg-verde text-white p-3 d-flex align-items-center shadow-sm" style={{ zIndex: 1050 }}>
                 <Button variant="link" className="text-white p-0 me-3 border-0" onClick={() => setMostrarSidebar(true)}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" className="bi bi-list" viewBox="0 0 16 16">
@@ -318,13 +314,11 @@ function Admin() {
                 <span className="fw-bold">Panel de Administración</span>
             </div>
 
-            {/* Sidebar Desktop */}
             <aside className="admin-sidebar-wrapper d-none d-md-flex">
                 <h5 className="admin-sidebar-title">Panel de Administración</h5>
                 <SidebarMenu tabActual={tabActual} setTabActual={handleTabClick} seccionesVisibles={seccionesVisibles} admin={admin} />
             </aside>
 
-            {/* Sidebar Mobile (Offcanvas) */}
             <Offcanvas show={mostrarSidebar} onHide={() => setMostrarSidebar(false)} className="admin-offcanvas bg-verde">
                 <Offcanvas.Header closeButton closeVariant="white" className="border-bottom border-light">
                     <Offcanvas.Title className="text-white fw-bold">Menú</Offcanvas.Title>
@@ -334,7 +328,6 @@ function Admin() {
                 </Offcanvas.Body>
             </Offcanvas>
 
-            {/* Área de contenido principal */}
             <main className="admin-content-area">
                 <div className="admin-content-inner">
                     {admin.feedback && (
@@ -470,7 +463,6 @@ function Admin() {
                 </div>
             </main>
 
-            {/* Modales */}
             <ModalFormulario id="admin-producto-modal" size="lg" show={admin.modal?.tipo === 'producto'} onHide={cerrarModal} onSubmit={admin.guardarProducto}
                              titulo={esAgregar ? 'Agregar Producto' : 'Modificar Producto'}>
                 <Campo id="producto-sku" label="Código producto (SKU)" required value={pf.sku} onChange={(v) => setP({ sku: v })} placeholder="Ej: ME023" />
