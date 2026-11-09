@@ -1,7 +1,11 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { apiLogin, apiRegistro, guardarToken, obtenerToken, borrarToken } from '../services/authApi'
+import {
+    apiLogin, apiRegistro, apiRefresh,
+    guardarToken, guardarRefreshToken, obtenerRefreshToken, borrarSesion,
+} from '../services/authApi'
 
 const AuthContext = createContext(null)
+const MARGEN_RENOVACION = 30_000 // renueva 30 s antes de expirar
 
 function decodificarToken(token) {
     try {
@@ -29,32 +33,58 @@ function decodificarToken(token) {
 }
 
 function cargarSesion() {
-    const token = obtenerToken()
-    if (!token) return null
-
-    const sesion = decodificarToken(token)
-    if (!sesion) borrarToken()
-    return sesion
+    const token = localStorage.getItem('token')
+    return token ? decodificarToken(token) : null
 }
 
 export function AuthProvider({ children }) {
     const [usuario, setUsuario] = useState(cargarSesion)
 
+    function cerrarSesion() {
+        borrarSesion()
+        setUsuario(null)
+    }
+
+    async function renovarSesion() {
+        const refreshToken = obtenerRefreshToken()
+        if (!refreshToken) { cerrarSesion(); return }
+
+        try {
+            const { token, refreshToken: nuevoRefresh } = await apiRefresh(refreshToken)
+            const sesion = decodificarToken(token)
+
+            if (sesion) {
+                guardarToken(token)
+                guardarRefreshToken(nuevoRefresh)
+                setUsuario(sesion)
+            } else {
+                cerrarSesion()
+            }
+        } catch {
+            cerrarSesion()
+        }
+    }
+
+    useEffect(() => {
+        if (!usuario && obtenerRefreshToken()) renovarSesion()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
     useEffect(() => {
         if (!usuario?.exp) return
-        const cerrarSesion = () => { borrarToken(); setUsuario(null) }
-        const restante = usuario.exp * 1000 - Date.now()
-        const timer = setTimeout(cerrarSesion, Math.min(Math.max(restante, 0), 2_147_483_647))
+        const espera = Math.min(Math.max(usuario.exp * 1000 - MARGEN_RENOVACION - Date.now(), 0), 2_147_483_647)
+        const timer = setTimeout(() => { renovarSesion() }, espera)
         return () => clearTimeout(timer)
     }, [usuario])
 
     async function login(email, pass) {
         try {
-            const { token } = await apiLogin(email.trim().toLowerCase(), pass)
+            const { token, refreshToken } = await apiLogin(email.trim().toLowerCase(), pass)
             const sesion = decodificarToken(token)
             if (!sesion) return { ok: false, error: 'No se pudo iniciar sesión. Intenta nuevamente.' }
 
             guardarToken(token)
+            guardarRefreshToken(refreshToken)
             setUsuario(sesion)
             return { ok: true }
         } catch (e) {
@@ -64,7 +94,7 @@ export function AuthProvider({ children }) {
 
     async function registrar(datos) {
         try {
-            await apiRegistro({
+            const { token, refreshToken } = await apiRegistro({
                 run: datos.run.trim().toUpperCase(),
                 nombre: datos.nombre.trim(),
                 apellidos: datos.apellidos.trim(),
@@ -75,6 +105,9 @@ export function AuthProvider({ children }) {
                 direccion: datos.direccion.trim(),
                 password: datos.pass,
             })
+            guardarToken(token)
+            guardarRefreshToken(refreshToken)
+            setUsuario(decodificarToken(token))
             return { ok: true }
         } catch (e) {
             return { ok: false, error: e.message }
@@ -82,8 +115,7 @@ export function AuthProvider({ children }) {
     }
 
     function logout() {
-        borrarToken()
-        setUsuario(null)
+        cerrarSesion()
     }
 
     const primerNombre = usuario ? usuario.nombre.trim().split(/\s+/)[0] : ''

@@ -15,21 +15,35 @@ import java.util.Date;
 public class JwtService {
     private final SecretKey key;
     private final long exp;
+    private final long refreshExp;
 
-    public JwtService(@Value("${jwt.secret}") String secret, @Value("${jwt.expiration}") long exp) {
+    public JwtService(@Value("${jwt.secret}") String secret,
+                      @Value("${jwt.expiration}") long exp,
+                      @Value("${jwt.refresh-expiration}") long refreshExp) {
         this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
         this.exp = exp;
+        this.refreshExp = refreshExp;
     }
 
     public String generarToken(String email, Long id, Rol rol, String nombre) {
         Date ahora = new Date();
+        return construir(email, id, rol, nombre, "access", ahora, new Date(ahora.getTime() + exp));
+    }
+
+    public String generarRefreshToken(String email, Long id, Rol rol, String nombre) {
+        Date ahora = new Date();
+        return construir(email, id, rol, nombre, "refresh", ahora, new Date(ahora.getTime() + refreshExp));
+    }
+
+    private String construir(String email, Long id, Rol rol, String nombre, String tipo, Date emision, Date expiracion) {
         return Jwts.builder()
                 .subject(email)
                 .claim("id", id)
                 .claim("rol", rol.name())
                 .claim("nombre", nombre)
-                .issuedAt(ahora)
-                .expiration(new Date(ahora.getTime() + exp))
+                .claim("tipo", tipo)
+                .issuedAt(emision)
+                .expiration(expiracion)
                 .signWith(key)
                 .compact();
     }
@@ -40,5 +54,9 @@ public class JwtService {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+    }
+
+    public boolean esRefreshToken(Claims claims) {
+        return "refresh".equals(claims.get("tipo", String.class));
     }
 }
