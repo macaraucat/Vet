@@ -67,7 +67,7 @@ function Checkout() {
         setErrores(nuevosErrores);
         if (Object.keys(nuevosErrores).length > 0) return;
 
-        const pagoCorrecto = Math.random() > 0.2;
+        const pagoCorrecto = true;
 
         if (pagoCorrecto) {
             try {
