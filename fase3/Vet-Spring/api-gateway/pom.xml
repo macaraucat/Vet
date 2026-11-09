@@ -13,9 +13,17 @@
 	<version>0.0.1-SNAPSHOT</version>
 
 	<dependencies>
+		<!-- Gateway (WebFlux + Reactor Netty) -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-gateway-server-webflux</artifactId>
+		</dependency>
+
+		<!-- Swagger UI agregado -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
+			<version>3.2.0</version>
 		</dependency>
 
 		<!-- Test -->
@@ -23,6 +31,16 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>com.vaadin.external.google</groupId>
+					<artifactId>android-json</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.minidev</groupId>
+					<artifactId>json-smart</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 
