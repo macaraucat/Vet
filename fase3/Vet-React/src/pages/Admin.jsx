@@ -3,6 +3,7 @@ import { Alert, Badge, Button, Card, Col, Container, Form, Modal, Nav, Row, Stac
 import { useNavigate } from 'react-router-dom'
 import { useAuthContext } from '../context/AuthContext'
 import { REGIONES, REGION_COMUNAS } from '../utils/validaciones'
+import { apiMe } from '../services/authApi'
 import useAdmin from '../hooks/useAdmin'
 
 const CATEGORIAS = ['Antibióticos', 'Antiparasitarios', 'Antiinflamatorios', 'Dermatología', 'Digestivo', 'Cardíaco', 'Analgésicos', 'Vacunas', 'Suplementos']
@@ -15,10 +16,12 @@ const precioCLP = new Intl.NumberFormat('es-CL')
 const formatearFecha = (fecha) => fecha?.split('-').reverse().join('-')
 
 const secciones = [
-    { id: 'productos', label: 'Gestión de Productos' },
-    { id: 'usuarios', label: 'Gestión de Usuarios' },
+    { id: 'dashboard', label: 'Dashboard' },
+    { id: 'usuarios', label: 'Usuarios' },
+    { id: 'productos', label: 'Productos' },
     { id: 'citas', label: 'Citas' },
     { id: 'mensajes', label: 'Mensajes' },
+    { id: 'perfil', label: 'Perfil' },
 ]
 
 const columnasProductos = [
@@ -148,18 +151,78 @@ async function confirmarYEjecutar(mensaje, accion) {
     }
 }
 
+function TarjetaKPI({ valor, etiqueta, cargando }) {
+    return (
+        <Card className="shadow-sm h-100 text-center">
+            <Card.Body>
+                <Card.Title as="h3" className="text-success mb-2">
+                    {cargando ? '…' : valor}
+                </Card.Title>
+                <Card.Text className="text-muted mb-0">{etiqueta}</Card.Text>
+            </Card.Body>
+        </Card>
+    )
+}
+
+function PerfilUsuario({ onLogout }) {
+    const [datos, setDatos] = useState(null)
+    const [error, setError] = useState('')
+    const [cargando, setCargando] = useState(true)
+
+    useEffect(() => {
+        let activo = true
+        apiMe()
+            .then((d) => { if (activo) setDatos(d) })
+            .catch((e) => { if (activo) setError(e.message || 'No se pudo cargar el perfil.') })
+            .finally(() => { if (activo) setCargando(false) })
+        return () => { activo = false }
+    }, [])
+
+    if (cargando) return <Alert variant="info" className="mb-0">Cargando perfil...</Alert>
+    if (error) return <Alert variant="danger" className="mb-0">{error}</Alert>
+    if (!datos) return null
+
+    return (
+        <>
+            <Row className="g-3 mb-3">
+                <Col xs={12} md={6}>
+                    <p className="mb-1"><strong>RUN:</strong> {datos.run || '—'}</p>
+                    <p className="mb-1"><strong>Nombre:</strong> {datos.nombre} {datos.apellidos}</p>
+                    <p className="mb-1"><strong>Correo:</strong> {datos.email}</p>
+                    <p className="mb-1"><strong>Fecha de nacimiento:</strong> {formatearFecha(datos.fechaNac) || '—'}</p>
+                </Col>
+                <Col xs={12} md={6}>
+                    <p className="mb-1"><strong>Rol:</strong> {datos.rol}</p>
+                    <p className="mb-1"><strong>Región:</strong> {datos.region || '—'}</p>
+                    <p className="mb-1"><strong>Comuna:</strong> {datos.comuna || '—'}</p>
+                    <p className="mb-1"><strong>Dirección:</strong> {datos.direccion || '—'}</p>
+                </Col>
+            </Row>
+            <div className="text-end">
+                <Button variant="outline-danger" onClick={onLogout}>Cerrar sesión</Button>
+            </div>
+        </>
+    )
+}
+
 function Admin() {
-    const { usuario } = useAuthContext()
+    const { usuario, logout } = useAuthContext()
     const navigate = useNavigate()
-    const [tabActual, setTabActual] = useState('productos')
+    const [tabActual, setTabActual] = useState('dashboard')
     const admin = useAdmin()
     const esFuncionario = usuario?.role === 'FUNCIONARIO'
     const tienePermiso = ROLES_PANEL.includes(usuario?.role)
+    const totalMensajes = 0 // placeholder hasta backend de mensajes
 
     useEffect(() => {
         if (!usuario) navigate('/login', { replace: true })
         else if (!tienePermiso) navigate('/', { replace: true })
     }, [navigate, usuario, tienePermiso])
+
+    // Si el rol actual no puede ver la tab activa, volver a dashboard
+    useEffect(() => {
+        if (esFuncionario && tabActual === 'usuarios') setTabActual('dashboard')
+    }, [esFuncionario, tabActual])
 
     if (!usuario || !tienePermiso) return null
 
@@ -170,10 +233,18 @@ function Admin() {
     const setC = (cambios) => admin.setCitaForm({ ...admin.citaForm, ...cambios })
     const { productoForm: pf, usuarioForm: uf, citaForm: cf } = admin
 
+    const seccionesVisibles = secciones.filter(({ id }) => !(esFuncionario && id === 'usuarios'))
+
+    const handleLogout = () => {
+        logout()
+        navigate('/login', { replace: true })
+    }
+
     return (
         <Container as="main" fluid className="py-3 py-md-4">
             <Row className="g-3">
                 <Col xs={12} md={3} xl={2} className="bg-light p-2 p-md-3 rounded">
+                    <h6 className="mb-3 px-2 text-success">Panel de Administración</h6>
                     <Nav
                         variant="pills"
                         activeKey={tabActual}
@@ -184,7 +255,7 @@ function Admin() {
                             admin.setFeedback(null)
                         }}
                     >
-                        {secciones.filter(({ id }) => id !== 'usuarios' || !esFuncionario).map(({ id, label }) => (
+                        {seccionesVisibles.map(({ id, label }) => (
                             <Nav.Item key={id}>
                                 <Nav.Link as="button" type="button" eventKey={id} className="text-start text-nowrap">{label}</Nav.Link>
                             </Nav.Item>
@@ -197,6 +268,40 @@ function Admin() {
                         <Alert variant={admin.feedback.variant} dismissible onClose={() => admin.setFeedback(null)}>
                             {admin.feedback.message}
                         </Alert>
+                    )}
+
+                    {tabActual === 'dashboard' && (
+                        <SeccionAdmin id="dashboard" titulo="Dashboard">
+                            <Row className="g-3">
+                                {!esFuncionario && (
+                                    <Col xs={12} sm={6} xl={3}>
+                                        <TarjetaKPI
+                                            valor={admin.usuarios.length}
+                                            etiqueta="Usuarios registrados"
+                                            cargando={admin.cargandoUsuarios}
+                                        />
+                                    </Col>
+                                )}
+                                <Col xs={12} sm={6} xl={3}>
+                                    <TarjetaKPI
+                                        valor={admin.productosAdmin.length}
+                                        etiqueta="Productos en catálogo"
+                                    />
+                                </Col>
+                                <Col xs={12} sm={6} xl={3}>
+                                    <TarjetaKPI
+                                        valor={admin.citas.length}
+                                        etiqueta="Citas registradas"
+                                    />
+                                </Col>
+                                <Col xs={12} sm={6} xl={3}>
+                                    <TarjetaKPI
+                                        valor={totalMensajes}
+                                        etiqueta="Mensajes recibidos"
+                                    />
+                                </Col>
+                            </Row>
+                        </SeccionAdmin>
                     )}
 
                     {tabActual === 'productos' && (
@@ -277,6 +382,12 @@ function Admin() {
                     {tabActual === 'mensajes' && (
                         <SeccionAdmin id="mensajes" titulo="Mensajes">
                             <Alert variant="info" className="mb-0">No hay mensajes nuevos por el momento.</Alert>
+                        </SeccionAdmin>
+                    )}
+
+                    {tabActual === 'perfil' && (
+                        <SeccionAdmin id="perfil" titulo="Mi Perfil">
+                            <PerfilUsuario onLogout={handleLogout} />
                         </SeccionAdmin>
                     )}
                 </Col>

@@ -6,5 +6,6 @@ coverage
 *.iml
 
 .env
+!**/.env.example
 
 target/

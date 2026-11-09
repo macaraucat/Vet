@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { Alert } from 'react-bootstrap'
 import Header from './components/Header'
 import Footer from './components/Footer'
@@ -22,26 +22,37 @@ function AvisoCarrito() {
     );
 }
 
+function Shell() {
+    const { pathname } = useLocation();
+    const esAdmin = pathname.startsWith('/admin');
+
+    return (
+        <>
+            {!esAdmin && <Header />}
+            <AvisoCarrito />
+            <Routes>
+                <Route path="/" element={<Index />}/>
+                <Route path="/login" element={<Login />} />
+                <Route path="/catalogo" element={<Catalogo />}/>
+                <Route path="/producto/:id" element={<Producto />}/>
+                <Route path="/carrito" element={<Carrito />}/>
+                <Route path="/admin" element={<Admin />}/>
+                <Route path="/checkout" element={<Checkout />}/>
+                <Route path="/ofertas" element={<Ofertas />}/>
+            </Routes>
+            {!esAdmin && <Footer />}
+        </>
+    );
+}
+
 function App() {
     return (
         <CarritoProvider>
             <BrowserRouter>
-                <Header />
-                <AvisoCarrito />
-                <Routes>
-                    <Route path="/" element={<Index />}/>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/catalogo" element={<Catalogo />}/>
-                    <Route path="/producto/:id" element={<Producto />}/>
-                    <Route path="/carrito" element={<Carrito />}/>
-                    <Route path="/admin" element={<Admin />}/>
-                    <Route path="/checkout" element={<Checkout />}/>
-                    <Route path="/ofertas" element={<Ofertas />}/>
-                </Routes>
-                <Footer />
+                <Shell />
             </BrowserRouter>
         </CarritoProvider>
-    )
+    );
 }
 
 export default App
