@@ -24,6 +24,12 @@ public class UsuarioController {
         return service.listar();
     }
 
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public UsuarioResponse miPerfil(Authentication auth) {
+        return service.obtenerPorEmail(auth.getName());
+    }
+
     @GetMapping("/{id}")
     public UsuarioResponse obtener(@PathVariable Long id) {
         return service.obtener(id);

@@ -17,6 +17,17 @@ const MENSAJES_POR_ESTADO = {
     409: 'El correo o el RUN ya están registrados.',
 }
 
+export async function apiMe() {
+    const token = obtenerToken()
+    if (!token) throw new Error('Sin sesión activa.')
+
+    const respuesta = await fetch(`${AUTH_URL}/api/v1/users/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+    })
+    if (!respuesta.ok) throw new Error('Sesión inválida.')
+    return respuesta.json()
+}
+
 async function post(ruta, cuerpo) {
     let respuesta
     try {

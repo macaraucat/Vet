@@ -29,6 +29,13 @@ public class UsuarioService {
         return UsuarioResponse.desde(buscar(id));
     }
 
+    @Transactional(readOnly = true)
+    public UsuarioResponse obtenerPorEmail(String email) {
+        return repo.findByEmail(normalizarEmail(email))
+                .map(UsuarioResponse::desde)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado."));
+    }
+
     @Transactional
     public UsuarioResponse crear(UsuarioRequest r) {
         if (r.password() == null || r.password().isBlank()) {

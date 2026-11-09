@@ -21,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtAuthentication extends OncePerRequestFilter {
     private static final String BEARER = "Bearer ";
+    private static final String TIPO_ACCESS = "access";
     private final JwtService jwt;
 
     @Override
@@ -31,6 +32,10 @@ public class JwtAuthentication extends OncePerRequestFilter {
         if (header != null && header.startsWith(BEARER)) {
             try {
                 Claims c = jwt.extraerClaims(header.substring(BEARER.length()));
+
+                if (!TIPO_ACCESS.equals(c.get("tipo", String.class))) {
+                    throw new JwtException("Se requiere un token de acceso");
+                }
 
                 String rol = c.get("rol", String.class);
                 if (rol == null || rol.isBlank()) {
