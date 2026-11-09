@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Import;
 @SpringBootApplication(scanBasePackages = "cl.vet")
 @Import(OpenApiConfig.class)
 public class UserServiceApplication {
-	static void main(String[] args) {
+	public static void main(String[] args) {
 		SpringApplication.run(UserServiceApplication.class, args);
 	}
 }
