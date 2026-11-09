@@ -1,9 +1,15 @@
 const AUTH_URL = import.meta.env.VITE_AUTH_URL ?? 'http://localhost:8081'
 const TOKEN_KEY = 'token'
+const REFRESH_KEY = 'refreshToken'
 
 export const guardarToken = (token) => localStorage.setItem(TOKEN_KEY, token)
 export const obtenerToken = () => localStorage.getItem(TOKEN_KEY)
-export const borrarToken = () => localStorage.removeItem(TOKEN_KEY)
+export const guardarRefreshToken = (token) => localStorage.setItem(REFRESH_KEY, token)
+export const obtenerRefreshToken = () => localStorage.getItem(REFRESH_KEY)
+export const borrarSesion = () => {
+    localStorage.removeItem(TOKEN_KEY)
+    localStorage.removeItem(REFRESH_KEY)
+}
 
 const MENSAJES_POR_ESTADO = {
     400: 'Los datos enviados no son válidos.',
@@ -29,6 +35,6 @@ async function post(ruta, cuerpo) {
     return respuesta.json()
 }
 
-export const apiLogin = (email, password) => post('/api/auth/login', { email, password })
-
-export const apiRegistro = (datos) => post('/api/auth/registro', datos)
+export const apiLogin = (email, password) => post('/api/v1/auth/login', { email, password })
+export const apiRegistro = (datos) => post('/api/v1/auth/registro', datos)
+export const apiRefresh = (refreshToken) => post('api/v1/auth/refresh', { refreshToken })

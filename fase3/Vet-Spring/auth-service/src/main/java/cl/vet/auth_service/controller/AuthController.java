@@ -2,6 +2,7 @@ package cl.vet.auth_service.controller;
 
 import cl.vet.auth_service.dto.AuthResponse;
 import cl.vet.auth_service.dto.LoginRequest;
+import cl.vet.auth_service.dto.RefreshRequest;
 import cl.vet.auth_service.dto.RegistroRequest;
 import cl.vet.auth_service.service.AuthService;
 import jakarta.validation.Valid;
@@ -10,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -25,5 +26,10 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     public AuthResponse registro(@Valid @RequestBody RegistroRequest req) {
         return service.registrar(req);
+    }
+
+    @PostMapping("/refresh")
+    public AuthResponse refresh(@Valid @RequestBody RefreshRequest req) {
+        return service.refrescar(req.refreshToken());
     }
 }
