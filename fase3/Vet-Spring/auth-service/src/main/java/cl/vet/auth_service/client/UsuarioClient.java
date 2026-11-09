@@ -14,9 +14,9 @@ import java.util.Optional;
 @FeignClient(name = "user-service", url = "${user.service.url}", configuration = UserFeignConfig.class, dismiss404 = true)
 public interface UsuarioClient {
 
-    @GetMapping("/api/usuarios/internal/email/{email}")
+    @GetMapping("/api/v1/users/internal/{email}")
     Optional<UsuarioInternoResponse> buscarPorEmail(@PathVariable("email") String email);
 
-    @PostMapping("/api/usuarios/internal")
+    @PostMapping("/api/v1/users/internal")
     UsuarioInternoResponse crear(@RequestBody UsuarioInternoRequest request);
 }

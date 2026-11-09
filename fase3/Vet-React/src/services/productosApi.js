@@ -1,13 +1,7 @@
-const PRODUCTOS_URL = import.meta.env.VITE_PRODUCTOS_URL ?? 'http://localhost:8083'
+import { peticion } from './apiClient'
 
 async function get(ruta) {
-    let respuesta
-    try {
-        respuesta = await fetch(`${PRODUCTOS_URL}${ruta}`)
-    } catch {
-        throw new Error('No se pudo conectar con el servidor. Intenta nuevamente.')
-    }
-
+    const respuesta = await peticion(ruta)
     if (!respuesta.ok) {
         throw new Error('Ocurrió un error al obtener los productos.')
     }
@@ -15,5 +9,4 @@ async function get(ruta) {
 }
 
 export const obtenerProductos = () => get('/api/productos')
-
 export const obtenerProductoPorId = (id) => get(`/api/productos/${id}`)
