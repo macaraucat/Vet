@@ -3,7 +3,7 @@ import { productos } from '../utils/productos'
 import { useAuthContext } from '../context/AuthContext'
 import { obtenerToken } from '../services/authApi'
 
-const API_URL = `${import.meta.env.VITE_USERS_URL ?? 'http://localhost:8080'}/api/usuarios`
+const API_URL = `${import.meta.env.VITE_USERS_URL ?? 'http://localhost:8080'}/api/v1/users`
 const stockInicial = [45, 30, 28, 60, 40, 35, 80, 50, 55, 30, 25, 20, 18, 40, 35, 15, 22, 48, 60, 36, 30, 25]
 
 const productosIniciales = productos.map((producto, index) => ({

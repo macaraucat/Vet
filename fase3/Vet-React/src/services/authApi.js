@@ -37,4 +37,4 @@ async function post(ruta, cuerpo) {
 
 export const apiLogin = (email, password) => post('/api/v1/auth/login', { email, password })
 export const apiRegistro = (datos) => post('/api/v1/auth/registro', datos)
-export const apiRefresh = (refreshToken) => post('api/v1/auth/refresh', { refreshToken })
+export const apiRefresh = (refreshToken) => post('/api/v1/auth/refresh', { refreshToken })
