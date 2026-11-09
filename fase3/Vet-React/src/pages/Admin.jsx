@@ -15,6 +15,15 @@ const COLOR_ESTADO = { Confirmada: 'success', Anulada: 'secondary' }
 const precioCLP = new Intl.NumberFormat('es-CL')
 const formatearFecha = (fecha) => fecha?.split('-').reverse().join('-')
 
+const ICONOS = {
+    dashboard: '/img/icons/dashboard.svg',
+    usuarios: '/img/icons/usuarios.svg',
+    productos: '/img/icons/productos.svg',
+    citas: '/img/icons/citas.svg',
+    mensajes: '/img/icons/mensajes.svg',
+    perfil: '/img/icons/perfil.svg',
+}
+
 const secciones = [
     { id: 'dashboard', label: 'Dashboard' },
     { id: 'usuarios', label: 'Usuarios' },
@@ -54,8 +63,20 @@ const columnasCitas = [
     { titulo: 'Estado cita', render: (c) => <Badge bg={COLOR_ESTADO[c.estado] ?? 'warning'}>{c.estado}</Badge> },
 ]
 
-function BotonAdmin(props) {
-    return <Button className="admin-action-button" {...props} />
+const ESTILO_BOTON = {
+    primario: 'admin-btn-primario',
+    secundario: 'admin-btn-secundario',
+    peligro: 'admin-btn-peligro',
+}
+
+function BotonAdmin({ tipo = 'secundario', className = '', ...props }) {
+    return (
+        <Button
+            variant=""
+            className={`admin-action-button ${ESTILO_BOTON[tipo] ?? 'admin-btn-secundario'} ${className}`.trim()}
+            {...props}
+        />
+    )
 }
 
 function SeccionAdmin({ id, titulo, acciones, children }) {
@@ -63,7 +84,7 @@ function SeccionAdmin({ id, titulo, acciones, children }) {
         <section aria-labelledby={`admin-${id}-title`}>
             <Card className="shadow-sm">
                 <Card.Header className="bg-white border-0 pb-0">
-                    <Card.Title as="h2" id={`admin-${id}-title`} className="h4 text-success mb-0">{titulo}</Card.Title>
+                    <Card.Title as="h2" id={`admin-${id}-title`} className="h4 admin-titulo mb-0">{titulo}</Card.Title>
                 </Card.Header>
                 <Card.Body>
                     {acciones && <Stack direction="horizontal" gap={2} className="admin-actions mb-3">{acciones}</Stack>}
@@ -76,7 +97,7 @@ function SeccionAdmin({ id, titulo, acciones, children }) {
 
 function TablaSeleccionable({ name, descripcion, columnas, filas, getId, getAriaLabel, seleccionado, onSeleccionar }) {
     return (
-        <Table bordered hover responsive className="align-middle mb-0">
+        <Table bordered hover responsive className="align-middle mb-0 admin-tabla">
             <thead>
             <tr>
                 <th className="text-center"><span className="visually-hidden">{descripcion}</span></th>
@@ -108,7 +129,9 @@ function Campo({ id, label, value, onChange, className = 'mb-3', ...props }) {
     return (
         <Form.Group className={className} controlId={id}>
             <Form.Label>{label}</Form.Label>
-            <Form.Control value={value ?? ''} onChange={(e) => onChange(e.target.value)} {...props} />
+            <Form.Control
+                value={value ?? ''}
+                onChange={(e) => onChange(e.target.value)} {...props} />
         </Form.Group>
     )
 }
@@ -134,8 +157,8 @@ function ModalFormulario({ id, show, titulo, onHide, onSubmit, size, textoGuarda
                 </Modal.Header>
                 <Modal.Body>{children}</Modal.Body>
                 <Modal.Footer>
-                    <BotonAdmin variant="secondary" onClick={onHide}>Cancelar</BotonAdmin>
-                    <BotonAdmin variant="primary" type="submit">{textoGuardar}</BotonAdmin>
+                    <BotonAdmin tipo="secundario" onClick={onHide}>Cancelar</BotonAdmin>
+                    <BotonAdmin tipo="primario" type="submit">{textoGuardar}</BotonAdmin>
                 </Modal.Footer>
             </Form>
         </Modal>
@@ -155,7 +178,7 @@ function TarjetaKPI({ valor, etiqueta, cargando }) {
     return (
         <Card className="shadow-sm h-100 text-center">
             <Card.Body>
-                <Card.Title as="h3" className="text-success mb-2">
+                <Card.Title as="h3" className="admin-titulo mb-2">
                     {cargando ? '…' : valor}
                 </Card.Title>
                 <Card.Text className="text-muted mb-0">{etiqueta}</Card.Text>
@@ -199,7 +222,7 @@ function PerfilUsuario({ onLogout }) {
                 </Col>
             </Row>
             <div className="text-end">
-                <Button variant="outline-danger" onClick={onLogout}>Cerrar sesión</Button>
+                <BotonAdmin tipo="peligro" onClick={onLogout}>Cerrar sesión</BotonAdmin>
             </div>
         </>
     )
@@ -212,14 +235,13 @@ function Admin() {
     const admin = useAdmin()
     const esFuncionario = usuario?.role === 'FUNCIONARIO'
     const tienePermiso = ROLES_PANEL.includes(usuario?.role)
-    const totalMensajes = 0 // placeholder hasta backend de mensajes
+    const totalMensajes = 0
 
     useEffect(() => {
         if (!usuario) navigate('/login', { replace: true })
         else if (!tienePermiso) navigate('/', { replace: true })
     }, [navigate, usuario, tienePermiso])
 
-    // Si el rol actual no puede ver la tab activa, volver a dashboard
     useEffect(() => {
         if (esFuncionario && tabActual === 'usuarios') setTabActual('dashboard')
     }, [esFuncionario, tabActual])
@@ -243,12 +265,12 @@ function Admin() {
     return (
         <Container as="main" fluid className="py-3 py-md-4">
             <Row className="g-3">
-                <Col xs={12} md={3} xl={2} className="bg-light p-2 p-md-3 rounded">
-                    <h6 className="mb-3 px-2 text-success">Panel de Administración</h6>
+                <Col xs={12} md={3} xl={2} className="admin-sidebar p-2 p-md-3 rounded">
+                    <h6 className="mb-3 px-2 text-white">Panel de Administración</h6>
                     <Nav
                         variant="pills"
                         activeKey={tabActual}
-                        className="flex-row flex-md-column flex-nowrap gap-2 overflow-auto"
+                        className="admin-sidebar-nav flex-row flex-md-column flex-nowrap gap-2 overflow-auto"
                         onSelect={(id) => {
                             if (!id) return
                             setTabActual(id)
@@ -257,7 +279,15 @@ function Admin() {
                     >
                         {seccionesVisibles.map(({ id, label }) => (
                             <Nav.Item key={id}>
-                                <Nav.Link as="button" type="button" eventKey={id} className="text-start text-nowrap">{label}</Nav.Link>
+                                <Nav.Link
+                                    as="button"
+                                    type="button"
+                                    eventKey={id}
+                                    className="admin-sidebar-link d-flex align-items-center gap-2 text-start text-nowrap"
+                                >
+                                    <img src={ICONOS[id]} alt="" width="24" height="24" />
+                                    <span>{label}</span>
+                                </Nav.Link>
                             </Nav.Item>
                         ))}
                     </Nav>
@@ -283,22 +313,13 @@ function Admin() {
                                     </Col>
                                 )}
                                 <Col xs={12} sm={6} xl={3}>
-                                    <TarjetaKPI
-                                        valor={admin.productosAdmin.length}
-                                        etiqueta="Productos en catálogo"
-                                    />
+                                    <TarjetaKPI valor={admin.productosAdmin.length} etiqueta="Productos en catálogo" />
                                 </Col>
                                 <Col xs={12} sm={6} xl={3}>
-                                    <TarjetaKPI
-                                        valor={admin.citas.length}
-                                        etiqueta="Citas registradas"
-                                    />
+                                    <TarjetaKPI valor={admin.citas.length} etiqueta="Citas registradas" />
                                 </Col>
                                 <Col xs={12} sm={6} xl={3}>
-                                    <TarjetaKPI
-                                        valor={totalMensajes}
-                                        etiqueta="Mensajes recibidos"
-                                    />
+                                    <TarjetaKPI valor={totalMensajes} etiqueta="Mensajes recibidos" />
                                 </Col>
                             </Row>
                         </SeccionAdmin>
@@ -309,9 +330,9 @@ function Admin() {
                             id="productos"
                             titulo="Gestión de Productos"
                             acciones={<>
-                                <BotonAdmin variant="success" onClick={() => admin.abrirProducto('agregar')}>+ Agregar</BotonAdmin>
-                                <BotonAdmin variant="warning" disabled={admin.productoSeleccionado === null} onClick={() => admin.abrirProducto('modificar')}>Modificar</BotonAdmin>
-                                <BotonAdmin variant="danger" disabled={admin.productoSeleccionado === null}
+                                <BotonAdmin tipo="primario" onClick={() => admin.abrirProducto('agregar')}>+ Agregar</BotonAdmin>
+                                <BotonAdmin tipo="secundario" disabled={admin.productoSeleccionado === null} onClick={() => admin.abrirProducto('modificar')}>Modificar</BotonAdmin>
+                                <BotonAdmin tipo="peligro" disabled={admin.productoSeleccionado === null}
                                             onClick={() => confirmarYEjecutar('¿Eliminar el producto seleccionado? Esta acción no se puede deshacer.', admin.eliminarProducto)}>
                                     Eliminar
                                 </BotonAdmin>
@@ -335,9 +356,9 @@ function Admin() {
                             id="usuarios"
                             titulo="Gestión de Usuarios"
                             acciones={<>
-                                <BotonAdmin variant="success" onClick={admin.agregarUsuario}>+ Agregar</BotonAdmin>
-                                <BotonAdmin variant="warning" disabled={admin.usuarioSeleccionado === null} onClick={admin.modificarUsuario}>Modificar</BotonAdmin>
-                                <BotonAdmin variant="danger" disabled={admin.usuarioSeleccionado === null}
+                                <BotonAdmin tipo="primario" onClick={admin.agregarUsuario}>+ Agregar</BotonAdmin>
+                                <BotonAdmin tipo="secundario" disabled={admin.usuarioSeleccionado === null} onClick={admin.modificarUsuario}>Modificar</BotonAdmin>
+                                <BotonAdmin tipo="peligro" disabled={admin.usuarioSeleccionado === null}
                                             onClick={() => confirmarYEjecutar('¿Eliminar el usuario seleccionado? Esta acción no se puede deshacer.', admin.eliminarUsuario)}>
                                     Eliminar
                                 </BotonAdmin>
@@ -361,9 +382,9 @@ function Admin() {
                             id="citas"
                             titulo="Gestión de Citas"
                             acciones={<>
-                                <BotonAdmin variant="success" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Confirmada')}>Confirmar</BotonAdmin>
-                                <BotonAdmin variant="warning" disabled={admin.citaSeleccionada === null} onClick={admin.abrirCita}>Modificar</BotonAdmin>
-                                <BotonAdmin variant="danger" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Anulada')}>Anular</BotonAdmin>
+                                <BotonAdmin tipo="primario" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Confirmada')}>Confirmar</BotonAdmin>
+                                <BotonAdmin tipo="secundario" disabled={admin.citaSeleccionada === null} onClick={admin.abrirCita}>Modificar</BotonAdmin>
+                                <BotonAdmin tipo="peligro" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Anulada')}>Anular</BotonAdmin>
                             </>}
                         >
                             <TablaSeleccionable

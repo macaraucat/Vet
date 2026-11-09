@@ -221,6 +221,91 @@ main {
     font-weight: 600;
 }
 
+/* Sidebar */
+.admin-sidebar {
+    background-color: var(--verde);
+}
+
+.admin-sidebar-nav .nav-link.admin-sidebar-link {
+    background-color: #FAFAFA;
+    color: var(--verde);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-weight: 600;
+    border: none;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-sidebar-nav .nav-link.admin-sidebar-link:hover {
+    background-color: #e6efee;
+    color: var(--verde);
+}
+
+.admin-sidebar-nav .nav-link.admin-sidebar-link.active {
+    background-color: #FAFAFA;
+    color: var(--verde);
+    font-weight: 700;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.55);
+}
+
+.admin-titulo {
+    color: var(--verde);
+}
+
+/* Botones de acción */
+.admin-btn-primario {
+    --bs-btn-color: #FAFAFA;
+    --bs-btn-bg: var(--verde);
+    --bs-btn-border-color: var(--verde);
+    --bs-btn-hover-color: #FAFAFA;
+    --bs-btn-hover-bg: #0f4a48;
+    --bs-btn-hover-border-color: #0f4a48;
+    --bs-btn-focus-shadow-rgb: 20, 94, 92;
+    --bs-btn-active-color: #FAFAFA;
+    --bs-btn-active-bg: #0c3b39;
+    --bs-btn-active-border-color: #0c3b39;
+    --bs-btn-disabled-color: #FAFAFA;
+    --bs-btn-disabled-bg: #6f9f9d;
+    --bs-btn-disabled-border-color: #6f9f9d;
+}
+
+.admin-btn-secundario {
+    --bs-btn-color: var(--verde);
+    --bs-btn-bg: transparent;
+    --bs-btn-border-color: var(--verde);
+    --bs-btn-hover-color: #FAFAFA;
+    --bs-btn-hover-bg: var(--verde);
+    --bs-btn-hover-border-color: var(--verde);
+    --bs-btn-focus-shadow-rgb: 20, 94, 92;
+    --bs-btn-active-color: #FAFAFA;
+    --bs-btn-active-bg: #0f4a48;
+    --bs-btn-active-border-color: #0f4a48;
+    --bs-btn-disabled-color: #6f9f9d;
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: #6f9f9d;
+}
+
+.admin-btn-peligro {
+    --bs-btn-color: #b02a37;
+    --bs-btn-bg: transparent;
+    --bs-btn-border-color: #b02a37;
+    --bs-btn-hover-color: #FAFAFA;
+    --bs-btn-hover-bg: #b02a37;
+    --bs-btn-hover-border-color: #b02a37;
+    --bs-btn-focus-shadow-rgb: 176, 42, 55;
+    --bs-btn-active-color: #FAFAFA;
+    --bs-btn-active-bg: #8c212c;
+    --bs-btn-active-border-color: #8c212c;
+    --bs-btn-disabled-color: #d99aa1;
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: #d99aa1;
+}
+
+/* Tablas responsivas legibles */
+.admin-tabla {
+    min-width: 700px;
+}
+
 /* FOOTER */
 .footer-map,
 .footer-form {
