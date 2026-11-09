@@ -208,8 +208,12 @@ main {
 }
 
 /* ADMIN */
-.admin-main-content {
-    min-width: 0;
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    margin: 0;
+    background-color: #f4f6f8;
 }
 
 .admin-actions {
@@ -221,38 +225,129 @@ main {
     font-weight: 600;
 }
 
-/* Sidebar */
-.admin-sidebar {
+.admin-sidebar-wrapper {
+    width: 240px; /* Más angosto que antes */
+    flex-shrink: 0;
     background-color: var(--verde);
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 0;
+}
+
+.admin-sidebar-title {
+    color: #FAFAFA;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+}
+
+.admin-sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
 }
 
 .admin-sidebar-nav .nav-link.admin-sidebar-link {
+    width: 90%; /* Botones al 90% del ancho del menú */
     background-color: #FAFAFA;
     color: var(--verde);
     border-radius: 0.5rem;
-    padding: 0.5rem 0.75rem;
+    padding: 0.6rem 1rem;
     font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.2s ease;
     border: none;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.admin-sidebar-nav .nav-link.admin-sidebar-link:hover {
-    background-color: #e6efee;
-    color: var(--verde);
-}
-
+.admin-sidebar-nav .nav-link.admin-sidebar-link:hover,
 .admin-sidebar-nav .nav-link.admin-sidebar-link.active {
-    background-color: #FAFAFA;
+    background-color: #ffffff;
     color: var(--verde);
-    font-weight: 700;
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.55);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+.admin-content-area {
+    flex-grow: 1;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.admin-main-content {
+    min-width: 0;
 }
 
 .admin-titulo {
     color: var(--verde);
 }
 
-/* Botones de acción */
+.kpi-icon {
+    width: 36px;
+    height: 36px;
+    opacity: 0.8;
+}
+
+.dashboard-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    cursor: pointer;
+    background-color: #ffffff;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.08);
+    border-color: var(--verde);
+}
+
+.dashboard-card-icon {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 1rem;
+    opacity: 0.85;
+    transition: transform 0.3s ease;
+}
+
+.dashboard-card:hover .dashboard-card-icon {
+    transform: scale(1.1);
+}
+
+.dashboard-card h5 {
+    color: var(--verde);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-card p {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin: 0;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.admin-actions {
+    flex-wrap: wrap;
+}
+
+.admin-action-button {
+    min-width: 7rem;
+    font-weight: 600;
+}
+
 .admin-btn-primario {
     --bs-btn-color: #FAFAFA;
     --bs-btn-bg: var(--verde);

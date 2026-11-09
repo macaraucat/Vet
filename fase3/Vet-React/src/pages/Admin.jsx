@@ -24,6 +24,15 @@ const ICONOS = {
     perfil: '/img/icons/perfil.svg',
 }
 
+const DESCRIPCIONES = {
+    dashboard: 'Visión general de todas las métricas y estadísticas clave del sistema.',
+    usuarios: 'Gestión de cuentas de usuario y sus roles dentro del sistema.',
+    productos: 'Administrar inventario y detalles de los productos disponibles.',
+    citas: 'Gestión y seguimiento de las citas agendadas por los clientes.',
+    mensajes: 'Bandeja de entrada con las consultas enviadas por los clientes.',
+    perfil: 'Administración de la información personal y configuraciones de cuenta.'
+}
+
 const secciones = [
     { id: 'dashboard', label: 'Dashboard' },
     { id: 'usuarios', label: 'Usuarios' },
@@ -82,8 +91,8 @@ function BotonAdmin({ tipo = 'secundario', className = '', ...props }) {
 function SeccionAdmin({ id, titulo, acciones, children }) {
     return (
         <section aria-labelledby={`admin-${id}-title`}>
-            <Card className="shadow-sm">
-                <Card.Header className="bg-white border-0 pb-0">
+            <Card className="shadow-sm border-0">
+                <Card.Header className="bg-white border-0 pt-4 pb-0">
                     <Card.Title as="h2" id={`admin-${id}-title`} className="h4 admin-titulo mb-0">{titulo}</Card.Title>
                 </Card.Header>
                 <Card.Body>
@@ -129,9 +138,7 @@ function Campo({ id, label, value, onChange, className = 'mb-3', ...props }) {
     return (
         <Form.Group className={className} controlId={id}>
             <Form.Label>{label}</Form.Label>
-            <Form.Control
-                value={value ?? ''}
-                onChange={(e) => onChange(e.target.value)} {...props} />
+            <Form.Control value={value ?? ''} onChange={(e) => onChange(e.target.value)} {...props} />
         </Form.Group>
     )
 }
@@ -174,14 +181,15 @@ async function confirmarYEjecutar(mensaje, accion) {
     }
 }
 
-function TarjetaKPI({ valor, etiqueta, cargando }) {
+function TarjetaKPI({ valor, etiqueta, cargando, icono }) {
     return (
-        <Card className="shadow-sm h-100 text-center">
-            <Card.Body>
-                <Card.Title as="h3" className="admin-titulo mb-2">
+        <Card className="shadow-sm h-100 text-center border-0">
+            <Card.Body className="d-flex flex-column align-items-center justify-content-center py-4">
+                {icono && <img src={icono} alt="" className="kpi-icon mb-2" />}
+                <Card.Title as="h3" className="admin-titulo mb-1 fw-bold" style={{ fontSize: '2rem' }}>
                     {cargando ? '…' : valor}
                 </Card.Title>
-                <Card.Text className="text-muted mb-0">{etiqueta}</Card.Text>
+                <Card.Text className="text-muted mb-0 fw-semibold">{etiqueta}</Card.Text>
             </Card.Body>
         </Card>
     )
@@ -263,157 +271,172 @@ function Admin() {
     }
 
     return (
-        <Container as="main" fluid className="py-3 py-md-4">
-            <Row className="g-3">
-                <Col xs={12} md={3} xl={2} className="admin-sidebar p-2 p-md-3 rounded">
-                    <h6 className="mb-3 px-2 text-white">Panel de Administración</h6>
-                    <Nav
-                        variant="pills"
-                        activeKey={tabActual}
-                        className="admin-sidebar-nav flex-row flex-md-column flex-nowrap gap-2 overflow-auto"
-                        onSelect={(id) => {
-                            if (!id) return
-                            setTabActual(id)
-                            admin.setFeedback(null)
-                        }}
+        <div className="admin-layout">
+            <aside className="admin-sidebar-wrapper">
+                <h5 className="admin-sidebar-title">Panel de Administración</h5>
+                <Nav
+                    variant="pills"
+                    activeKey={tabActual}
+                    className="admin-sidebar-nav"
+                    onSelect={(id) => {
+                        if (!id) return
+                        setTabActual(id)
+                        admin.setFeedback(null)
+                    }}
+                >
+                    {seccionesVisibles.map(({ id, label }) => (
+                        <Nav.Item key={id} className="w-100 d-flex justify-content-center">
+                            <Nav.Link
+                                as="button"
+                                type="button"
+                                eventKey={id}
+                                className="admin-sidebar-link"
+                            >
+                                <img src={ICONOS[id]} alt="" width="20" height="20" />
+                                <span>{label}</span>
+                            </Nav.Link>
+                        </Nav.Item>
+                    ))}
+                </Nav>
+            </aside>
+
+            <main className="admin-content-area">
+                {admin.feedback && (
+                    <Alert variant={admin.feedback.variant} dismissible onClose={() => admin.setFeedback(null)}>
+                        {admin.feedback.message}
+                    </Alert>
+                )}
+
+                {tabActual === 'dashboard' && (
+                    <SeccionAdmin id="dashboard" titulo="Dashboard">
+                        <Row className="g-3 mb-4">
+                            {!esFuncionario && (
+                                <Col xs={12} sm={6} xl={3}>
+                                    <TarjetaKPI
+                                        valor={admin.usuarios.length}
+                                        etiqueta="Usuarios registrados"
+                                        cargando={admin.cargandoUsuarios}
+                                        icono={ICONOS.usuarios}
+                                    />
+                                </Col>
+                            )}
+                            <Col xs={12} sm={6} xl={3}>
+                                <TarjetaKPI valor={admin.productosAdmin.length} etiqueta="Productos en catálogo" icono={ICONOS.productos} />
+                            </Col>
+                            <Col xs={12} sm={6} xl={3}>
+                                <TarjetaKPI valor={admin.citas.length} etiqueta="Citas registradas" icono={ICONOS.citas} />
+                            </Col>
+                            <Col xs={12} sm={6} xl={3}>
+                                <TarjetaKPI valor={totalMensajes} etiqueta="Mensajes recibidos" icono={ICONOS.mensajes} />
+                            </Col>
+                        </Row>
+
+                        <Row className="g-3">
+                            {seccionesVisibles.map(({ id, label }) => (
+                                <Col xs={12} sm={6} xl={4} key={id}>
+                                    <div
+                                        className="dashboard-card"
+                                        onClick={() => { setTabActual(id); admin.setFeedback(null); }}
+                                    >
+                                        <img src={ICONOS[id]} alt={label} className="dashboard-card-icon" />
+                                        <h5>{label}</h5>
+                                        <p>{DESCRIPCIONES[id]}</p>
+                                    </div>
+                                </Col>
+                            ))}
+                        </Row>
+                    </SeccionAdmin>
+                )}
+
+                {tabActual === 'productos' && (
+                    <SeccionAdmin
+                        id="productos"
+                        titulo="Gestión de Productos"
+                        acciones={<>
+                            <BotonAdmin tipo="primario" onClick={() => admin.abrirProducto('agregar')}>+ Agregar</BotonAdmin>
+                            <BotonAdmin tipo="secundario" disabled={admin.productoSeleccionado === null} onClick={() => admin.abrirProducto('modificar')}>Modificar</BotonAdmin>
+                            <BotonAdmin tipo="peligro" disabled={admin.productoSeleccionado === null}
+                                        onClick={() => confirmarYEjecutar('¿Eliminar el producto seleccionado? Esta acción no se puede deshacer.', admin.eliminarProducto)}>
+                                Eliminar
+                            </BotonAdmin>
+                        </>}
                     >
-                        {seccionesVisibles.map(({ id, label }) => (
-                            <Nav.Item key={id}>
-                                <Nav.Link
-                                    as="button"
-                                    type="button"
-                                    eventKey={id}
-                                    className="admin-sidebar-link d-flex align-items-center gap-2 text-start text-nowrap"
-                                >
-                                    <img src={ICONOS[id]} alt="" width="24" height="24" />
-                                    <span>{label}</span>
-                                </Nav.Link>
-                            </Nav.Item>
-                        ))}
-                    </Nav>
-                </Col>
+                        <TablaSeleccionable
+                            name="producto-seleccionado"
+                            descripcion="Seleccionar un producto"
+                            columnas={columnasProductos}
+                            filas={admin.productosAdmin}
+                            getId={(p) => p.sku}
+                            getAriaLabel={(p) => `Seleccionar ${p.nombre}`}
+                            seleccionado={admin.productoSeleccionado}
+                            onSeleccionar={admin.setProductoSeleccionado}
+                        />
+                    </SeccionAdmin>
+                )}
 
-                <Col xs={12} md={9} xl={10} className="admin-main-content">
-                    {admin.feedback && (
-                        <Alert variant={admin.feedback.variant} dismissible onClose={() => admin.setFeedback(null)}>
-                            {admin.feedback.message}
-                        </Alert>
-                    )}
+                {tabActual === 'usuarios' && !esFuncionario && (
+                    <SeccionAdmin
+                        id="usuarios"
+                        titulo="Gestión de Usuarios"
+                        acciones={<>
+                            <BotonAdmin tipo="primario" onClick={admin.agregarUsuario}>+ Agregar</BotonAdmin>
+                            <BotonAdmin tipo="secundario" disabled={admin.usuarioSeleccionado === null} onClick={admin.modificarUsuario}>Modificar</BotonAdmin>
+                            <BotonAdmin tipo="peligro" disabled={admin.usuarioSeleccionado === null}
+                                        onClick={() => confirmarYEjecutar('¿Eliminar el usuario seleccionado? Esta acción no se puede deshacer.', admin.eliminarUsuario)}>
+                                Eliminar
+                            </BotonAdmin>
+                        </>}
+                    >
+                        <TablaSeleccionable
+                            name="usuario-seleccionado"
+                            descripcion="Seleccionar un usuario"
+                            columnas={columnasUsuarios}
+                            filas={admin.usuarios}
+                            getId={(u) => u.id}
+                            getAriaLabel={(u) => `Seleccionar a ${u.nombre} ${u.apellidos}`}
+                            seleccionado={admin.usuarioSeleccionado}
+                            onSeleccionar={admin.setUsuarioSeleccionado}
+                        />
+                    </SeccionAdmin>
+                )}
 
-                    {tabActual === 'dashboard' && (
-                        <SeccionAdmin id="dashboard" titulo="Dashboard">
-                            <Row className="g-3">
-                                {!esFuncionario && (
-                                    <Col xs={12} sm={6} xl={3}>
-                                        <TarjetaKPI
-                                            valor={admin.usuarios.length}
-                                            etiqueta="Usuarios registrados"
-                                            cargando={admin.cargandoUsuarios}
-                                        />
-                                    </Col>
-                                )}
-                                <Col xs={12} sm={6} xl={3}>
-                                    <TarjetaKPI valor={admin.productosAdmin.length} etiqueta="Productos en catálogo" />
-                                </Col>
-                                <Col xs={12} sm={6} xl={3}>
-                                    <TarjetaKPI valor={admin.citas.length} etiqueta="Citas registradas" />
-                                </Col>
-                                <Col xs={12} sm={6} xl={3}>
-                                    <TarjetaKPI valor={totalMensajes} etiqueta="Mensajes recibidos" />
-                                </Col>
-                            </Row>
-                        </SeccionAdmin>
-                    )}
+                {tabActual === 'citas' && (
+                    <SeccionAdmin
+                        id="citas"
+                        titulo="Gestión de Citas"
+                        acciones={<>
+                            <BotonAdmin tipo="primario" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Confirmada')}>Confirmar</BotonAdmin>
+                            <BotonAdmin tipo="secundario" disabled={admin.citaSeleccionada === null} onClick={admin.abrirCita}>Modificar</BotonAdmin>
+                            <BotonAdmin tipo="peligro" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Anulada')}>Anular</BotonAdmin>
+                        </>}
+                    >
+                        <TablaSeleccionable
+                            name="cita-seleccionada"
+                            descripcion="Seleccionar una cita"
+                            columnas={columnasCitas}
+                            filas={admin.citas}
+                            getId={(c) => c.id}
+                            getAriaLabel={(c) => `Seleccionar cita de ${c.nombreMascota}`}
+                            seleccionado={admin.citaSeleccionada}
+                            onSeleccionar={admin.setCitaSeleccionada}
+                        />
+                    </SeccionAdmin>
+                )}
 
-                    {tabActual === 'productos' && (
-                        <SeccionAdmin
-                            id="productos"
-                            titulo="Gestión de Productos"
-                            acciones={<>
-                                <BotonAdmin tipo="primario" onClick={() => admin.abrirProducto('agregar')}>+ Agregar</BotonAdmin>
-                                <BotonAdmin tipo="secundario" disabled={admin.productoSeleccionado === null} onClick={() => admin.abrirProducto('modificar')}>Modificar</BotonAdmin>
-                                <BotonAdmin tipo="peligro" disabled={admin.productoSeleccionado === null}
-                                            onClick={() => confirmarYEjecutar('¿Eliminar el producto seleccionado? Esta acción no se puede deshacer.', admin.eliminarProducto)}>
-                                    Eliminar
-                                </BotonAdmin>
-                            </>}
-                        >
-                            <TablaSeleccionable
-                                name="producto-seleccionado"
-                                descripcion="Seleccionar un producto"
-                                columnas={columnasProductos}
-                                filas={admin.productosAdmin}
-                                getId={(p) => p.sku}
-                                getAriaLabel={(p) => `Seleccionar ${p.nombre}`}
-                                seleccionado={admin.productoSeleccionado}
-                                onSeleccionar={admin.setProductoSeleccionado}
-                            />
-                        </SeccionAdmin>
-                    )}
+                {tabActual === 'mensajes' && (
+                    <SeccionAdmin id="mensajes" titulo="Mensajes">
+                        <Alert variant="info" className="mb-0">No hay mensajes nuevos por el momento.</Alert>
+                    </SeccionAdmin>
+                )}
 
-                    {tabActual === 'usuarios' && !esFuncionario && (
-                        <SeccionAdmin
-                            id="usuarios"
-                            titulo="Gestión de Usuarios"
-                            acciones={<>
-                                <BotonAdmin tipo="primario" onClick={admin.agregarUsuario}>+ Agregar</BotonAdmin>
-                                <BotonAdmin tipo="secundario" disabled={admin.usuarioSeleccionado === null} onClick={admin.modificarUsuario}>Modificar</BotonAdmin>
-                                <BotonAdmin tipo="peligro" disabled={admin.usuarioSeleccionado === null}
-                                            onClick={() => confirmarYEjecutar('¿Eliminar el usuario seleccionado? Esta acción no se puede deshacer.', admin.eliminarUsuario)}>
-                                    Eliminar
-                                </BotonAdmin>
-                            </>}
-                        >
-                            <TablaSeleccionable
-                                name="usuario-seleccionado"
-                                descripcion="Seleccionar un usuario"
-                                columnas={columnasUsuarios}
-                                filas={admin.usuarios}
-                                getId={(u) => u.id}
-                                getAriaLabel={(u) => `Seleccionar a ${u.nombre} ${u.apellidos}`}
-                                seleccionado={admin.usuarioSeleccionado}
-                                onSeleccionar={admin.setUsuarioSeleccionado}
-                            />
-                        </SeccionAdmin>
-                    )}
+                {tabActual === 'perfil' && (
+                    <SeccionAdmin id="perfil" titulo="Mi Perfil">
+                        <PerfilUsuario onLogout={handleLogout} />
+                    </SeccionAdmin>
+                )}
+            </main>
 
-                    {tabActual === 'citas' && (
-                        <SeccionAdmin
-                            id="citas"
-                            titulo="Gestión de Citas"
-                            acciones={<>
-                                <BotonAdmin tipo="primario" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Confirmada')}>Confirmar</BotonAdmin>
-                                <BotonAdmin tipo="secundario" disabled={admin.citaSeleccionada === null} onClick={admin.abrirCita}>Modificar</BotonAdmin>
-                                <BotonAdmin tipo="peligro" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Anulada')}>Anular</BotonAdmin>
-                            </>}
-                        >
-                            <TablaSeleccionable
-                                name="cita-seleccionada"
-                                descripcion="Seleccionar una cita"
-                                columnas={columnasCitas}
-                                filas={admin.citas}
-                                getId={(c) => c.id}
-                                getAriaLabel={(c) => `Seleccionar cita de ${c.nombreMascota}`}
-                                seleccionado={admin.citaSeleccionada}
-                                onSeleccionar={admin.setCitaSeleccionada}
-                            />
-                        </SeccionAdmin>
-                    )}
-
-                    {tabActual === 'mensajes' && (
-                        <SeccionAdmin id="mensajes" titulo="Mensajes">
-                            <Alert variant="info" className="mb-0">No hay mensajes nuevos por el momento.</Alert>
-                        </SeccionAdmin>
-                    )}
-
-                    {tabActual === 'perfil' && (
-                        <SeccionAdmin id="perfil" titulo="Mi Perfil">
-                            <PerfilUsuario onLogout={handleLogout} />
-                        </SeccionAdmin>
-                    )}
-                </Col>
-            </Row>
-
+            {/* Modales */}
             <ModalFormulario id="admin-producto-modal" size="lg" show={admin.modal?.tipo === 'producto'} onHide={cerrarModal} onSubmit={admin.guardarProducto}
                              titulo={esAgregar ? 'Agregar Producto' : 'Modificar Producto'}>
                 <Campo id="producto-sku" label="Código producto (SKU)" required value={pf.sku} onChange={(v) => setP({ sku: v })} placeholder="Ej: ME023" />
@@ -450,7 +473,7 @@ function Admin() {
                 <Campo id="cita-edad" label="Edad" required type="number" min="0" step="1" value={cf.edad} onChange={(v) => setC({ edad: v })} />
                 <Campo id="cita-tutor" className="" label="Nombre tutor" required value={cf.nombreTutor} onChange={(v) => setC({ nombreTutor: v })} />
             </ModalFormulario>
-        </Container>
+        </div>
     )
 }
 
