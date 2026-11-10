@@ -4,7 +4,6 @@ import { MapContainer, TileLayer, Marker } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import useFormulario from '../hooks/useFormulario'
 import { reglasContacto } from '../utils/validaciones'
-import { PRECIO_CONSULTA } from '../utils/productos'
 
 const valoresContactoIniciales = { asunto: '', email: '', mensaje: '' }
 
@@ -46,9 +45,8 @@ function Footer() {
                         </p>
                         <h6 className="my-1 fw-semibold">Horario Consulta</h6>
                         <p className="mb-1 text-start">
-                            Lunes a domingo: 10:00 - 13:00 y 14:00 - 17:00
-                        </p>
-                        <p className="mb-1 text-start">Valor de la consulta ${PRECIO_CONSULTA.toLocaleString('es-CL')}</p>
+                            Lunes a domingo: 10:00 - 13:00 y 14:00 - 17:00<br />
+                            Valor de la consulta $15.000</p>
                         <Image src="/img/icons/logo.png" alt="Logo" width={96} height={96} className="mt-2" />
                     </Col>
 

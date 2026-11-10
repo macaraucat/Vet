@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { PRECIO_CONSULTA } from "../utils/productos";
 
 export function useCarrito() {
     const [carrito, setCarrito] = useState(() => {
@@ -30,7 +29,7 @@ export function useCarrito() {
             id: `cita-${Date.now()}`,
             tipo: "cita",
             nombre: "Consulta veterinaria",
-            precio: PRECIO_CONSULTA,
+            precio: 15000,
             cantidad: 1,
             fecha: cita.fecha,
             hora: cita.hora,

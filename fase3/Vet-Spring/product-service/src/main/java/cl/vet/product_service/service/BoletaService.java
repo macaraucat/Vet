@@ -1,5 +1,6 @@
 package cl.vet.product_service.service;
 
+import cl.vet.common.exception.ResourceNotFoundException;
 import cl.vet.product_service.dto.BoletaRequestDTO;
 import cl.vet.product_service.dto.ItemCarritoDTO;
 import cl.vet.product_service.model.Boleta;
@@ -33,7 +34,8 @@ public class BoletaService {
 
         for (ItemCarritoDTO item : request.getItems()) {
             Producto producto = productoRepository.findById(item.getProductoId())
-                    .orElseThrow();
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Producto no encontrado: " + item.getProductoId()));
 
             DetalleBoleta detalle = new DetalleBoleta();
             detalle.setBoleta(boleta);

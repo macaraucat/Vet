@@ -20,12 +20,7 @@ public class CategoriaService {
 
     public Categoria buscarPorId(Long id) {
         return categoriaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
-    }
-
-    public Categoria buscarPorNombre(String nombre) {
-        return categoriaRepository.findByNombre(nombre)
-                .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada: " + nombre));
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada: " + id));
     }
 
     public Categoria crear(Categoria categoria) {

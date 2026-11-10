@@ -3,9 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Badge, Button, Container, Nav, NavDropdown, Navbar } from 'react-bootstrap'
 import { useCarritoContext } from '../context/CarritoContext'
 import { useAuthContext } from '../context/AuthContext'
-import { productos } from '../utils/productos'
 
-const categorias = [...new Set(productos.map((p) => p.categoria))]
+const categorias = ['Antibióticos', 'Antiparasitarios', 'Antiinflamatorios', 'Dermatología', 'Digestivo', 'Cardíaco', 'Analgésicos', 'Vacunas', 'Suplementos']
 
 function Header() {
     const [menuAbierto, setMenuAbierto] = useState(false)

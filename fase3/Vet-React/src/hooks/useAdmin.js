@@ -1,116 +1,127 @@
 import { useEffect, useState } from 'react'
-import { productos } from '../utils/productos'
 import { useAuthContext } from '../context/AuthContext'
 import { peticion } from '../services/apiClient'
 
 const RUTA_USUARIOS = '/api/v1/users'
-
-const stockInicial = [45, 30, 28, 60, 40, 35, 80, 50, 55, 30, 25, 20, 18, 40, 35, 15, 22, 48, 60, 36, 30, 25]
-
-const productosIniciales = productos.map((producto, index) => ({
-    sku: producto.id,
-    nombre: producto.nombre,
-    descripcion: `${producto.detalle}. Uso en ${producto.especie}.`,
-    precio: producto.precio,
-    stock: stockInicial[index],
-    categoria: producto.categoria,
-}))
-
-const citasIniciales = [
-    { id: 1, fecha: '2026-10-15', hora: '10:00', nombreMascota: 'Luna', especie: 'Perro', raza: 'Golden Retriever', edad: 4, nombreTutor: 'Camila Rojas', estado: 'Pendiente' },
-    { id: 2, fecha: '2026-10-16', hora: '11:00', nombreMascota: 'Michi', especie: 'Gato', raza: 'Doméstico de pelo corto', edad: 2, nombreTutor: 'Javier Soto', estado: 'Confirmada' },
-    { id: 3, fecha: '2026-10-17', hora: '12:00', nombreMascota: 'Coco', especie: 'Conejo', raza: 'Cabeza de león', edad: 1, nombreTutor: 'Fernanda Díaz', estado: 'Pendiente' },
-    { id: 4, fecha: '2026-10-19', hora: '15:00', nombreMascota: 'Rocky', especie: 'Perro', raza: 'Mestizo', edad: 7, nombreTutor: 'Diego Pérez', estado: 'Anulada' },
-    { id: 5, fecha: '2026-10-20', hora: '16:00', nombreMascota: 'Kiwi', especie: 'Ave', raza: 'Cotorra', edad: 3, nombreTutor: 'Valentina Muñoz', estado: 'Pendiente' },
-]
+const RUTA_PRODUCTOS = '/api/v1/productos'
+const RUTA_CATEGORIAS = '/api/v1/categorias'
+const RUTA_BOLETAS = '/api/v1/boletas'
 
 function useAdmin() {
     const { usuario, logout } = useAuthContext()
     const esAdministrador = usuario?.role === 'ADMINISTRADOR'
-    const [cargandoUsuarios, setCargandoUsuarios] = useState(true)
-    const [usuarioForm, setUsuarioForm] = useState({})
-    const [usuarios, setUsuarios] = useState([])
-    const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null)
-    const [productosAdmin, setProductosAdmin] = useState(productosIniciales)
-    const [productoForm, setProductoForm] = useState({})
+
+    const [productos, setProductos] = useState([])
+    const [categorias, setCategorias] = useState([])
     const [productoSeleccionado, setProductoSeleccionado] = useState(null)
-    const [citaForm, setCitaForm] = useState({})
-    const [citas, setCitas] = useState(citasIniciales)
-    const [citaSeleccionada, setCitaSeleccionada] = useState(null)
-    const [modal, setModal] = useState(null)
-    const [feedback, setFeedback] = useState(null)
+    const [productoForm, setProductoForm] = useState({})
+
+    const [usuarios, setUsuarios] = useState([])
+    const [cargandoUsuarios, setCargandoUsuarios] = useState(true)
+    const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null)
+    const [usuarioForm, setUsuarioForm] = useState({})
+
     const [ordenes, setOrdenes] = useState([])
     const [cargandoOrdenes, setCargandoOrdenes] = useState(false)
     const [detalleOrden, setDetalleOrden] = useState(null)
 
-    function abrirProducto(modo) {
-        if (modo === 'modificar') {
-            const seleccionado = productosAdmin.find((producto) => producto.sku === productoSeleccionado)
-            if (!seleccionado) {
-                setFeedback({ variant: 'warning', message: 'Seleccione un único producto para modificar.' })
-                return
-            }
-            setProductoForm({ ...seleccionado })
-        } else {
-            setProductoForm({ sku: '', nombre: '', descripcion: '', precio: '', stock: '', categoria: '' })
-        }
-        setFeedback(null)
-        setModal({
-            tipo: 'producto',
-            modo,
-            ...(modo === 'modificar' ? { skuOriginal: productoSeleccionado } : {}),
-        })
-    }
+    const [modal, setModal] = useState(null)
+    const [feedback, setFeedback] = useState(null)
 
-    function guardarProducto(event) {
-        event.preventDefault()
-        const datos = {
-            ...productoForm,
-            sku: productoForm.sku.trim(),
-            nombre: productoForm.nombre.trim(),
-            descripcion: productoForm.descripcion.trim(),
-            precio: Number(productoForm.precio),
-            stock: Number(productoForm.stock),
-        }
-        const skuEnUso = productosAdmin.some((producto) => producto.sku === datos.sku && (modal.modo === 'agregar' || producto.sku !== modal.skuOriginal))
-        if (skuEnUso) {
-            setFeedback({ variant: 'warning', message: 'Ya existe un producto con ese código SKU.' })
-            return
-        }
-
-        if (modal.modo === 'agregar') {
-            setProductosAdmin((actuales) => [...actuales, datos])
-            setFeedback({ variant: 'success', message: 'Producto agregado correctamente.' })
-        } else {
-            setProductosAdmin((actuales) => actuales.map((producto) => producto.sku === modal.skuOriginal ? datos : producto))
-            setFeedback({ variant: 'success', message: 'Producto modificado correctamente.' })
-        }
-        setProductoSeleccionado(null)
-        setModal(null)
-    }
-
-    function eliminarProducto() {
-        if (productoSeleccionado === null) return
-        setProductosAdmin((actuales) => actuales.filter((producto) => producto.sku !== productoSeleccionado))
-        setProductoSeleccionado(null)
-        setFeedback({ variant: 'success', message: 'Producto eliminado correctamente.' })
-    }
-
-    async function apiUsuarios(ruta, opciones = {}) {
+    async function api(ruta, opciones = {}) {
         const res = await peticion(ruta, { ...opciones, autenticada: true })
         if (res.status === 401) logout()
         return res
     }
 
+    async function cargarProductos() {
+        try {
+            const [resP, resC] = await Promise.all([api(RUTA_PRODUCTOS), api(RUTA_CATEGORIAS)])
+            if (!resP.ok || !resC.ok) throw new Error()
+            setProductos(await resP.json())
+            setCategorias(await resC.json())
+        } catch {
+            setFeedback({ variant: 'danger', message: 'No se pudieron cargar los productos.' })
+        }
+    }
+
+    useEffect(() => { cargarProductos() }, [])
+
+    function abrirProducto(modo) {
+        if (modo === 'modificar') {
+            const p = productos.find((x) => x.id === productoSeleccionado)
+            if (!p) {
+                setFeedback({ variant: 'warning', message: 'Seleccione un único producto para modificar.' })
+                return
+            }
+            setProductoForm({
+                codigo: p.codigo,
+                nombre: p.nombre,
+                detalle: p.detalle,
+                especie: p.especie,
+                precio: p.precio,
+                imagen: p.imagen ?? '',
+                categoriaId: p.categoria?.id ?? '',
+            })
+        } else {
+            setProductoForm({ codigo: '', nombre: '', detalle: '', especie: 'Perro / Gato', precio: '', imagen: '', categoriaId: '' })
+        }
+        setFeedback(null)
+        setModal({ tipo: 'producto', modo })
+    }
+
+    async function guardarProducto(event) {
+        event.preventDefault()
+        const esEditar = modal.modo === 'modificar'
+        const body = {
+            codigo: productoForm.codigo.trim(),
+            nombre: productoForm.nombre.trim(),
+            detalle: productoForm.detalle.trim(),
+            especie: productoForm.especie,
+            precio: Number(productoForm.precio),
+            imagen: productoForm.imagen.trim(),
+            categoria: { id: Number(productoForm.categoriaId) },
+        }
+        try {
+            const url = esEditar ? `${RUTA_PRODUCTOS}/${productoSeleccionado}` : RUTA_PRODUCTOS
+            const res = await api(url, { method: esEditar ? 'PUT' : 'POST', cuerpo: body })
+            if (!res.ok) {
+                setFeedback({ variant: 'danger', message: 'No se pudo guardar el producto.' })
+                return
+            }
+            setFeedback({ variant: 'success', message: esEditar ? 'Producto modificado.' : 'Producto agregado.' })
+            setProductoSeleccionado(null)
+            setModal(null)
+            await cargarProductos()
+        } catch {
+            setFeedback({ variant: 'danger', message: 'Error de conexión.' })
+        }
+    }
+
+    async function eliminarProducto() {
+        if (productoSeleccionado === null) return
+        try {
+            const res = await api(`${RUTA_PRODUCTOS}/${productoSeleccionado}`, { method: 'DELETE' })
+            if (!res.ok) {
+                setFeedback({ variant: 'danger', message: 'No se pudo eliminar el producto.' })
+                return
+            }
+            setProductoSeleccionado(null)
+            setFeedback({ variant: 'success', message: 'Producto eliminado.' })
+            await cargarProductos()
+        } catch {
+            setFeedback({ variant: 'danger', message: 'Error de conexión.' })
+        }
+    }
+
     async function cargarUsuarios() {
         setCargandoUsuarios(true)
         try {
-            const res = await apiUsuarios(RUTA_USUARIOS)
-            if (!res.ok) throw new Error('Error al consultar usuarios')
-            const datos = await res.json()
-            setUsuarios(datos)
+            const res = await api(RUTA_USUARIOS)
+            if (!res.ok) throw new Error()
+            setUsuarios(await res.json())
         } catch {
-            setFeedback({ variant: 'danger', message: 'No se pudieron cargar los usuarios desde el servidor.' })
+            setFeedback({ variant: 'danger', message: 'No se pudieron cargar los usuarios.' })
         } finally {
             setCargandoUsuarios(false)
         }
@@ -121,10 +132,6 @@ function useAdmin() {
         else setCargandoUsuarios(false)
     }, [esAdministrador])
 
-    useEffect(() => {
-        cargarOrdenes()
-    }, [])
-
     function agregarUsuario() {
         setUsuarioForm({ run: '', nombre: '', apellidos: '', email: '', fechaNac: '', region: '', comuna: '', direccion: '', rol: '', password: '' })
         setFeedback(null)
@@ -132,19 +139,19 @@ function useAdmin() {
     }
 
     function modificarUsuario() {
-        const seleccionado = usuarios.find((user) => user.id === usuarioSeleccionado)
-        if (!seleccionado) {
+        const u = usuarios.find((x) => x.id === usuarioSeleccionado)
+        if (!u) {
             setFeedback({ variant: 'warning', message: 'Seleccione un único usuario para modificar.' })
             return
         }
-        setUsuarioForm({ ...seleccionado, password: '' })
+        setUsuarioForm({ ...u, password: '' })
         setFeedback(null)
-        setModal({ tipo: 'usuario', modo: 'modificar', idOriginal: usuarioSeleccionado })
+        setModal({ tipo: 'usuario', modo: 'modificar' })
     }
 
     async function guardarUsuario(event) {
         event.preventDefault()
-        const esModificar = modal.modo === 'modificar'
+        const esEditar = modal.modo === 'modificar'
         const body = {
             run: usuarioForm.run.trim(),
             nombre: usuarioForm.nombre.trim(),
@@ -152,52 +159,49 @@ function useAdmin() {
             email: usuarioForm.email.trim(),
             fechaNac: usuarioForm.fechaNac,
             region: usuarioForm.region,
-            comuna: usuarioForm.comuna.trim(),
+            comuna: usuarioForm.comuna,
             direccion: usuarioForm.direccion.trim(),
             rol: usuarioForm.rol,
-            password: usuarioForm.password || '',
+            password: usuarioForm.password || null,
         }
-
         try {
-            const res = await apiUsuarios(esModificar ? `${RUTA_USUARIOS}/${modal.idOriginal}` : RUTA_USUARIOS, {
-                method: esModificar ? 'PUT' : 'POST',
-                cuerpo: body,
-            })
+            const url = esEditar ? `${RUTA_USUARIOS}/${usuarioSeleccionado}` : RUTA_USUARIOS
+            const res = await api(url, { method: esEditar ? 'PUT' : 'POST', cuerpo: body })
             if (!res.ok) {
-                const error = await res.json().catch(() => null)
-                setFeedback({ variant: 'danger', message: error?.message || 'No se pudo guardar el usuario.' })
+                const err = await res.json().catch(() => null)
+                setFeedback({ variant: 'danger', message: err?.message || 'No se pudo guardar el usuario.' })
                 return
             }
-            setFeedback({ variant: 'success', message: esModificar ? 'Usuario modificado correctamente.' : 'Usuario agregado correctamente.' })
+            setFeedback({ variant: 'success', message: esEditar ? 'Usuario modificado.' : 'Usuario agregado.' })
             setUsuarioSeleccionado(null)
             setModal(null)
             await cargarUsuarios()
         } catch {
-            setFeedback({ variant: 'danger', message: 'Error de conexión con el servidor.' })
+            setFeedback({ variant: 'danger', message: 'Error de conexión.' })
         }
     }
 
     async function eliminarUsuario() {
         if (usuarioSeleccionado === null) return
         try {
-            const res = await apiUsuarios(`${RUTA_USUARIOS}/${usuarioSeleccionado}`, { method: 'DELETE' })
+            const res = await api(`${RUTA_USUARIOS}/${usuarioSeleccionado}`, { method: 'DELETE' })
             if (!res.ok) {
-                const error = await res.json().catch(() => null)
-                setFeedback({ variant: 'danger', message: error?.message || 'No se pudo eliminar el usuario.' })
+                const err = await res.json().catch(() => null)
+                setFeedback({ variant: 'danger', message: err?.message || 'No se pudo eliminar el usuario.' })
                 return
             }
             setUsuarioSeleccionado(null)
-            setFeedback({ variant: 'success', message: 'Usuario eliminado correctamente.' })
+            setFeedback({ variant: 'success', message: 'Usuario eliminado.' })
             await cargarUsuarios()
         } catch {
-            setFeedback({ variant: 'danger', message: 'Error de conexión con el servidor.' })
+            setFeedback({ variant: 'danger', message: 'Error de conexión.' })
         }
     }
 
     async function cargarOrdenes() {
         setCargandoOrdenes(true)
         try {
-            const res = await apiUsuarios('/api/boletas')
+            const res = await api(RUTA_BOLETAS)
             if (!res.ok) throw new Error()
             setOrdenes(await res.json())
         } catch {
@@ -207,89 +211,25 @@ function useAdmin() {
         }
     }
 
+    useEffect(() => { cargarOrdenes() }, [])
+
     async function verDetalleOrden(id) {
         try {
-            const res = await apiUsuarios(`/api/boletas/${id}/detalle`)
+            const res = await api(`${RUTA_BOLETAS}/${id}/detalle`)
             if (!res.ok) throw new Error()
-            const items = await res.json()
-            setDetalleOrden({ id, items })
+            setDetalleOrden({ id, items: await res.json() })
         } catch {
-            setFeedback({ variant: 'danger', message: 'No se pudo cargar el detalle de la orden.' })
+            setFeedback({ variant: 'danger', message: 'No se pudo cargar el detalle.' })
         }
-    }
-
-    function abrirCita() {
-        const seleccionada = citas.find((cita) => cita.id === citaSeleccionada)
-        if (!seleccionada) {
-            setFeedback({ variant: 'warning', message: 'Seleccione una única cita para modificar.' })
-            return
-        }
-        setCitaForm({ ...seleccionada })
-        setModal({ tipo: 'cita', citaId: seleccionada.id })
-    }
-
-    function guardarCita(event) {
-        event.preventDefault()
-        setCitas((actuales) => actuales.map((cita) => (
-            cita.id === modal.citaId
-                ? { ...cita, ...citaForm, edad: Number(citaForm.edad) }
-                : cita
-        )))
-        setCitaSeleccionada(null)
-        setModal(null)
-        setFeedback({ variant: 'success', message: 'Cita modificada correctamente.' })
-    }
-
-    function actualizarEstadoCita(estado) {
-        if (citaSeleccionada === null) return
-        setCitas((actuales) => actuales.map((cita) => (
-            cita.id === citaSeleccionada ? { ...cita, estado } : cita
-        )))
-        setCitaSeleccionada(null)
-        setFeedback({
-            variant: 'success',
-            message: estado === 'Confirmada' ? 'Cita confirmada correctamente.' : 'Cita anulada correctamente.',
-        })
     }
 
     return {
-        productosAdmin,
-        usuarios,
-        cargandoUsuarios,
-        cargarUsuarios,
-        citas,
-        productoSeleccionado,
-        setProductoSeleccionado,
-        usuarioSeleccionado,
-        setUsuarioSeleccionado,
-        citaSeleccionada,
-        setCitaSeleccionada,
-        citaForm,
-        setCitaForm,
-        modal,
-        setModal,
-        productoForm,
-        setProductoForm,
-        usuarioForm,
-        setUsuarioForm,
-        feedback,
-        setFeedback,
-        abrirProducto,
-        guardarProducto,
-        eliminarProducto,
-        agregarUsuario,
-        guardarUsuario,
-        eliminarUsuario,
-        modificarUsuario,
-        abrirCita,
-        guardarCita,
-        actualizarEstadoCita,
-        ordenes,
-        cargandoOrdenes,
-        cargarOrdenes,
-        detalleOrden,
-        setDetalleOrden,
-        verDetalleOrden,
+        productos, categorias, productoSeleccionado, setProductoSeleccionado, productoForm, setProductoForm,
+        abrirProducto, guardarProducto, eliminarProducto,
+        usuarios, cargandoUsuarios, usuarioSeleccionado, setUsuarioSeleccionado, usuarioForm, setUsuarioForm,
+        agregarUsuario, modificarUsuario, guardarUsuario, eliminarUsuario,
+        ordenes, cargandoOrdenes, detalleOrden, setDetalleOrden, verDetalleOrden,
+        modal, setModal, feedback, setFeedback,
     }
 }
 

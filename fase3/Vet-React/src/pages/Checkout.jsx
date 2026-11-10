@@ -1,42 +1,51 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Alert, Button, Card, Col, Container, Form, Row, Table } from "react-bootstrap";
 import { useCarritoContext } from "../context/CarritoContext";
 import { useAuthContext } from "../context/AuthContext";
 import { validar, reglasCheckout, REGIONES, REGION_COMUNAS } from "../utils/validaciones";
 import { crearBoleta } from "../services/boletasApi";
-
-
-function buscarDatosUsuario(nombre) {
-    try {
-        const usuarios = JSON.parse(localStorage.getItem("usuariosDB")) || [];
-        return usuarios.find((u) => u.nombre === nombre);
-    } catch {
-        return undefined;
-    }
-}
+import { apiMe } from "../services/authApi";
 
 function Checkout() {
     const { carrito, totalPrecio, vaciarCarrito } = useCarritoContext();
     const { usuario } = useAuthContext();
 
-    const guardado = (usuario && buscarDatosUsuario(usuario.nombre)) || {};
-
     const [datos, setDatos] = useState({
-        nombre: guardado.nombre || "",
+        nombre: "",
         apellidos: "",
-        correo: guardado.email || "",
+        correo: "",
         entrega: "Despacho a domicilio",
-        calle: guardado.direccion || "",
+        calle: "",
         departamento: "",
         region: "",
-        comuna: guardado.comuna || "",
+        comuna: "",
         indicaciones: "",
     });
     const [errores, setErrores] = useState({});
-    const [resultado, setResultado] = useState(null); 
+    const [resultado, setResultado] = useState(null);
     const [pedido, setPedido] = useState(null);
     const [correoEnviado, setCorreoEnviado] = useState(false);
+
+    useEffect(() => {
+        if (!usuario) return;
+        let activo = true;
+        apiMe()
+            .then((d) => {
+                if (!activo) return;
+                setDatos((prev) => ({
+                    ...prev,
+                    nombre: prev.nombre || d.nombre || "",
+                    apellidos: prev.apellidos || d.apellidos || "",
+                    correo: prev.correo || d.email || "",
+                    calle: prev.calle || d.direccion || "",
+                    region: prev.region || d.region || "",
+                    comuna: prev.comuna || d.comuna || "",
+                }));
+            })
+            .catch(() => { /* sin sesión válida, el formulario queda vacío */ });
+        return () => { activo = false; };
+    }, [usuario]);
 
     const esRetiro = datos.entrega === "Retiro en tienda";
 
@@ -53,7 +62,7 @@ function Checkout() {
             return;
         }
 
-        setDatos({ ...datos, [name]: value });
+        setDatos((prev) => ({ ...prev, [name]: value }));
     }
 
     async function pagar(e) {
@@ -67,21 +76,13 @@ function Checkout() {
         setErrores(nuevosErrores);
         if (Object.keys(nuevosErrores).length > 0) return;
 
-        const pagoCorrecto = true;
-
-        if (pagoCorrecto) {
-            try {
-                const boleta = await crearBoleta(usuario?.id ?? 0, carrito);
-                setPedido({ numero: boleta.id, items: carrito, total: totalPrecio });
-                setResultado("exito");
-                vaciarCarrito();
-            } catch {
-                setPedido({ numero: 0, items: carrito, total: totalPrecio });
-                setResultado("error");
-            }
-        } else {
-            const numero = Math.floor(100000 + Math.random() * 900000);
-            setPedido({ numero, items: carrito, total: totalPrecio });
+        try {
+            const boleta = await crearBoleta(usuario?.id ?? 0, carrito);
+            setPedido({ numero: boleta.id, items: carrito, total: boleta.total ?? totalPrecio });
+            setResultado("exito");
+            vaciarCarrito();
+        } catch {
+            setPedido({ numero: 0, items: carrito, total: totalPrecio });
             setResultado("error");
         }
     }
@@ -114,22 +115,22 @@ function Checkout() {
 
                             <Table responsive>
                                 <thead>
-                                    <tr>
-                                        <th>Producto</th>
-                                        <th>Precio</th>
-                                        <th>Cantidad</th>
-                                        <th>Subtotal</th>
-                                    </tr>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Precio</th>
+                                    <th>Cantidad</th>
+                                    <th>Subtotal</th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                    {pedido.items.map((item) => (
-                                        <tr key={item.id}>
-                                            <td>{item.nombre}</td>
-                                            <td>${item.precio.toLocaleString("es-CL")}</td>
-                                            <td>{item.cantidad}</td>
-                                            <td>${(item.precio * item.cantidad).toLocaleString("es-CL")}</td>
-                                        </tr>
-                                    ))}
+                                {pedido.items.map((item) => (
+                                    <tr key={item.id}>
+                                        <td>{item.nombre}</td>
+                                        <td>${item.precio.toLocaleString("es-CL")}</td>
+                                        <td>{item.cantidad}</td>
+                                        <td>${(item.precio * item.cantidad).toLocaleString("es-CL")}</td>
+                                    </tr>
+                                ))}
                                 </tbody>
                             </Table>
 

@@ -1,16 +1,13 @@
 import { useEffect, useState } from 'react'
-import { Alert, Badge, Button, Card, Col, Container, Form, Modal, Nav, Offcanvas, Row, Stack, Table } from 'react-bootstrap'
+import { Alert, Button, Card, Col, Form, Modal, Nav, Offcanvas, Row, Stack, Table } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import { useAuthContext } from '../context/AuthContext'
 import { REGIONES, REGION_COMUNAS } from '../utils/validaciones'
 import { apiMe } from '../services/authApi'
 import useAdmin from '../hooks/useAdmin'
 
-const CATEGORIAS = ['Antibióticos', 'Antiparasitarios', 'Antiinflamatorios', 'Dermatología', 'Digestivo', 'Cardíaco', 'Analgésicos', 'Vacunas', 'Suplementos']
 const ROLES = ['ADMINISTRADOR', 'FUNCIONARIO', 'CLIENTE']
-const ESPECIES = ['Perro', 'Gato', 'Ave', 'Conejo']
-const ROLES_PANEL = ['FUNCIONARIO', 'ADMINISTRADOR']
-const COLOR_ESTADO = { Confirmada: 'success', Anulada: 'secondary' }
+const ESPECIES = ['Perro', 'Gato', 'Perro / Gato', 'Ave', 'Conejo']
 
 const precioCLP = new Intl.NumberFormat('es-CL')
 const formatearFecha = (fecha) => fecha?.split('-').reverse().join('-')
@@ -19,7 +16,6 @@ const ICONOS = {
     dashboard: '/img/icons/dashboard.svg',
     usuarios: '/img/icons/usuarios.svg',
     productos: '/img/icons/productos.svg',
-    citas: '/img/icons/citas.svg',
     ordenes: '/img/icons/ordenes.svg',
     perfil: '/img/icons/perfil.svg',
 }
@@ -27,28 +23,31 @@ const ICONOS = {
 const DESCRIPCIONES = {
     dashboard: 'Visión general de todas las métricas y estadísticas clave del sistema.',
     usuarios: 'Gestión de cuentas de usuario y sus roles dentro del sistema.',
-    productos: 'Administrar inventario y detalles de los productos disponibles.',
-    citas: 'Gestión y seguimiento de las citas agendadas por los clientes.',
-    ordenes: 'Historial de compras realizadas con el detalle de cada orden.',  // ← nueva
+    productos: 'Administrar los productos disponibles en el catálogo.',
+    ordenes: 'Historial de compras realizadas con el detalle de cada orden.',
     perfil: 'Administración de la información personal y configuraciones de cuenta.',
 }
 
-const secciones = [
-    { id: 'dashboard', label: 'Dashboard' },
-    { id: 'usuarios', label: 'Usuarios' },
-    { id: 'productos', label: 'Productos' },
-    { id: 'citas', label: 'Citas' },
-    { id: 'ordenes', label: 'Órdenes' },
-    { id: 'perfil', label: 'Perfil' },
-]
+const SECCIONES = {
+    dashboard: { label: 'Dashboard' },
+    usuarios: { label: 'Usuarios' },
+    productos: { label: 'Productos' },
+    ordenes: { label: 'Órdenes' },
+    perfil: { label: 'Perfil' },
+}
+
+const SECCIONES_POR_ROL = {
+    ADMINISTRADOR: ['dashboard', 'usuarios', 'productos', 'ordenes', 'perfil'],
+    FUNCIONARIO: ['productos', 'ordenes', 'perfil'],
+}
 
 const columnasProductos = [
-    { titulo: 'SKU', render: (p) => p.sku },
+    { titulo: 'SKU', render: (p) => p.codigo },
     { titulo: 'Nombre', render: (p) => p.nombre },
-    { titulo: 'Descripción', render: (p) => p.descripcion },
+    { titulo: 'Descripción', render: (p) => p.detalle },
+    { titulo: 'Especie', render: (p) => p.especie },
     { titulo: 'Precio', render: (p) => `$${precioCLP.format(p.precio)}` },
-    { titulo: 'Stock', render: (p) => p.stock },
-    { titulo: 'Categoría', render: (p) => p.categoria },
+    { titulo: 'Categoría', render: (p) => p.categoria?.nombre ?? '—' },
 ]
 
 const columnasUsuarios = [
@@ -60,16 +59,6 @@ const columnasUsuarios = [
     { titulo: 'Rol', render: (u) => u.rol },
     { titulo: 'Comuna', render: (u) => u.comuna || '—' },
     { titulo: 'Dirección', render: (u) => u.direccion || '—' },
-]
-
-const columnasCitas = [
-    { titulo: 'Fecha', render: (c) => formatearFecha(c.fecha) || '' },
-    { titulo: 'Hora', render: (c) => c.hora },
-    { titulo: 'Mascota', render: (c) => c.nombreMascota },
-    { titulo: 'Especie', render: (c) => c.especie },
-    { titulo: 'Edad', render: (c) => c.edad },
-    { titulo: 'Tutor', render: (c) => c.nombreTutor },
-    { titulo: 'Estado', render: (c) => <Badge bg={COLOR_ESTADO[c.estado] ?? 'warning'}>{c.estado}</Badge> },
 ]
 
 const ESTILO_BOTON = {
@@ -250,11 +239,11 @@ function SidebarMenu({ tabActual, setTabActual, seccionesVisibles, admin }) {
                 admin.setFeedback(null)
             }}
         >
-            {seccionesVisibles.map(({ id, label }) => (
+            {seccionesVisibles.map((id) => (
                 <Nav.Item key={id} className="w-100 d-flex justify-content-center">
                     <Nav.Link as="button" type="button" eventKey={id} className="admin-sidebar-link">
                         <img src={ICONOS[id]} alt="" width="20" height="20" />
-                        <span>{label}</span>
+                        <span>{SECCIONES[id].label}</span>
                     </Nav.Link>
                 </Nav.Item>
             ))}
@@ -265,31 +254,31 @@ function SidebarMenu({ tabActual, setTabActual, seccionesVisibles, admin }) {
 function Admin() {
     const { usuario, logout } = useAuthContext()
     const navigate = useNavigate()
-    const [tabActual, setTabActual] = useState('dashboard')
-    const [mostrarSidebar, setMostrarSidebar] = useState(false) // Para móviles
     const admin = useAdmin()
+
+    const esAdministrador = usuario?.role === 'ADMINISTRADOR'
     const esFuncionario = usuario?.role === 'FUNCIONARIO'
-    const tienePermiso = ROLES_PANEL.includes(usuario?.role)
+    const tienePermiso = esAdministrador || esFuncionario
+    const soloLectura = esFuncionario
+
+    const [tabActual, setTabActual] = useState(() => (esFuncionario ? 'productos' : 'dashboard'))
+    const [mostrarSidebar, setMostrarSidebar] = useState(false)
 
     useEffect(() => {
         if (!usuario) navigate('/login', { replace: true })
         else if (!tienePermiso) navigate('/', { replace: true })
     }, [navigate, usuario, tienePermiso])
 
-    useEffect(() => {
-        if (esFuncionario && tabActual === 'usuarios') setTabActual('dashboard')
-    }, [esFuncionario, tabActual])
-
     if (!usuario || !tienePermiso) return null
+
+    const seccionesVisibles = SECCIONES_POR_ROL[usuario.role] ?? []
 
     const cerrarModal = () => admin.setModal(null)
     const esAgregar = admin.modal?.modo === 'agregar'
-    const setP = (cambios) => admin.setProductoForm({ ...admin.productoForm, ...cambios })
-    const setU = (cambios) => admin.setUsuarioForm({ ...admin.usuarioForm, ...cambios })
-    const setC = (cambios) => admin.setCitaForm({ ...admin.citaForm, ...cambios })
-    const { productoForm: pf, usuarioForm: uf, citaForm: cf } = admin
 
-    const seccionesVisibles = secciones.filter(({ id }) => !(esFuncionario && id === 'usuarios'))
+    const setP = (cambios) => admin.setProductoForm((prev) => ({ ...prev, ...cambios }))
+    const setU = (cambios) => admin.setUsuarioForm((prev) => ({ ...prev, ...cambios }))
+    const { productoForm: pf, usuarioForm: uf } = admin
 
     const handleLogout = () => {
         logout()
@@ -307,7 +296,7 @@ function Admin() {
             <div className="d-md-none bg-verde text-white p-3 d-flex align-items-center shadow-sm" style={{ zIndex: 1050 }}>
                 <Button variant="link" className="text-white p-0 me-3 border-0" onClick={() => setMostrarSidebar(true)}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" className="bi bi-list" viewBox="0 0 16 16">
-                        <path fillRule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+                        <path fillRule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z" />
                     </svg>
                 </Button>
                 <span className="fw-bold">Panel de Administración</span>
@@ -338,23 +327,18 @@ function Admin() {
                     {tabActual === 'dashboard' && (
                         <SeccionAdmin id="dashboard" titulo="Dashboard">
                             <Row className="g-3 mb-4">
-                                {!esFuncionario && (
-                                    <Col xs={12} sm={6} xl={3}>
-                                        <TarjetaKPI
-                                            valor={admin.usuarios.length}
-                                            etiqueta="Usuarios registrados"
-                                            cargando={admin.cargandoUsuarios}
-                                            icono={ICONOS.usuarios}
-                                        />
-                                    </Col>
-                                )}
-                                <Col xs={12} sm={6} xl={3}>
-                                    <TarjetaKPI valor={admin.productosAdmin.length} etiqueta="Productos en catálogo" icono={ICONOS.productos} />
+                                <Col xs={12} sm={6} xl={4}>
+                                    <TarjetaKPI
+                                        valor={admin.usuarios.length}
+                                        etiqueta="Usuarios registrados"
+                                        cargando={admin.cargandoUsuarios}
+                                        icono={ICONOS.usuarios}
+                                    />
                                 </Col>
-                                <Col xs={12} sm={6} xl={3}>
-                                    <TarjetaKPI valor={admin.citas.length} etiqueta="Citas registradas" icono={ICONOS.citas} />
+                                <Col xs={12} sm={6} xl={4}>
+                                    <TarjetaKPI valor={admin.productos.length} etiqueta="Productos en catálogo" icono={ICONOS.productos} />
                                 </Col>
-                                <Col xs={12} sm={6} xl={3}>
+                                <Col xs={12} sm={6} xl={4}>
                                     <TarjetaKPI
                                         valor={admin.ordenes.length}
                                         etiqueta="Órdenes registradas"
@@ -365,11 +349,11 @@ function Admin() {
                             </Row>
 
                             <Row className="g-3">
-                                {seccionesVisibles.map(({ id, label }) => (
+                                {seccionesVisibles.map((id) => (
                                     <Col xs={12} sm={6} lg={4} key={id}>
                                         <div className="dashboard-card" onClick={() => handleTabClick(id)}>
-                                            <img src={ICONOS[id]} alt={label} className="dashboard-card-icon" />
-                                            <h5>{label}</h5>
+                                            <img src={ICONOS[id]} alt={SECCIONES[id].label} className="dashboard-card-icon" />
+                                            <h5>{SECCIONES[id].label}</h5>
                                             <p>{DESCRIPCIONES[id]}</p>
                                         </div>
                                     </Col>
@@ -382,21 +366,23 @@ function Admin() {
                         <SeccionAdmin
                             id="productos"
                             titulo="Gestión de Productos"
-                            acciones={<>
-                                <BotonAdmin tipo="primario" onClick={() => admin.abrirProducto('agregar')}>+ Agregar</BotonAdmin>
-                                <BotonAdmin tipo="secundario" disabled={admin.productoSeleccionado === null} onClick={() => admin.abrirProducto('modificar')}>Modificar</BotonAdmin>
-                                <BotonAdmin tipo="peligro" disabled={admin.productoSeleccionado === null}
-                                            onClick={() => confirmarYEjecutar('¿Eliminar el producto seleccionado? Esta acción no se puede deshacer.', admin.eliminarProducto)}>
-                                    Eliminar
-                                </BotonAdmin>
-                            </>}
+                            acciones={soloLectura ? null : (
+                                <>
+                                    <BotonAdmin tipo="primario" onClick={() => admin.abrirProducto('agregar')}>+ Agregar</BotonAdmin>
+                                    <BotonAdmin tipo="secundario" disabled={admin.productoSeleccionado === null} onClick={() => admin.abrirProducto('modificar')}>Modificar</BotonAdmin>
+                                    <BotonAdmin tipo="peligro" disabled={admin.productoSeleccionado === null}
+                                                onClick={() => confirmarYEjecutar('¿Eliminar el producto seleccionado? Esta acción no se puede deshacer.', admin.eliminarProducto)}>
+                                        Eliminar
+                                    </BotonAdmin>
+                                </>
+                            )}
                         >
                             <TablaSeleccionable
                                 name="producto-seleccionado"
                                 descripcion="Seleccionar un producto"
                                 columnas={columnasProductos}
-                                filas={admin.productosAdmin}
-                                getId={(p) => p.sku}
+                                filas={admin.productos}
+                                getId={(p) => p.id}
                                 getAriaLabel={(p) => `Seleccionar ${p.nombre}`}
                                 seleccionado={admin.productoSeleccionado}
                                 onSeleccionar={admin.setProductoSeleccionado}
@@ -404,7 +390,7 @@ function Admin() {
                         </SeccionAdmin>
                     )}
 
-                    {tabActual === 'usuarios' && !esFuncionario && (
+                    {tabActual === 'usuarios' && esAdministrador && (
                         <SeccionAdmin
                             id="usuarios"
                             titulo="Gestión de Usuarios"
@@ -426,29 +412,6 @@ function Admin() {
                                 getAriaLabel={(u) => `Seleccionar a ${u.nombre} ${u.apellidos}`}
                                 seleccionado={admin.usuarioSeleccionado}
                                 onSeleccionar={admin.setUsuarioSeleccionado}
-                            />
-                        </SeccionAdmin>
-                    )}
-
-                    {tabActual === 'citas' && (
-                        <SeccionAdmin
-                            id="citas"
-                            titulo="Gestión de Citas"
-                            acciones={<>
-                                <BotonAdmin tipo="primario" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Confirmada')}>Confirmar</BotonAdmin>
-                                <BotonAdmin tipo="secundario" disabled={admin.citaSeleccionada === null} onClick={admin.abrirCita}>Modificar</BotonAdmin>
-                                <BotonAdmin tipo="peligro" disabled={admin.citaSeleccionada === null} onClick={() => admin.actualizarEstadoCita('Anulada')}>Anular</BotonAdmin>
-                            </>}
-                        >
-                            <TablaSeleccionable
-                                name="cita-seleccionada"
-                                descripcion="Seleccionar una cita"
-                                columnas={columnasCitas}
-                                filas={admin.citas}
-                                getId={(c) => c.id}
-                                getAriaLabel={(c) => `Seleccionar cita de ${c.nombreMascota}`}
-                                seleccionado={admin.citaSeleccionada}
-                                onSeleccionar={admin.setCitaSeleccionada}
                             />
                         </SeccionAdmin>
                     )}
@@ -500,12 +463,21 @@ function Admin() {
 
             <ModalFormulario id="admin-producto-modal" size="lg" show={admin.modal?.tipo === 'producto'} onHide={cerrarModal} onSubmit={admin.guardarProducto}
                              titulo={esAgregar ? 'Agregar Producto' : 'Modificar Producto'}>
-                <Campo id="producto-sku" label="Código producto (SKU)" required value={pf.sku} onChange={(v) => setP({ sku: v })} placeholder="Ej: ME023" />
+                <Campo id="producto-codigo" label="Código producto (SKU)" required value={pf.codigo} onChange={(v) => setP({ codigo: v })} placeholder="Ej: ME023" />
                 <Campo id="producto-nombre" label="Nombre" required value={pf.nombre} onChange={(v) => setP({ nombre: v })} placeholder="Ingresar nombre del producto" />
-                <Campo id="producto-descripcion" label="Descripción (opcional)" as="textarea" rows={2} value={pf.descripcion} onChange={(v) => setP({ descripcion: v })} placeholder="Descripción del producto" />
+                <Campo id="producto-detalle" label="Detalle" required value={pf.detalle} onChange={(v) => setP({ detalle: v })} placeholder="Ej: Amoxicilina · Blíster 10 comp." />
+                <CampoSelect id="producto-especie" label="Especie" required value={pf.especie} onChange={(v) => setP({ especie: v })} placeholder="Seleccionar especie" opciones={ESPECIES} />
                 <Campo id="producto-precio" label="Precio" required type="number" min="0" step="1" value={pf.precio} onChange={(v) => setP({ precio: v })} placeholder="Ej: 4200" />
-                <Campo id="producto-stock" label="Stock" required type="number" min="0" step="1" value={pf.stock} onChange={(v) => setP({ stock: v })} placeholder="Cantidad en stock" />
-                <CampoSelect id="producto-categoria" label="Categoría" required className="" value={pf.categoria} onChange={(v) => setP({ categoria: v })} placeholder="Seleccionar categoría" opciones={CATEGORIAS} />
+                <Campo id="producto-imagen" label="URL de imagen (opcional)" value={pf.imagen} onChange={(v) => setP({ imagen: v })} placeholder="/img/ME023.jpeg" />
+                <Form.Group className="" controlId="producto-categoria">
+                    <Form.Label>Categoría</Form.Label>
+                    <Form.Select value={pf.categoriaId ?? ''} onChange={(e) => setP({ categoriaId: e.target.value })} required>
+                        <option value="">Seleccionar categoría</option>
+                        {admin.categorias.map((c) => (
+                            <option key={c.id} value={c.id}>{c.nombre}</option>
+                        ))}
+                    </Form.Select>
+                </Form.Group>
             </ModalFormulario>
 
             <ModalFormulario id="admin-usuario-modal" size="lg" show={admin.modal?.tipo === 'usuario'} onHide={cerrarModal} onSubmit={admin.guardarUsuario}
@@ -523,16 +495,6 @@ function Admin() {
                 <Campo id="usuario-password" className="" label={esAgregar ? 'Contraseña' : 'Nueva contraseña (opcional)'} type="password" maxLength={10} required={esAgregar}
                        value={uf.password} onChange={(v) => setU({ password: v })}
                        placeholder={esAgregar ? 'Ingresar contraseña' : 'Dejar vacío para mantener la actual'} />
-            </ModalFormulario>
-
-            <ModalFormulario id="admin-cita-modal" show={admin.modal?.tipo === 'cita'} onHide={cerrarModal} onSubmit={admin.guardarCita}
-                             titulo="Modificar Cita" textoGuardar="Guardar cambios">
-                <Campo id="cita-fecha" label="Fecha" required type="date" value={cf.fecha} onChange={(v) => setC({ fecha: v })} />
-                <Campo id="cita-hora" label="Hora" required type="time" value={cf.hora} onChange={(v) => setC({ hora: v })} />
-                <Campo id="cita-mascota" label="Nombre mascota" required value={cf.nombreMascota} onChange={(v) => setC({ nombreMascota: v })} />
-                <CampoSelect id="cita-especie" label="Especie" required value={cf.especie} onChange={(v) => setC({ especie: v })} placeholder="Seleccionar especie" opciones={ESPECIES} />
-                <Campo id="cita-edad" label="Edad" required type="number" min="0" step="1" value={cf.edad} onChange={(v) => setC({ edad: v })} />
-                <Campo id="cita-tutor" className="" label="Nombre tutor" required value={cf.nombreTutor} onChange={(v) => setC({ nombreTutor: v })} />
             </ModalFormulario>
 
             <Modal
