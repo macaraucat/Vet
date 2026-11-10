@@ -1,5 +1,6 @@
 package cl.vet.product_service.controller;
 
+import cl.vet.product_service.model.Categoria;
 import cl.vet.product_service.model.Producto;
 import cl.vet.product_service.service.ProductoService;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/productos")
+@RequestMapping("/api/v1/productos")
 @RequiredArgsConstructor
 public class ProductoController {
 
@@ -18,7 +19,7 @@ public class ProductoController {
 
     @GetMapping
     public List<Producto> listar(
-            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) Categoria categoria,
             @RequestParam(required = false) String nombre) {
         if (categoria != null) {
             return service.buscarPorCategoria(categoria);

@@ -32,6 +32,7 @@ public class Producto {
     @Column(length = 200)
     private String imagen;
 
-    @Column(length = 30)
-    private String categoria;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "categoria_id", nullable = false)
+    private Categoria categoria;
 }

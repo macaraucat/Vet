@@ -40,7 +40,7 @@ function Producto() {
                         <Image src={producto.imagen} alt={producto.nombre} fluid rounded className="shadow-sm" />
                     </Col>
                     <Col xs={12} md={7}>
-                        <Badge bg="secondary" className="mb-2">{producto.categoria}</Badge>
+                        <Badge bg="secondary" className="mb-2">{producto.categoria.nombre}</Badge>
                         <h2>{producto.nombre}</h2>
                         <p className="fs-4 fw-bold">${producto.precio.toLocaleString("es-CL")}</p>
                         <ul className="list-unstyled">

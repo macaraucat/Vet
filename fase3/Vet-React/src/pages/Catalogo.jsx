@@ -21,11 +21,11 @@ function Catalogo() {
             .finally(() => setCargando(false));
     }, []);
 
-    const categorias = [...new Set(productos.map((p) => p.categoria))];
+    const categorias = [...new Set(productos.map((p) => p.categoria.nombre))];
 
     const productosFiltrados = productos.filter((p) => {
         const coincideNombre = p.nombre.toLowerCase().includes(busqueda.toLowerCase());
-        const coincideCategoria = categoria === "" || p.categoria === categoria;
+        const coincideCategoria = categoria === "" || p.categoria.nombre === categoria;
         return coincideNombre && coincideCategoria;
     });
 

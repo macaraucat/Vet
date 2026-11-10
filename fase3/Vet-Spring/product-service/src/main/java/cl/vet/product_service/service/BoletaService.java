@@ -37,7 +37,7 @@ public class BoletaService {
 
             DetalleBoleta detalle = new DetalleBoleta();
             detalle.setBoleta(boleta);
-            detalle.setProductoId(producto.getId());
+            detalle.setProducto(producto);
             detalle.setCantidad(item.getCantidad());
             detalle.setPrecioUnitario(producto.getPrecio());
             detalleBoletaRepository.save(detalle);

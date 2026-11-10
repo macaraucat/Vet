@@ -39,6 +39,9 @@ function useAdmin() {
     const [citaSeleccionada, setCitaSeleccionada] = useState(null)
     const [modal, setModal] = useState(null)
     const [feedback, setFeedback] = useState(null)
+    const [ordenes, setOrdenes] = useState([])
+    const [cargandoOrdenes, setCargandoOrdenes] = useState(false)
+    const [detalleOrden, setDetalleOrden] = useState(null)
 
     function abrirProducto(modo) {
         if (modo === 'modificar') {
@@ -118,6 +121,10 @@ function useAdmin() {
         else setCargandoUsuarios(false)
     }, [esAdministrador])
 
+    useEffect(() => {
+        cargarOrdenes()
+    }, [])
+
     function agregarUsuario() {
         setUsuarioForm({ run: '', nombre: '', apellidos: '', email: '', fechaNac: '', region: '', comuna: '', direccion: '', rol: '', password: '' })
         setFeedback(null)
@@ -187,6 +194,30 @@ function useAdmin() {
         }
     }
 
+    async function cargarOrdenes() {
+        setCargandoOrdenes(true)
+        try {
+            const res = await apiUsuarios('/api/boletas')
+            if (!res.ok) throw new Error()
+            setOrdenes(await res.json())
+        } catch {
+            setFeedback({ variant: 'danger', message: 'No se pudieron cargar las órdenes.' })
+        } finally {
+            setCargandoOrdenes(false)
+        }
+    }
+
+    async function verDetalleOrden(id) {
+        try {
+            const res = await apiUsuarios(`/api/boletas/${id}/detalle`)
+            if (!res.ok) throw new Error()
+            const items = await res.json()
+            setDetalleOrden({ id, items })
+        } catch {
+            setFeedback({ variant: 'danger', message: 'No se pudo cargar el detalle de la orden.' })
+        }
+    }
+
     function abrirCita() {
         const seleccionada = citas.find((cita) => cita.id === citaSeleccionada)
         if (!seleccionada) {
@@ -253,6 +284,12 @@ function useAdmin() {
         abrirCita,
         guardarCita,
         actualizarEstadoCita,
+        ordenes,
+        cargandoOrdenes,
+        cargarOrdenes,
+        detalleOrden,
+        setDetalleOrden,
+        verDetalleOrden,
     }
 }
 

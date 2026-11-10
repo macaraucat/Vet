@@ -17,7 +17,7 @@ function TarjetaProducto({ producto, descuento = 0 }) {
                 />
             </Link>
             <Card.Body className="d-flex flex-column">
-                <Badge bg="secondary" className="align-self-start mb-2">{producto.categoria}</Badge>
+                <Badge bg="secondary" className="align-self-start mb-2">{producto.categoria.nombre}</Badge>
                 <Card.Title>{producto.nombre}</Card.Title>
                 <Card.Text className="mb-1">{producto.detalle}</Card.Text>
 

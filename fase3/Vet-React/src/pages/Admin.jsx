@@ -20,7 +20,7 @@ const ICONOS = {
     usuarios: '/img/icons/usuarios.svg',
     productos: '/img/icons/productos.svg',
     citas: '/img/icons/citas.svg',
-    mensajes: '/img/icons/mensajes.svg',
+    ordenes: '/img/icons/ordenes.svg',
     perfil: '/img/icons/perfil.svg',
 }
 
@@ -29,8 +29,8 @@ const DESCRIPCIONES = {
     usuarios: 'Gestión de cuentas de usuario y sus roles dentro del sistema.',
     productos: 'Administrar inventario y detalles de los productos disponibles.',
     citas: 'Gestión y seguimiento de las citas agendadas por los clientes.',
-    mensajes: 'Bandeja de entrada con las consultas enviadas por los clientes.',
-    perfil: 'Administración de la información personal y configuraciones de cuenta.'
+    ordenes: 'Historial de compras realizadas con el detalle de cada orden.',  // ← nueva
+    perfil: 'Administración de la información personal y configuraciones de cuenta.',
 }
 
 const secciones = [
@@ -38,7 +38,7 @@ const secciones = [
     { id: 'usuarios', label: 'Usuarios' },
     { id: 'productos', label: 'Productos' },
     { id: 'citas', label: 'Citas' },
-    { id: 'mensajes', label: 'Mensajes' },
+    { id: 'ordenes', label: 'Órdenes' },
     { id: 'perfil', label: 'Perfil' },
 ]
 
@@ -270,7 +270,6 @@ function Admin() {
     const admin = useAdmin()
     const esFuncionario = usuario?.role === 'FUNCIONARIO'
     const tienePermiso = ROLES_PANEL.includes(usuario?.role)
-    const totalMensajes = 0
 
     useEffect(() => {
         if (!usuario) navigate('/login', { replace: true })
@@ -356,7 +355,12 @@ function Admin() {
                                     <TarjetaKPI valor={admin.citas.length} etiqueta="Citas registradas" icono={ICONOS.citas} />
                                 </Col>
                                 <Col xs={12} sm={6} xl={3}>
-                                    <TarjetaKPI valor={totalMensajes} etiqueta="Mensajes recibidos" icono={ICONOS.mensajes} />
+                                    <TarjetaKPI
+                                        valor={admin.ordenes.length}
+                                        etiqueta="Órdenes registradas"
+                                        cargando={admin.cargandoOrdenes}
+                                        icono={ICONOS.ordenes}
+                                    />
                                 </Col>
                             </Row>
 
@@ -449,9 +453,40 @@ function Admin() {
                         </SeccionAdmin>
                     )}
 
-                    {tabActual === 'mensajes' && (
-                        <SeccionAdmin id="mensajes" titulo="Mensajes">
-                            <Alert variant="info" className="mb-0">No hay mensajes nuevos por el momento.</Alert>
+                    {tabActual === 'ordenes' && (
+                        <SeccionAdmin id="ordenes" titulo="Órdenes">
+                            {admin.cargandoOrdenes ? (
+                                <Alert variant="info" className="mb-0">Cargando órdenes...</Alert>
+                            ) : admin.ordenes.length === 0 ? (
+                                <Alert variant="secondary" className="mb-0">No hay órdenes registradas.</Alert>
+                            ) : (
+                                <Table bordered hover responsive className="align-middle mb-0 admin-tabla">
+                                    <thead>
+                                    <tr>
+                                        <th>N° Orden</th>
+                                        <th>Cliente (ID)</th>
+                                        <th>Fecha</th>
+                                        <th>Total</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {admin.ordenes.map((o) => (
+                                        <tr key={o.id}>
+                                            <td>#{o.id}</td>
+                                            <td>{o.usuarioId}</td>
+                                            <td>{new Date(o.fecha).toLocaleString('es-CL')}</td>
+                                            <td>${precioCLP.format(o.total)}</td>
+                                            <td>
+                                                <BotonAdmin tipo="secundario" onClick={() => admin.verDetalleOrden(o.id)}>
+                                                    Ver detalle
+                                                </BotonAdmin>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    </tbody>
+                                </Table>
+                            )}
                         </SeccionAdmin>
                     )}
 
@@ -499,6 +534,48 @@ function Admin() {
                 <Campo id="cita-edad" label="Edad" required type="number" min="0" step="1" value={cf.edad} onChange={(v) => setC({ edad: v })} />
                 <Campo id="cita-tutor" className="" label="Nombre tutor" required value={cf.nombreTutor} onChange={(v) => setC({ nombreTutor: v })} />
             </ModalFormulario>
+
+            <Modal
+                show={admin.detalleOrden !== null}
+                onHide={() => admin.setDetalleOrden(null)}
+                size="lg"
+                aria-labelledby="orden-detalle-title"
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title id="orden-detalle-title">
+                        Detalle de la orden #{admin.detalleOrden?.id}
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {admin.detalleOrden?.items.length === 0 ? (
+                        <p className="text-muted mb-0">Esta orden no tiene detalles.</p>
+                    ) : (
+                        <Table responsive>
+                            <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Precio unitario</th>
+                                <th>Subtotal</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {admin.detalleOrden?.items.map((d) => (
+                                <tr key={d.id}>
+                                    <td>{d.producto?.nombre ?? `Producto #${d.producto?.id ?? '?'}`}</td>
+                                    <td>{d.cantidad}</td>
+                                    <td>${precioCLP.format(d.precioUnitario)}</td>
+                                    <td>${precioCLP.format(d.precioUnitario * d.cantidad)}</td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </Table>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <BotonAdmin tipo="secundario" onClick={() => admin.setDetalleOrden(null)}>Cerrar</BotonAdmin>
+                </Modal.Footer>
+            </Modal>
         </div>
     )
 }

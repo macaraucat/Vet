@@ -20,7 +20,6 @@ spring:
           default-filters:
             - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
           routes:
-            # ---------- Rutas de negocio ----------
             - id: auth-service
               uri: http://localhost:8081
               predicates:
@@ -34,9 +33,9 @@ spring:
             - id: product-service
               uri: http://localhost:8083
               predicates:
-                - Path=/api/productos/**,/api/categorias/**,/api/boletas/**
+                - Path=/api/v1/productos/**,/api/v1/categorias/**,/api/v1/boletas/**
 
-            # ---------- Rutas para el Swagger UI agregado ----------
+            # Rutas Swagger
             - id: auth-docs
               uri: http://localhost:8081
               predicates:
@@ -58,7 +57,6 @@ spring:
               filters:
                 - StripPrefix=1
 
-# ---------- SpringDoc (Swagger UI agregado) ----------
 springdoc:
   swagger-ui:
     urls:

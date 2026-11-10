@@ -14,12 +14,13 @@ public class DetalleBoleta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "boleta_id", nullable = false)
     private Boleta boleta;
 
-    @Column(nullable = false)
-    private Long productoId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "producto_id", nullable = false)
+    private Producto producto;
 
     @Column(nullable = false)
     private Integer cantidad;

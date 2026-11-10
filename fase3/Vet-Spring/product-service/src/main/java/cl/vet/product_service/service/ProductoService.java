@@ -1,5 +1,6 @@
 package cl.vet.product_service.service;
 
+import cl.vet.product_service.model.Categoria;
 import cl.vet.product_service.model.Producto;
 import cl.vet.product_service.repository.ProductoRepository;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,7 @@ public class ProductoService {
         repository.deleteById(id);
     }
 
-    public List<Producto> buscarPorCategoria(String categoria) {
+    public List<Producto> buscarPorCategoria(Categoria categoria) {
         return repository.findByCategoria(categoria);
     }
 

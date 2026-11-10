@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#145E5C" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Cuerpo del portapapeles con hueco arriba para el clip -->
+  <path d="M9 4.5 H6.2 C5.1 4.5 4.2 5.4 4.2 6.5 V20 C4.2 21.1 5.1 22 6.2 22 H17.8 C18.9 22 19.8 21.1 19.8 20 V6.5 C19.8 5.4 18.9 4.5 17.8 4.5 H15" />
+  <!-- Clip superior -->
+  <path d="M9 6.8 V5.9 C9 5 9.6 4.6 10.3 4.6 H10.8 C10.8 3.4 11.2 2.5 12 2.5 C12.8 2.5 13.2 3.4 13.2 4.6 H13.7 C14.4 4.6 15 5 15 5.9 V6.8 C15 7.6 14.4 8.1 13.7 8.1 H10.3 C9.6 8.1 9 7.6 9 6.8 Z" />
+  <!-- Check de orden -->
+  <path d="M9.2 13 L11.2 15 L15.2 10.8" />
+  <!-- Líneas de la orden -->
+  <path d="M9 17.2 H15" />
+  <path d="M9 19.6 H15" />
+</svg>

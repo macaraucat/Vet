@@ -1,5 +1,6 @@
 package cl.vet.product_service.service;
 
+import cl.vet.common.exception.ResourceNotFoundException;
 import cl.vet.product_service.model.Categoria;
 import cl.vet.product_service.repository.CategoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,11 @@ public class CategoriaService {
     public Categoria buscarPorId(Long id) {
         return categoriaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
+    }
+
+    public Categoria buscarPorNombre(String nombre) {
+        return categoriaRepository.findByNombre(nombre)
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada: " + nombre));
     }
 
     public Categoria crear(Categoria categoria) {
