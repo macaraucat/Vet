@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Alert, Button, Card, Col, Container, Form, Row, Table } from "react-bootstrap";
 import { useCarritoContext } from "../context/CarritoContext";
 import { useAuthContext } from "../context/AuthContext";
 import { validar, reglasCheckout, REGIONES, REGION_COMUNAS } from "../utils/validaciones";
-import { crearBoleta } from "../services/boletasApi";
+import { crearBoleta } from "../services/tiendaApi";
 import { apiMe } from "../services/authApi";
 
 function Checkout() {
     const { carrito, totalPrecio, vaciarCarrito } = useCarritoContext();
     const { usuario } = useAuthContext();
+    const navigate = useNavigate();
 
     const [datos, setDatos] = useState({
         nombre: "",
@@ -22,9 +23,11 @@ function Checkout() {
         comuna: "",
         indicaciones: "",
     });
+
     const [errores, setErrores] = useState({});
     const [resultado, setResultado] = useState(null);
-    const [pedido, setPedido] = useState(null);
+
+    const [pedido, setPedido] = useState({ numero: 0, items: [], total: 0 });
     const [correoEnviado, setCorreoEnviado] = useState(false);
 
     useEffect(() => {
@@ -170,7 +173,7 @@ function Checkout() {
                 <Container className="mb-5 text-center">
                     <h2 className="mb-4">Checkout</h2>
                     <p>Tu carrito está vacío.</p>
-                    <Button as={Link} to="/catalogo" variant="success">Ir al catálogo</Button>
+                    <Button variant="success" onClick={() => navigate("/catalogo")}>Ir al catálogo</Button>
                 </Container>
             </main>
         );
@@ -188,7 +191,6 @@ function Checkout() {
 
                 <Form onSubmit={pagar} noValidate>
                     <h5>Información del cliente</h5>
-
                     <Row>
                         <Col md={6}>
                             <Form.Group className="mb-3">
@@ -213,7 +215,6 @@ function Checkout() {
                     </Form.Group>
 
                     <h5 className="mt-3">Opción de entrega</h5>
-
                     <Form.Group className="mb-3">
                         <Form.Select name="entrega" value={datos.entrega} onChange={cambiar}>
                             <option>Despacho a domicilio</option>
@@ -224,7 +225,6 @@ function Checkout() {
                     {!esRetiro && (
                         <>
                             <h5 className="mt-3">Dirección de entrega</h5>
-
                             <Row>
                                 <Col md={8}>
                                     <Form.Group className="mb-3">
@@ -278,9 +278,7 @@ function Checkout() {
                     )}
 
                     <div className="text-end">
-                        <Button type="submit" variant="success">
-                            Pagar ahora ${totalPrecio.toLocaleString("es-CL")}
-                        </Button>
+                        <Button type="submit" variant="success">Pagar ahora ${totalPrecio.toLocaleString("es-CL")}</Button>
                     </div>
                 </Form>
             </Container>

@@ -46,14 +46,6 @@ public class ProductoService {
         repository.deleteById(id);
     }
 
-    public List<Producto> buscarPorCategoria(Categoria categoria) {
-        return repository.findByCategoria(categoria);
-    }
-
-    public List<Producto> buscarPorNombre(String nombre) {
-        return repository.findByNombreContainingIgnoreCase(nombre);
-    }
-
     private Categoria resolverCategoria(Producto datos) {
         Long catId = datos.getCategoria() != null ? datos.getCategoria().getId() : null;
         if (catId == null) {

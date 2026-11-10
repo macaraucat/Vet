@@ -1,6 +1,5 @@
 package cl.vet.product_service.controller;
 
-import cl.vet.product_service.model.Categoria;
 import cl.vet.product_service.model.Producto;
 import cl.vet.product_service.service.ProductoService;
 import lombok.RequiredArgsConstructor;
@@ -18,17 +17,7 @@ public class ProductoController {
     private final ProductoService service;
 
     @GetMapping
-    public List<Producto> listar(
-            @RequestParam(required = false) Categoria categoria,
-            @RequestParam(required = false) String nombre) {
-        if (categoria != null) {
-            return service.buscarPorCategoria(categoria);
-        }
-        if (nombre != null) {
-            return service.buscarPorNombre(nombre);
-        }
-        return service.listar();
-    }
+    public List<Producto> listar() { return service.listar(); }
 
     @GetMapping("/{id}")
     public Producto buscarPorId(@PathVariable Long id) {

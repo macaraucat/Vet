@@ -1,11 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAuthContext } from '../context/AuthContext'
-import { peticion } from '../services/apiClient'
-
-const RUTA_USUARIOS = '/api/v1/users'
-const RUTA_PRODUCTOS = '/api/v1/productos'
-const RUTA_CATEGORIAS = '/api/v1/categorias'
-const RUTA_BOLETAS = '/api/v1/boletas'
+import { peticion } from '../services/api'
 
 function useAdmin() {
     const { usuario, logout } = useAuthContext()
@@ -36,7 +31,7 @@ function useAdmin() {
 
     async function cargarProductos() {
         try {
-            const [resP, resC] = await Promise.all([api(RUTA_PRODUCTOS), api(RUTA_CATEGORIAS)])
+            const [resP, resC] = await Promise.all([api('/api/v1/productos'), api('/api/v1/categorias')])
             if (!resP.ok || !resC.ok) throw new Error()
             setProductos(await resP.json())
             setCategorias(await resC.json())
@@ -83,7 +78,7 @@ function useAdmin() {
             categoria: { id: Number(productoForm.categoriaId) },
         }
         try {
-            const url = esEditar ? `${RUTA_PRODUCTOS}/${productoSeleccionado}` : RUTA_PRODUCTOS
+            const url = esEditar ? `/api/v1/productos/${productoSeleccionado}` : '/api/v1/productos'
             const res = await api(url, { method: esEditar ? 'PUT' : 'POST', cuerpo: body })
             if (!res.ok) {
                 setFeedback({ variant: 'danger', message: 'No se pudo guardar el producto.' })
@@ -101,7 +96,7 @@ function useAdmin() {
     async function eliminarProducto() {
         if (productoSeleccionado === null) return
         try {
-            const res = await api(`${RUTA_PRODUCTOS}/${productoSeleccionado}`, { method: 'DELETE' })
+            const res = await api(`/api/v1/productos/${productoSeleccionado}`, { method: 'DELETE' })
             if (!res.ok) {
                 setFeedback({ variant: 'danger', message: 'No se pudo eliminar el producto.' })
                 return
@@ -117,7 +112,7 @@ function useAdmin() {
     async function cargarUsuarios() {
         setCargandoUsuarios(true)
         try {
-            const res = await api(RUTA_USUARIOS)
+            const res = await api('/api/v1/users')
             if (!res.ok) throw new Error()
             setUsuarios(await res.json())
         } catch {
@@ -165,7 +160,7 @@ function useAdmin() {
             password: usuarioForm.password || null,
         }
         try {
-            const url = esEditar ? `${RUTA_USUARIOS}/${usuarioSeleccionado}` : RUTA_USUARIOS
+            const url = esEditar ? `/api/v1/users/${usuarioSeleccionado}` : '/api/v1/users'
             const res = await api(url, { method: esEditar ? 'PUT' : 'POST', cuerpo: body })
             if (!res.ok) {
                 const err = await res.json().catch(() => null)
@@ -184,7 +179,7 @@ function useAdmin() {
     async function eliminarUsuario() {
         if (usuarioSeleccionado === null) return
         try {
-            const res = await api(`${RUTA_USUARIOS}/${usuarioSeleccionado}`, { method: 'DELETE' })
+            const res = await api(`/api/v1/users/${usuarioSeleccionado}`, { method: 'DELETE' })
             if (!res.ok) {
                 const err = await res.json().catch(() => null)
                 setFeedback({ variant: 'danger', message: err?.message || 'No se pudo eliminar el usuario.' })
@@ -201,7 +196,7 @@ function useAdmin() {
     async function cargarOrdenes() {
         setCargandoOrdenes(true)
         try {
-            const res = await api(RUTA_BOLETAS)
+            const res = await api('/api/v1/boletas')
             if (!res.ok) throw new Error()
             setOrdenes(await res.json())
         } catch {
@@ -215,7 +210,7 @@ function useAdmin() {
 
     async function verDetalleOrden(id) {
         try {
-            const res = await api(`${RUTA_BOLETAS}/${id}/detalle`)
+            const res = await api(`/api/v1/boletas/${id}/detalle`)
             if (!res.ok) throw new Error()
             setDetalleOrden({ id, items: await res.json() })
         } catch {

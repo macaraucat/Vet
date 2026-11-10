@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Badge, Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { useCarritoContext } from "../context/CarritoContext";
-import { obtenerProductos } from "../services/productosApi";
+import { obtenerProductos } from "../services/tiendaApi";
 
 function Catalogo() {
     const { agregarAlCarrito } = useCarritoContext();
@@ -44,12 +44,8 @@ function Catalogo() {
 
                 <Row className="g-3 mb-4">
                     <Col md={8}>
-                        <Form.Control
-                            type="search"
-                            placeholder="Buscar producto por nombre..."
-                            value={busqueda}
-                            onChange={(e) => setBusqueda(e.target.value)}
-                        />
+                        <Form.Control type="search" placeholder="Buscar producto por nombre..."
+                            value={busqueda} onChange={(e) => setBusqueda(e.target.value)}/>
                     </Col>
                     <Col md={4}>
                         <Form.Select
@@ -57,9 +53,7 @@ function Catalogo() {
                             onChange={(e) => setSearchParams(e.target.value ? { categoria: e.target.value } : {})}
                         >
                             <option value="">Todas las categorías</option>
-                            {categorias.map((c) => (
-                                <option key={c} value={c}>{c}</option>
-                            ))}
+                            {categorias.map((c) => (<option key={c} value={c}>{c}</option>))}
                         </Form.Select>
                     </Col>
                 </Row>
@@ -73,16 +67,10 @@ function Catalogo() {
                         <Col xs={12} sm={6} lg={3} key={p.id}>
                             <Card className="shadow-sm" style={{ height: "100%", minWidth: 0 }}>
                                 <Link to={`/producto/${p.id}`} className="text-decoration-none text-dark">
-                                    <Card.Img
-                                        variant="top"
-                                        src={p.imagen}
-                                        className="catalogo-product-image"
-                                        alt={p.nombre}
-                                        style={{ height: "180px", objectFit: "cover" }}
-                                    />
+                                    <Card.Img variant="top" src={p.imagen} className="catalogo-product-image" alt={p.nombre}/>
                                 </Link>
                                 <Card.Body className="d-flex flex-column" style={{ minWidth: 0 }}>
-                                    <Badge bg="secondary" className="align-self-start mb-2">{p.categoria}</Badge>
+                                    <Badge bg="secondary" className="align-self-start mb-2">{p.categoria.nombre}</Badge>
                                     <Link to={`/producto/${p.id}`} className="text-decoration-none text-dark">
                                         <Card.Title>{p.nombre}</Card.Title>
                                     </Link>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import TarjetaProducto from "../components/TarjetaProducto";
-import { obtenerProductos } from "../services/productosApi";
+import { obtenerProductos } from "../services/tiendaApi";
 
 const productosEnOferta = ["ME001", "ME005", "ME010", "ME013", "ME016", "ME021"];
 const DESCUENTO_OFERTA = 0.2;

@@ -6,7 +6,7 @@ import { useCarritoContext } from '../context/CarritoContext'
 import useFormulario from '../hooks/useFormulario'
 import { crearReglasCita } from '../utils/validaciones'
 
-const HORARIOS = ['10:00', '11:00', '12:00', '14:00', '15:00', '16:00']
+const HORARIOS = [ '10:00-10:45', '11:00-11:45', '12:00-12:45', '13:00-13:45', '15:00-15:45', '16:00-16:45', '17:00-17:45',]
 const ESPECIES = ['Perro', 'Gato', 'Ave', 'Conejo']
 const citaInicial = { fecha: '', hora: '', mascota: '', especie: '', edad: '' }
 
@@ -40,17 +40,12 @@ function fechaLocal(date) {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 }
 
-function obtenerHoraFin(hora) {
-    return `${String(Number(hora.slice(0, 2)) + 1).padStart(2, '0')}:00`
-}
-
 function obtenerBloquesDisponibles(fecha, hoy) {
-    if (!fecha) return []
-    if (fecha !== hoy) return HORARIOS
-    return HORARIOS.filter((hora) => Number(hora.slice(0, 2)) > new Date().getHours())
+    if (!fecha || fecha === hoy) return []
+    return HORARIOS
 }
 
-function Campo({ name, label, valores, errores, children }) {
+function Campo({ name, label, errores, children }) {
     return (
         <Form.Group className="mb-3" controlId={`cita-${name}`}>
             <Form.Label><b>{label}</b></Form.Label>
@@ -92,7 +87,7 @@ function Index() {
     )
 
     const bloquesDisponibles = obtenerBloquesDisponibles(cita.fecha, hoy)
-    const sinHorarios = !cita.fecha || bloquesDisponibles.length === 0 || !!errores.fecha
+    const sinHorarios = !cita.fecha || bloquesDisponibles.length === 0
     const esCliente = usuario?.role === 'CLIENTE'
 
     const toggleExpandir = (i) => {
@@ -159,13 +154,13 @@ function Index() {
                 <p>Veterinaria San Marcos es una clínica veterinaria ubicada en Rancagua, Región del Libertador General Bernardo O'Higgins, fundada en 2009. Contamos con un equipo integral dedicado a brindar una atención cercana y profesional, para tus mascotas. A lo largo de estos años, hemos visto crecer la confianza de nuestros clientes, lo que nos motiva a seguir mejorando cada aspecto de nuestra atención, desde la comodidad de nuestras instalaciones hasta la calidez con la que recibimos a cada mascota y su familia.</p>
                 <Image src="/img/team.jpg" alt="Team" className="team-img mx-auto d-block my-4" />
                 <h3>Nuestro equipo:</h3>
-                <p>
-                    <b>Laura Claro Hernández:</b> Médica Veterinaria, Universidad de Concepción. Diplomado en Cirugía de Pequeños Animales (Universidad de Chile). Directora clínica y fundadora de Veterinaria San Marcos, con más de 15 años de trayectoria en medicina y cirugía de perros y gatos.<hr />
-                    <b>Carmen Martínez Larraín:</b> Médica Veterinaria, Universidad Austral de Chile. Diplomado en Medicina Interna de Pequeños Animales; responsable de consultas generales, vacunación y programas preventivos.<hr />
-                    <b>Ignacio Solar Guzmán:</b> Médico Veterinario, Universidad de Concepción. Magíster en Medicina de Especies Exóticas, con dedicación especial a aves y conejos; a cargo de la atención de mascotas no convencionales.<hr />
-                    <b>Jorge Vial Peña:</b> Técnico en Enfermería Veterinaria, Universidad Santo Tomás. Encargado de pabellón y apoyo en procedimientos quirúrgicos, cuidados intensivos y toma de exámenes.<hr />
+                <div>
+                    <b>Laura Claro Hernández:</b> Médica Veterinaria, Universidad de Concepción. Diplomado en Cirugía de Pequeños Animales (Universidad de Chile). Directora clínica y fundadora de Veterinaria San Marcos, con más de 15 años de trayectoria en medicina y cirugía de perros y gatos.
+                    <b>Carmen Martínez Larraín:</b> Médica Veterinaria, Universidad Austral de Chile. Diplomado en Medicina Interna de Pequeños Animales; responsable de consultas generales, vacunación y programas preventivos.
+                    <b>Ignacio Solar Guzmán:</b> Médico Veterinario, Universidad de Concepción. Magíster en Medicina de Especies Exóticas, con dedicación especial a aves y conejos; a cargo de la atención de mascotas no convencionales.
+                    <b>Jorge Vial Peña:</b> Técnico en Enfermería Veterinaria, Universidad Santo Tomás. Encargado de pabellón y apoyo en procedimientos quirúrgicos, cuidados intensivos y toma de exámenes.
                     <b>Sofía Astorga Zapata:</b> Administradora, Universidad de Talca. Recepcionista y encargada de atención a clientes, agendamiento de horas y gestión administrativa de la clínica.
-                </p>
+                </div>
             </section>
 
             <section id="noticias" className="noticias container">
@@ -197,37 +192,39 @@ function Index() {
                 <Modal.Body>
                     {confirmada ? (
                         <Alert variant="success" className="mb-0">
-                            ¡Cita confirmada! Recibirás un correo electrónico con la información en los próximos minutos.
+                            ¡Cita agregada al carrito! Completa el pago para confirmarla.
                         </Alert>
                     ) : (
                         <Form className="cita-form" onSubmit={handleSubmit} noValidate>
-                            <Campo name="fecha" label="Fecha" valores={cita} errores={errores}>
+                            <Campo name="fecha" label="Fecha" errores={errores}>
                                 <Form.Control type="date" name="fecha" min={hoy} value={cita.fecha} onChange={handleChange} isInvalid={!!errores.fecha} />
                             </Campo>
 
-                            <Campo name="hora" label="Hora" valores={cita} errores={errores}>
+                            <Campo name="hora" label="Hora" errores={errores}>
                                 <Form.Select name="hora" value={cita.hora} onChange={handleChange} disabled={sinHorarios} isInvalid={!!errores.hora}>
                                     <option value="" disabled>
-                                        {bloquesDisponibles.length === 0 && cita.fecha && !errores.fecha ? 'No quedan horarios este día' : 'Seleccionar hora'}
+                                        {cita.fecha && bloquesDisponibles.length === 0
+                                            ? 'No hay horas disponibles para hoy'
+                                            : 'Seleccionar hora'}
                                     </option>
-                                    {bloquesDisponibles.map((hora) => (
-                                        <option key={hora} value={hora}>{hora} a {obtenerHoraFin(hora)}</option>
+                                    {bloquesDisponibles.map((bloque) => (
+                                        <option key={bloque} value={bloque}>{bloque}</option>
                                     ))}
                                 </Form.Select>
                             </Campo>
 
-                            <Campo name="mascota" label="Nombre mascota" valores={cita} errores={errores}>
+                            <Campo name="mascota" label="Nombre mascota" errores={errores}>
                                 <Form.Control type="text" name="mascota" value={cita.mascota} onChange={handleChange} isInvalid={!!errores.mascota} />
                             </Campo>
 
-                            <Campo name="especie" label="Especie" valores={cita} errores={errores}>
+                            <Campo name="especie" label="Especie" errores={errores}>
                                 <Form.Select name="especie" value={cita.especie} onChange={handleChange} isInvalid={!!errores.especie}>
                                     <option value="" disabled>Seleccionar especie</option>
                                     {ESPECIES.map((especie) => <option key={especie} value={especie}>{especie}</option>)}
                                 </Form.Select>
                             </Campo>
 
-                            <Campo name="edad" label="Edad mascota (años)" valores={cita} errores={errores}>
+                            <Campo name="edad" label="Edad mascota (años)" errores={errores}>
                                 <Form.Control type="number" name="edad" min="0" step="1" value={cita.edad} onChange={handleChange} isInvalid={!!errores.edad} />
                             </Campo>
 

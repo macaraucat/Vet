@@ -1,9 +1,8 @@
-import { peticion } from './apiClient'
-import { obtenerToken } from './sesion'
+import { peticion, obtenerToken } from './api'
 
 export {
-    guardarToken, obtenerToken, guardarRefreshToken, obtenerRefreshToken, borrarSesion,
-} from './sesion'
+    guardarToken, guardarRefreshToken, obtenerRefreshToken, borrarSesion,
+} from './api'
 
 const MENSAJES_POR_ESTADO = {
     400: 'Los datos enviados no son válidos.',

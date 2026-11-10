@@ -32,7 +32,7 @@ public class Producto {
     @Column(length = 200)
     private String imagen;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "categoria_id", nullable = false)
     private Categoria categoria;
 }

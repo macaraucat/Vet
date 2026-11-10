@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 
+const PRECIO_CONSULTA = 15000;
+
 export function useCarrito() {
     const [carrito, setCarrito] = useState(() => {
         return JSON.parse(localStorage.getItem("carrito")) || [];
@@ -29,11 +31,11 @@ export function useCarrito() {
             id: `cita-${Date.now()}`,
             tipo: "cita",
             nombre: "Consulta veterinaria",
-            precio: 15000,
+            precio: PRECIO_CONSULTA,
             cantidad: 1,
             fecha: cita.fecha,
             hora: cita.hora,
-            nombreMascota: cita.nombreMascota,
+            nombreMascota: cita.mascota,
             especie: cita.especie,
             edad: Number(cita.edad),
             tutor,
@@ -58,7 +60,9 @@ export function useCarrito() {
     }
 
     const totalItems = carrito.reduce((suma, item) => suma + item.cantidad, 0);
-    const totalPrecio = carrito.reduce((suma, item) => suma + item.precio * item.cantidad, 0);
+    const totalPrecio = carrito
+        .filter((item) => item.tipo !== "cita")
+        .reduce((suma, item) => suma + item.precio * item.cantidad, 0);
 
     return { carrito, agregarAlCarrito, agregarCitaAlCarrito, eliminarItem, vaciarCarrito, totalItems, totalPrecio, mensaje, cambiarCantidad };
 }

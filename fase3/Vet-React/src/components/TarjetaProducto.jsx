@@ -9,12 +9,7 @@ function TarjetaProducto({ producto, descuento = 0 }) {
     return (
         <Card className="shadow-sm" style={{ height: "100%", minWidth: 0 }}>
             <Link to={`/producto/${producto.id}`}>
-                <Card.Img
-                    variant="top"
-                    src={producto.imagen}
-                    alt={producto.nombre}
-                    style={{ height: "180px", objectFit: "cover" }}
-                />
+                <Card.Img variant="top" src={producto.imagen} alt={producto.nombre}/>
             </Link>
             <Card.Body className="d-flex flex-column">
                 <Badge bg="secondary" className="align-self-start mb-2">{producto.categoria.nombre}</Badge>
@@ -36,12 +31,8 @@ function TarjetaProducto({ producto, descuento = 0 }) {
                     <Button as={Link} to={`/producto/${producto.id}`} variant="outline-secondary" size="sm" className="w-100">
                         Ver detalle
                     </Button>
-                    <Button
-                        variant="success"
-                        size="sm"
-                        className="w-100"
-                        onClick={() => agregarAlCarrito(producto.id, producto.nombre, precioFinal, producto.imagen)}
-                    >
+                    <Button variant="success" size="sm" className="w-100"
+                        onClick={() => agregarAlCarrito(producto.id, producto.nombre, precioFinal, producto.imagen)}>
                         Agregar
                     </Button>
                 </div>

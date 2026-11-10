@@ -2,7 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Badge, Button, Col, Container, Image, Row } from "react-bootstrap";
 import { useCarritoContext } from "../context/CarritoContext";
-import { obtenerProductoPorId } from "../services/productosApi";
+import { obtenerProductoPorId } from "../services/tiendaApi";
 
 function Producto() {
     const { id } = useParams();
