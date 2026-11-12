@@ -39,13 +39,11 @@ main {
     color: #145E5C;
 }
 
+.justified-text {
+    text-align: justify;
+}
 .container h6 {
     color: white;
-}
-
-.container p {
-    margin-block: 8px;
-    text-align: justify;
 }
 
 /* HEADER */
@@ -197,25 +195,97 @@ main {
 }
 
 /* ADMIN */
-/* Layout General */
+/* Layout general: móvil = columna (barra superior + contenido); >= 768px = fila (sidebar + contenido) */
 .admin-layout {
     display: flex;
+    flex-direction: column;
     height: 100vh;
-    width: 100vw;
+    height: 100dvh;
+    width: 100%;
     overflow: hidden; /* Previene scroll de toda la página */
     background-color: #f4f6f8;
     margin: 0;
 }
 
-/* Sidebar Desktop */
+/* Barra superior móvil: título a la izquierda, hamburguesa a la derecha */
+.admin-mobile-header {
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.admin-mobile-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+}
+
+.admin-mobile-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+    line-height: 1.2;
+}
+
+.admin-hamburger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0.25rem;
+    border: 0;
+    border-radius: 0.375rem;
+    background: transparent;
+    color: #fff;
+}
+
+.admin-hamburger:focus-visible,
+.mobile-btn:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+/* Menú móvil: una sola fila, solo íconos.
+   --cols = 5 (ADMINISTRADOR) o 2 (FUNCIONARIO); la grilla queda centrada */
+.mobile-nav {
+    display: grid;
+    grid-template-columns: repeat(var(--cols, 5), minmax(0, 72px));
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.25rem 1rem 1rem;
+}
+
+.mobile-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 0.5rem;
+    background-color: #FAFAFA;
+    transition: box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.mobile-btn img {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+}
+
+.mobile-btn.active {
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.45);
+}
+
+/* Sidebar (tablet y escritorio) */
 .admin-sidebar-wrapper {
-    width: 240px;
+    width: 200px;
     flex-shrink: 0;
     background-color: var(--verde);
-    display: flex;
     flex-direction: column;
     padding: 1.5rem 0;
-    height: 100vh;
+    height: 100%;
     overflow-y: auto;
 }
 
@@ -228,7 +298,7 @@ main {
     padding: 0 1rem;
 }
 
-.admin-sidebar-nav {
+.sidebar-nav {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -236,7 +306,7 @@ main {
     width: 100%;
 }
 
-.admin-sidebar-nav .nav-link.admin-sidebar-link {
+.sidebar-nav .nav-link.sidebar-link {
     width: 90%;
     background-color: #FAFAFA;
     color: var(--verde);
@@ -250,27 +320,19 @@ main {
     border: none;
 }
 
-.admin-sidebar-nav .nav-link.admin-sidebar-link:hover,
-.admin-sidebar-nav .nav-link.admin-sidebar-link.active {
+.sidebar-nav .nav-link.sidebar-link:hover,
+.sidebar-nav .nav-link.sidebar-link.active {
     background-color: #ffffff;
     color: var(--verde);
     box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     transform: translateY(-2px);
 }
 
-/* Sidebar en Móvil (Offcanvas) */
-.admin-offcanvas .admin-sidebar-link {
-    background-color: #FAFAFA !important;
-    color: var(--verde) !important;
-    width: 100%;
-    justify-content: flex-start;
-}
-
-/* Área de Contenido */
+/* Área de contenido */
 .admin-content-area {
     flex: 1 1 0;
     min-width: 0;
-    height: 100vh;
+    min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
     background-color: #f4f6f8;
@@ -280,7 +342,6 @@ main {
 .admin-content-inner {
     max-width: 1400px;
     margin: 0 auto;
-    height: 100%;
 }
 
 /* Títulos y KPIs */
@@ -304,6 +365,90 @@ main {
 
 .admin-tabla {
     min-width: 700px;
+}
+
+/* La tabla del detalle de orden vive dentro de un modal: no necesita ancho mínimo */
+.table.admin-tabla.admin-tabla--compacta {
+    min-width: 0;
+}
+
+/* Formularios en modal: el <form> envuelve header/body/footer; se mantiene el scroll interno del body */
+.modal-content > form {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+/* Móvil (< 768px): las tablas pasan a "tarjetas" (una por fila) para no depender del scroll horizontal */
+@media (max-width: 767.98px) {
+    .table.admin-tabla {
+        min-width: 0;
+    }
+
+    .table.admin-tabla thead {
+        display: none;
+    }
+
+    .table.admin-tabla,
+    .table.admin-tabla tbody,
+    .table.admin-tabla tr,
+    .table.admin-tabla td {
+        display: block;
+        width: 100%;
+    }
+
+    .table.admin-tabla tr {
+        margin-bottom: 0.75rem;
+        padding: 0.5rem 0.25rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        background-color: #fff;
+    }
+
+    .table.admin-tabla td {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.35rem 0.75rem;
+        border: 0;
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
+
+    .table.admin-tabla td::before {
+        content: attr(data-label);
+        flex-shrink: 0;
+        font-weight: 600;
+        color: var(--verde);
+        text-align: left;
+    }
+}
+
+/* Móvil pequeño: los botones de acción se reparten el ancho */
+@media (max-width: 575.98px) {
+    .admin-actions .btn {
+        flex: 1 1 auto;
+    }
+}
+
+/* Tablet (>= 768px): aparece el sidebar y el layout pasa a fila */
+@media (min-width: 768px) {
+    .admin-layout {
+        flex-direction: row;
+    }
+
+    .admin-content-area {
+        padding: 2rem;
+    }
+}
+
+/* Escritorio (>= 992px): sidebar más ancho */
+@media (min-width: 992px) {
+    .admin-sidebar-wrapper {
+        width: 240px;
+    }
 }
 
 /* FOOTER */
@@ -346,10 +491,6 @@ main {
 }
 
 @media (min-width: 768px) {
-    .admin-content-area {
-        padding: 2rem;
-    }
-
     .container > .table {
         display: table;
         overflow-x: visible;

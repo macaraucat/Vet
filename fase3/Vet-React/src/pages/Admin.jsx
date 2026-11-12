@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Alert, Button, Card, Col, Form, Modal, Nav, Offcanvas, Row, Stack, Table } from 'react-bootstrap'
+import { Alert, Button, Card, Col, Collapse, Form, Modal, Nav, Row, Stack, Table } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import { useAuthContext } from '../context/AuthContext'
 import { REGIONES, REGION_COMUNAS } from '../utils/validaciones'
@@ -11,16 +11,19 @@ const ESPECIES = ['Perro', 'Gato', 'Perro / Gato', 'Ave', 'Conejo']
 const precioCLP = new Intl.NumberFormat('es-CL')
 const fechaCL = (f) => f?.split('-').reverse().join('-') || '—'
 
+const MITAD = 'col-12 col-lg-6 mb-3'
+const COMPLETO = 'col-12 mb-3'
+
 const SECCIONES = {
     dashboard: { label: 'Dashboard', icono: '/img/icons/dashboard.svg', descripcion: 'Visión general de todas las métricas y estadísticas clave del sistema.' },
-    usuarios:  { label: 'Usuarios',  icono: '/img/icons/usuarios.svg',  descripcion: 'Gestión de cuentas de usuario y sus roles dentro del sistema.' },
     productos: { label: 'Productos', icono: '/img/icons/productos.svg', descripcion: 'Administrar los productos disponibles en el catálogo.' },
-    ordenes:   { label: 'Órdenes',   icono: '/img/icons/ordenes.svg',   descripcion: 'Historial de compras realizadas con el detalle de cada orden.' },
-    perfil:    { label: 'Perfil',    icono: '/img/icons/perfil.svg',    descripcion: 'Administración de la información personal y configuraciones de cuenta.' },
+    usuarios: { label: 'Usuarios', icono: '/img/icons/usuarios.svg', descripcion: 'Gestión de cuentas de usuario y sus roles dentro del sistema.' },
+    ordenes: { label: 'Órdenes', icono: '/img/icons/ordenes.svg', descripcion: 'Historial de compras realizadas con el detalle de cada orden.' },
+    perfil: { label: 'Perfil', icono: '/img/icons/perfil.svg', descripcion: 'Administración de la información personal y configuraciones de cuenta.' },
 }
 const SECCION_POR_ROL = {
     ADMINISTRADOR: ['dashboard', 'usuarios', 'productos', 'ordenes', 'perfil'],
-    FUNCIONARIO: ['productos', 'ordenes', 'perfil'],
+    FUNCIONARIO: ['productos', 'perfil'],
 }
 const COLS_PRODUCTOS = [
     { titulo: 'SKU', render: (p) => p.codigo },
@@ -35,22 +38,57 @@ const COLS_USUARIOS = [
     { titulo: 'Nombre', render: (u) => u.nombre },
     { titulo: 'Apellidos', render: (u) => u.apellidos },
     { titulo: 'Correo', render: (u) => u.email || '—' },
-    { titulo: 'F. Nacimiento', render: (u) => fechaCL(u.fechaNac) },
+    { titulo: 'Fecha Nac.', render: (u) => fechaCL(u.fechaNac) },
     { titulo: 'Rol', render: (u) => u.rol },
     { titulo: 'Comuna', render: (u) => u.comuna || '—' },
     { titulo: 'Dirección', render: (u) => u.direccion || '—' },
 ]
 
+function NavLateral({ visibles, tab, onSelect }) {
+    return (
+        <Nav variant="pills" activeKey={tab} className="sidebar-nav" onSelect={(id) => id && onSelect(id)}>
+            {visibles.map((id) => (
+                <Nav.Item key={id} className="w-100 d-flex justify-content-center">
+                    <Nav.Link as="button" type="button" eventKey={id} className="sidebar-link">
+                        <img src={SECCIONES[id].icono} alt="" width="20" height="20" />
+                        <span>{SECCIONES[id].label}</span>
+                    </Nav.Link>
+                </Nav.Item>
+            ))}
+        </Nav>
+    )
+}
+
+function NavMovil({ visibles, tab, onSelect }) {
+    return (
+        <nav aria-label="Secciones" className="mobile-nav" style={{ '--cols': visibles.length }}>
+            {visibles.map((id) => (
+                <button
+                    key={id}
+                    type="button"
+                    className={`mobile-btn${tab === id ? ' active' : ''}`}
+                    aria-label={SECCIONES[id].label}
+                    aria-current={tab === id ? 'page' : undefined}
+                    title={SECCIONES[id].label}
+                    onClick={() => onSelect(id)}
+                >
+                    <img src={SECCIONES[id].icono} alt="" width="26" height="26" />
+                </button>
+            ))}
+        </nav>
+    )
+}
+
 function Seccion({ id, titulo, acciones, children }) {
     return (
-        <section aria-labelledby={`admin-${id}-title`} className="h-100">
+        <section aria-labelledby={`admin-${id}-title`}>
             <Card className="shadow-sm border-0 h-100">
                 <Card.Header className="bg-white border-0 pt-3 pb-0">
                     <Card.Title as="h2" id={`admin-${id}-title`} className="h4 admin-titulo mb-0">{titulo}</Card.Title>
                 </Card.Header>
-                <Card.Body className="d-flex flex-column">
+                <Card.Body>
                     {acciones && <Stack direction="horizontal" gap={2} className="admin-actions mb-3">{acciones}</Stack>}
-                    <div className="flex-grow-1 overflow-auto">{children}</div>
+                    {children}
                 </Card.Body>
             </Card>
         </section>
@@ -67,11 +105,11 @@ function TablaSeleccionable({ name, descripcion, columnas, filas, getId, getAria
             <tbody>
             {filas.map((fila) => (
                 <tr key={getId(fila)}>
-                    <td className="text-center">
+                    <td className="text-center" data-label="Seleccionar">
                         <Form.Check type="radio" name={name} aria-label={getAriaLabel(fila)} className="d-flex justify-content-center m-0"
                                     checked={seleccionado === getId(fila)} onChange={() => onSeleccionar(getId(fila))} />
                     </td>
-                    {columnas.map(({ titulo, render }) => <td key={titulo}>{render(fila)}</td>)}
+                    {columnas.map(({ titulo, render }) => <td key={titulo} data-label={titulo}>{render(fila)}</td>)}
                 </tr>
             ))}
             </tbody>
@@ -104,7 +142,7 @@ function PerfilUsuario({ onLogout }) {
     if (error) return <Alert variant="danger" className="mb-0">{error}</Alert>
     if (!datos) return <Alert variant="info" className="mb-0">Cargando perfil...</Alert>
     return (
-        <div className="overflow-auto">
+        <div>
             <Row className="g-3 mb-3">
                 <Col xs={12} md={6}>
                     <p className="mb-1"><strong>RUN:</strong> {datos.run || '—'}</p>
@@ -129,7 +167,7 @@ function Admin() {
     const navigate = useNavigate()
     const a = useAdmin()
     const [tab, setTab] = useState(() => usuario?.role === 'FUNCIONARIO' ? 'productos' : 'dashboard')
-    const [sidebar, setSidebar] = useState(false)
+    const [menuMovil, setMenuMovil] = useState(false)
 
     const esAdmin = usuario?.role === 'ADMINISTRADOR'
     const esFunc = usuario?.role === 'FUNCIONARIO'
@@ -144,48 +182,44 @@ function Admin() {
     if (!usuario || !permiso) return null
 
     const visibles = SECCION_POR_ROL[usuario.role] ?? []
-    const cambiarTab = (id) => { setTab(id); a.setFeedback(null); setSidebar(false) }
+    const cambiarTab = (id) => { setTab(id); a.setFeedback(null); setMenuMovil(false) }
     const confirmar = (msg, fn) => window.confirm(msg) && fn()
     const esAgregar = a.modal?.modo === 'agregar'
     const setP = (c) => a.setProductoForm((p) => ({ ...p, ...c }))
     const setU = (c) => a.setUsuarioForm((p) => ({ ...p, ...c }))
     const { productoForm: pf, usuarioForm: uf } = a
 
-    const SidebarNav = () => (
-        <Nav variant="pills" activeKey={tab} className="admin-sidebar-nav" onSelect={(id) => id && cambiarTab(id)}>
-            {visibles.map((id) => (
-                <Nav.Item key={id} className="w-100 d-flex justify-content-center">
-                    <Nav.Link as="button" type="button" eventKey={id} className="admin-sidebar-link">
-                        <img src={SECCIONES[id].icono} alt="" width="20" height="20" />
-                        <span>{SECCIONES[id].label}</span>
-                    </Nav.Link>
-                </Nav.Item>
-            ))}
-        </Nav>
-    )
-
     return (
         <div className="admin-layout">
-            <div className="d-md-none bg-verde text-white p-3 d-flex align-items-center shadow-sm" style={{ zIndex: 1050 }}>
-                <Button variant="link" className="text-white p-0 me-3 border-0" onClick={() => setSidebar(true)}>
-                    <svg width="28" height="28" fill="currentColor" viewBox="0 0 16 16">
-                        <path fillRule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z" />
-                    </svg>
-                </Button>
-                <span className="fw-bold">Panel de Administración</span>
+            {/* Móvil */}
+            <div className="admin-mobile-header d-md-none bg-verde text-white">
+                <div className="admin-mobile-bar">
+                    <span className="admin-mobile-title">Panel de Administración</span>
+                    <button
+                        type="button"
+                        className="admin-hamburger"
+                        aria-label={menuMovil ? 'Cerrar menú' : 'Abrir menú'}
+                        aria-expanded={menuMovil}
+                        aria-controls="admin-menu-movil"
+                        onClick={() => setMenuMovil((v) => !v)}
+                    >
+                        <svg width="30" height="30" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                            <path fillRule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z" />
+                        </svg>
+                    </button>
+                </div>
+                <Collapse in={menuMovil}>
+                    <div id="admin-menu-movil">
+                        <NavMovil visibles={visibles} tab={tab} onSelect={cambiarTab} />
+                    </div>
+                </Collapse>
             </div>
 
+            {/* Tablet y escritorio */}
             <aside className="admin-sidebar-wrapper d-none d-md-flex">
                 <h5 className="admin-sidebar-title">Panel de Administración</h5>
-                <SidebarNav />
+                <NavLateral visibles={visibles} tab={tab} onSelect={cambiarTab} />
             </aside>
-
-            <Offcanvas show={sidebar} onHide={() => setSidebar(false)} className="admin-offcanvas bg-verde">
-                <Offcanvas.Header closeButton closeVariant="white" className="border-bottom border-light">
-                    <Offcanvas.Title className="text-white fw-bold">Menú</Offcanvas.Title>
-                </Offcanvas.Header>
-                <Offcanvas.Body className="p-0 pt-3"><SidebarNav /></Offcanvas.Body>
-            </Offcanvas>
 
             <main className="admin-content-area">
                 <div className="admin-content-inner">
@@ -196,7 +230,7 @@ function Admin() {
                             <Row className="g-3 mb-4">
                                 {[
                                     { valor: a.usuarios.length, etiqueta: 'Usuarios registrados', cargando: a.cargandoUsuarios, icono: SECCIONES.usuarios.icono },
-                                    { valor: a.productos.length, etiqueta: 'Productos en catálogo', icono: SECCIONES.productos.icono },
+                                    { valor: 871 , etiqueta: 'Productos en catálogo', icono: SECCIONES.productos.icono },
                                     { valor: a.ordenes.length, etiqueta: 'Órdenes registradas', cargando: a.cargandoOrdenes, icono: SECCIONES.ordenes.icono },
                                 ].map((kpi) => (
                                     <Col xs={12} sm={6} xl={4} key={kpi.etiqueta}>
@@ -259,11 +293,11 @@ function Admin() {
                                         <tbody>
                                         {a.ordenes.map((o) => (
                                             <tr key={o.id}>
-                                                <td>#{o.id}</td>
-                                                <td>{o.usuarioId}</td>
-                                                <td>{new Date(o.fecha).toLocaleString('es-CL')}</td>
-                                                <td>${precioCLP.format(o.total)}</td>
-                                                <td><Button variant="secondary" size="sm" onClick={() => a.verDetalleOrden(o.id)}>Ver detalle</Button></td>
+                                                <td data-label="N° Orden">#{o.id}</td>
+                                                <td data-label="Cliente (ID)">{o.usuarioId}</td>
+                                                <td data-label="Fecha">{new Date(o.fecha).toLocaleString('es-CL')}</td>
+                                                <td data-label="Total">${precioCLP.format(o.total)}</td>
+                                                <td data-label="Detalle"><Button variant="secondary" size="sm" onClick={() => a.verDetalleOrden(o.id)}>Ver detalle</Button></td>
                                             </tr>
                                         ))}
                                         </tbody>
@@ -279,23 +313,26 @@ function Admin() {
                 </div>
             </main>
 
-            <Modal show={a.modal?.tipo === 'producto'} onHide={() => a.setModal(null)} size="lg" aria-labelledby="prod-title">
+            {/* Modales: pantalla completa en móvil (< 576px) */}
+            <Modal show={a.modal?.tipo === 'producto'} onHide={() => a.setModal(null)} size="lg" fullscreen="sm-down" aria-labelledby="prod-title">
                 <Form onSubmit={a.guardarProducto}>
                     <Modal.Header closeButton><Modal.Title id="prod-title">{esAgregar ? 'Agregar Producto' : 'Modificar Producto'}</Modal.Title></Modal.Header>
                     <Modal.Body>
-                        <Campo id="producto-codigo" label="Código producto (SKU)" required value={pf.codigo} onChange={(v) => setP({ codigo: v })} placeholder="Ej: ME023" />
-                        <Campo id="producto-nombre" label="Nombre" required value={pf.nombre} onChange={(v) => setP({ nombre: v })} placeholder="Ingresar nombre del producto" />
-                        <Campo id="producto-detalle" label="Detalle" required value={pf.detalle} onChange={(v) => setP({ detalle: v })} placeholder="Ej: Amoxicilina · Blíster 10 comp." />
-                        <Campo id="producto-especie" label="Especie" required value={pf.especie} onChange={(v) => setP({ especie: v })} placeholder="Seleccionar especie" opciones={ESPECIES} />
-                        <Campo id="producto-precio" label="Precio" required type="number" min="0" step="1" value={pf.precio} onChange={(v) => setP({ precio: v })} placeholder="Ej: 4200" />
-                        <Campo id="producto-imagen" label="URL de imagen (opcional)" value={pf.imagen} onChange={(v) => setP({ imagen: v })} placeholder="/img/ME023.jpeg" />
-                        <Form.Group controlId="producto-categoria">
-                            <Form.Label>Categoría</Form.Label>
-                            <Form.Select value={pf.categoriaId ?? ''} onChange={(e) => setP({ categoriaId: e.target.value })} required>
-                                <option value="">Seleccionar categoría</option>
-                                {a.categorias.map((c) => <option key={c.id} value={c.id}>{c.nombre}</option>)}
-                            </Form.Select>
-                        </Form.Group>
+                        <Row>
+                            <Campo className={MITAD} id="producto-codigo" label="Código producto (SKU)" required value={pf.codigo} onChange={(v) => setP({ codigo: v })} placeholder="Ej: ME023" />
+                            <Campo className={MITAD} id="producto-nombre" label="Nombre" required value={pf.nombre} onChange={(v) => setP({ nombre: v })} placeholder="Ingresar nombre del producto" />
+                            <Campo className={COMPLETO} id="producto-detalle" label="Detalle" required value={pf.detalle} onChange={(v) => setP({ detalle: v })} placeholder="Ej: Amoxicilina · Blíster 10 comp." />
+                            <Campo className={MITAD} id="producto-especie" label="Especie" required value={pf.especie} onChange={(v) => setP({ especie: v })} placeholder="Seleccionar especie" opciones={ESPECIES} />
+                            <Campo className={MITAD} id="producto-precio" label="Precio" required type="number" min="0" step="1" value={pf.precio} onChange={(v) => setP({ precio: v })} placeholder="Ej: 4200" />
+                            <Campo className={MITAD} id="producto-imagen" label="URL de imagen (opcional)" value={pf.imagen} onChange={(v) => setP({ imagen: v })} placeholder="/img/ME023.jpeg" />
+                            <Form.Group className={MITAD} controlId="producto-categoria">
+                                <Form.Label>Categoría</Form.Label>
+                                <Form.Select value={pf.categoriaId ?? ''} onChange={(e) => setP({ categoriaId: e.target.value })} required>
+                                    <option value="">Seleccionar categoría</option>
+                                    {a.categorias.map((c) => <option key={c.id} value={c.id}>{c.nombre}</option>)}
+                                </Form.Select>
+                            </Form.Group>
+                        </Row>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={() => a.setModal(null)}>Cancelar</Button>
@@ -304,20 +341,22 @@ function Admin() {
                 </Form>
             </Modal>
 
-            <Modal show={a.modal?.tipo === 'usuario'} onHide={() => a.setModal(null)} size="lg" aria-labelledby="user-title">
+            <Modal show={a.modal?.tipo === 'usuario'} onHide={() => a.setModal(null)} size="lg" fullscreen="sm-down" aria-labelledby="user-title">
                 <Form onSubmit={a.guardarUsuario}>
                     <Modal.Header closeButton><Modal.Title id="user-title">{esAgregar ? 'Agregar Usuario' : 'Modificar Usuario'}</Modal.Title></Modal.Header>
                     <Modal.Body>
-                        <Campo id="u-run" label="RUN (sin puntos ni guion)" required maxLength={9} value={uf.run} onChange={(v) => setU({ run: v })} placeholder="Ingresar RUN" />
-                        <Campo id="u-nombre" label="Nombre" required maxLength={30} value={uf.nombre} onChange={(v) => setU({ nombre: v })} placeholder="Ingresar nombre" />
-                        <Campo id="u-apellidos" label="Apellidos" required maxLength={30} value={uf.apellidos} onChange={(v) => setU({ apellidos: v })} placeholder="Ingresar apellidos" />
-                        <Campo id="u-email" label="Correo electrónico" required type="email" maxLength={40} value={uf.email} onChange={(v) => setU({ email: v })} placeholder="Ingresar correo" />
-                        <Campo id="u-fecha" label="Fecha de nacimiento" required type="date" value={uf.fechaNac} onChange={(v) => setU({ fechaNac: v })} />
-                        <Campo id="u-rol" label="Rol" required value={uf.rol} onChange={(v) => setU({ rol: v })} placeholder="Seleccionar rol" opciones={ROLES} />
-                        <Campo id="u-region" label="Región" required value={uf.region} onChange={(v) => setU({ region: v, comuna: '' })} placeholder="Seleccionar región" opciones={REGIONES} />
-                        <Campo id="u-comuna" label="Comuna" required disabled={!uf.region} value={uf.comuna} onChange={(v) => setU({ comuna: v })} placeholder={uf.region ? 'Seleccionar comuna' : 'Primero selecciona una región'} opciones={REGION_COMUNAS[uf.region] ?? []} />
-                        <Campo id="u-direccion" label="Dirección" required maxLength={100} value={uf.direccion} onChange={(v) => setU({ direccion: v })} placeholder="Ingresar dirección" />
-                        <Campo id="u-password" label={esAgregar ? 'Contraseña' : 'Nueva contraseña (opcional)'} type="password" maxLength={10} required={esAgregar} value={uf.password} onChange={(v) => setU({ password: v })} placeholder={esAgregar ? 'Ingresar contraseña' : 'Dejar vacío para mantener la actual'} />
+                        <Row>
+                            <Campo className={MITAD} id="u-run" label="RUN (sin puntos ni guion)" required maxLength={9} value={uf.run} onChange={(v) => setU({ run: v })} placeholder="Ingresar RUN" />
+                            <Campo className={MITAD} id="u-nombre" label="Nombre" required maxLength={30} value={uf.nombre} onChange={(v) => setU({ nombre: v })} placeholder="Ingresar nombre" />
+                            <Campo className={MITAD} id="u-apellidos" label="Apellidos" required maxLength={30} value={uf.apellidos} onChange={(v) => setU({ apellidos: v })} placeholder="Ingresar apellidos" />
+                            <Campo className={MITAD} id="u-email" label="Correo electrónico" required type="email" maxLength={40} value={uf.email} onChange={(v) => setU({ email: v })} placeholder="Ingresar correo" />
+                            <Campo className={MITAD} id="u-fecha" label="Fecha de nacimiento" required type="date" value={uf.fechaNac} onChange={(v) => setU({ fechaNac: v })} />
+                            <Campo className={MITAD} id="u-rol" label="Rol" required value={uf.rol} onChange={(v) => setU({ rol: v })} placeholder="Seleccionar rol" opciones={ROLES} />
+                            <Campo className={MITAD} id="u-region" label="Región" required value={uf.region} onChange={(v) => setU({ region: v, comuna: '' })} placeholder="Seleccionar región" opciones={REGIONES} />
+                            <Campo className={MITAD} id="u-comuna" label="Comuna" required disabled={!uf.region} value={uf.comuna} onChange={(v) => setU({ comuna: v })} placeholder={uf.region ? 'Seleccionar comuna' : 'Primero selecciona una región'} opciones={REGION_COMUNAS[uf.region] ?? []} />
+                            <Campo className={COMPLETO} id="u-direccion" label="Dirección" required maxLength={100} value={uf.direccion} onChange={(v) => setU({ direccion: v })} placeholder="Ingresar dirección" />
+                            <Campo className={MITAD} id="u-password" label={esAgregar ? 'Contraseña' : 'Nueva contraseña (opcional)'} type="password" maxLength={10} required={esAgregar} value={uf.password} onChange={(v) => setU({ password: v })} placeholder={esAgregar ? 'Ingresar contraseña' : 'Dejar vacío para mantener la actual'} />
+                        </Row>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={() => a.setModal(null)}>Cancelar</Button>
@@ -326,19 +365,19 @@ function Admin() {
                 </Form>
             </Modal>
 
-            <Modal show={a.detalleOrden !== null} onHide={() => a.setDetalleOrden(null)} size="lg" aria-labelledby="orden-det-title">
+            <Modal show={a.detalleOrden !== null} onHide={() => a.setDetalleOrden(null)} size="lg" fullscreen="sm-down" aria-labelledby="orden-det-title">
                 <Modal.Header closeButton><Modal.Title id="orden-det-title">Detalle de la orden #{a.detalleOrden?.id}</Modal.Title></Modal.Header>
                 <Modal.Body>
                     {a.detalleOrden?.items.length === 0 ? <p className="text-muted mb-0">Esta orden no tiene detalles.</p>
-                        : <Table responsive>
+                        : <Table responsive className="admin-tabla admin-tabla--compacta align-middle mb-0">
                             <thead><tr><th>Producto</th><th>Cantidad</th><th>Precio unitario</th><th>Subtotal</th></tr></thead>
                             <tbody>
                             {a.detalleOrden?.items.map((d) => (
                                 <tr key={d.id}>
-                                    <td>{d.producto?.nombre ?? `Producto #${d.producto?.id ?? '?'}`}</td>
-                                    <td>{d.cantidad}</td>
-                                    <td>${precioCLP.format(d.precioUnitario)}</td>
-                                    <td>${precioCLP.format(d.precioUnitario * d.cantidad)}</td>
+                                    <td data-label="Producto">{d.producto?.nombre ?? `Producto #${d.producto?.id ?? '?'}`}</td>
+                                    <td data-label="Cantidad">{d.cantidad}</td>
+                                    <td data-label="Precio unitario">${precioCLP.format(d.precioUnitario)}</td>
+                                    <td data-label="Subtotal">${precioCLP.format(d.precioUnitario * d.cantidad)}</td>
                                 </tr>
                             ))}
                             </tbody>

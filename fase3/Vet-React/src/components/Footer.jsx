@@ -17,12 +17,7 @@ const posicion = [-34.1708, -70.7444]
 
 function Footer() {
     const [enviado, setEnviado] = useState(false)
-    const {
-        valores: form,
-        errores,
-        errorGeneral,
-        handleChange: actualizarCampo,
-        handleSubmit,
+    const { valores: form, errores, errorGeneral, handleChange: actualizarCampo, handleSubmit,
     } = useFormulario(valoresContactoIniciales, reglasContacto, () => {
         setEnviado(true)
         return null
@@ -39,14 +34,11 @@ function Footer() {
                 <Row className="gy-1">
                     <Col xs={12} md={6} xl={4} className="d-flex flex-column align-items-center">
                         <h6 className="my-1 fw-semibold">Horario Tienda</h6>
-                        <p className="mb-1 text-start">
-                            Lunes a viernes: 10:00 - 19:30<br />
-                            Sábados y domingos: 10:00 - 16:00
-                        </p>
+                            <div className="text-center">Lunes a viernes: 10:00 - 19:30</div>
+                            <div className="mb-1 text-center">Sábado y domingo: 10:00 - 16:00</div>
                         <h6 className="my-1 fw-semibold">Horario Consulta</h6>
-                        <p className="mb-1 text-start">
-                            Lunes a domingo: 10:00 - 13:00 y 14:00 - 17:00<br />
-                            Valor de la consulta $15.000</p>
+                            <div className="text-center">Lunes a domingo: 10:00 - 13:00 y 14:00 - 17:00</div>
+                            <div className="mb-1 text-center">Valor de la consulta $15.000</div>
                         <Image src="/img/icons/logo.png" alt="Logo" width={96} height={96} className="mt-2" />
                     </Col>
 

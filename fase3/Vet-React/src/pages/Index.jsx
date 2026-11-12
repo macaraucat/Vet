@@ -6,7 +6,7 @@ import { useCarritoContext } from '../context/CarritoContext'
 import useFormulario from '../hooks/useFormulario'
 import { crearReglasCita } from '../utils/validaciones'
 
-const HORARIOS = [ '10:00-10:45', '11:00-11:45', '12:00-12:45', '13:00-13:45', '15:00-15:45', '16:00-16:45', '17:00-17:45',]
+const HORARIOS = [ '10:00-10:45', '11:00-11:45', '12:00-12:45', '13:00-13:45', '15:00-15:45', '16:00-16:45',]
 const ESPECIES = ['Perro', 'Gato', 'Ave', 'Conejo']
 const citaInicial = { fecha: '', hora: '', mascota: '', especie: '', edad: '' }
 
@@ -154,13 +154,11 @@ function Index() {
                 <p>Veterinaria San Marcos es una clínica veterinaria ubicada en Rancagua, Región del Libertador General Bernardo O'Higgins, fundada en 2009. Contamos con un equipo integral dedicado a brindar una atención cercana y profesional, para tus mascotas. A lo largo de estos años, hemos visto crecer la confianza de nuestros clientes, lo que nos motiva a seguir mejorando cada aspecto de nuestra atención, desde la comodidad de nuestras instalaciones hasta la calidez con la que recibimos a cada mascota y su familia.</p>
                 <Image src="/img/team.jpg" alt="Team" className="team-img mx-auto d-block my-4" />
                 <h3>Nuestro equipo:</h3>
-                <div>
-                    <b>Laura Claro Hernández:</b> Médica Veterinaria, Universidad de Concepción. Diplomado en Cirugía de Pequeños Animales (Universidad de Chile). Directora clínica y fundadora de Veterinaria San Marcos, con más de 15 años de trayectoria en medicina y cirugía de perros y gatos.
-                    <b>Carmen Martínez Larraín:</b> Médica Veterinaria, Universidad Austral de Chile. Diplomado en Medicina Interna de Pequeños Animales; responsable de consultas generales, vacunación y programas preventivos.
-                    <b>Ignacio Solar Guzmán:</b> Médico Veterinario, Universidad de Concepción. Magíster en Medicina de Especies Exóticas, con dedicación especial a aves y conejos; a cargo de la atención de mascotas no convencionales.
-                    <b>Jorge Vial Peña:</b> Técnico en Enfermería Veterinaria, Universidad Santo Tomás. Encargado de pabellón y apoyo en procedimientos quirúrgicos, cuidados intensivos y toma de exámenes.
-                    <b>Sofía Astorga Zapata:</b> Administradora, Universidad de Talca. Recepcionista y encargada de atención a clientes, agendamiento de horas y gestión administrativa de la clínica.
-                </div>
+                <div className="mb-2 justified-text"><b>Laura Claro Hernández:</b> Médica Veterinaria, Universidad de Concepción. Diplomado en Cirugía de Pequeños Animales (Universidad de Chile). Directora clínica y fundadora de Veterinaria San Marcos, con más de 15 años de trayectoria en medicina y cirugía de perros y gatos.</div>
+                <div className="mb-2 justified-text"><b>Carmen Martínez Larraín:</b> Médica Veterinaria, Universidad Austral de Chile. Diplomado en Medicina Interna de Pequeños Animales; responsable de consultas generales, vacunación y programas preventivos.</div>
+                <div className="mb-2 justified-text"><b>Ignacio Solar Guzmán:</b> Médico Veterinario, Universidad de Concepción. Magíster en Medicina de Especies Exóticas, con dedicación especial a aves y conejos; a cargo de la atención de mascotas no convencionales.</div>
+                <div className="mb-2 justified-text"><b>Jorge Vial Peña:</b> Técnico en Enfermería Veterinaria, Universidad Santo Tomás. Encargado de pabellón y apoyo en procedimientos quirúrgicos, cuidados intensivos y toma de exámenes.</div>
+                <div className="mb-2 justified-text"><b>Sofía Astorga Zapata:</b> Administradora, Universidad de Talca. Recepcionista y encargada de atención a clientes, agendamiento de horas y gestión administrativa de la clínica.</div>
             </section>
 
             <section id="noticias" className="noticias container">

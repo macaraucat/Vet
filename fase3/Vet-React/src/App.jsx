@@ -5,7 +5,6 @@ import Footer from './components/Footer'
 import Login from './pages/Login'
 import Index from './pages/Index'
 import Catalogo from './pages/Catalogo'
-import Producto from './pages/Producto'
 import Carrito from './pages/Carrito'
 import Admin from './pages/Admin'
 import Checkout from './pages/Checkout'
@@ -34,7 +33,7 @@ function Shell() {
                 <Route path="/" element={<Index />}/>
                 <Route path="/login" element={<Login />} />
                 <Route path="/catalogo" element={<Catalogo />}/>
-                <Route path="/producto/:id" element={<Producto />}/>
+                <Route path="/producto/:id" element={<Catalogo />}/>
                 <Route path="/carrito" element={<Carrito />}/>
                 <Route path="/admin" element={<Admin />}/>
                 <Route path="/checkout" element={<Checkout />}/>
