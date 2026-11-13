@@ -60,9 +60,7 @@ export function useCarrito() {
     }
 
     const totalItems = carrito.reduce((suma, item) => suma + item.cantidad, 0);
-    const totalPrecio = carrito
-        .filter((item) => item.tipo !== "cita")
-        .reduce((suma, item) => suma + item.precio * item.cantidad, 0);
+    const totalPrecio = carrito.reduce((suma, item) => suma + item.precio * item.cantidad, 0);
 
     return { carrito, agregarAlCarrito, agregarCitaAlCarrito, eliminarItem, vaciarCarrito, totalItems, totalPrecio, mensaje, cambiarCantidad };
 }
