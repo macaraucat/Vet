@@ -189,9 +189,15 @@ function Index() {
                 </Modal.Header>
                 <Modal.Body>
                     {confirmada ? (
-                        <Alert variant="success" className="mb-0">
-                            ¡Cita agregada al carrito! Completa el pago para confirmarla.
-                        </Alert>
+                        <>
+                            <Alert variant="success" className="mb-0">
+                                ¡Cita agregada al carrito! Completa el pago para confirmarla.
+                            </Alert>
+                            <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                                <Button variant="outline-secondary" onClick={cerrarCita}>Seguir en la tienda</Button>
+                                <Button variant="success" onClick={() => { cerrarCita(); navigate('/checkout') }}>Ir a pagar</Button>
+                            </div>
+                        </>
                     ) : (
                         <Form className="cita-form" onSubmit={handleSubmit} noValidate>
                             <Campo name="fecha" label="Fecha" errores={errores}>
