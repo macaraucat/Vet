@@ -25,19 +25,19 @@ public class BoletaController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','FUNCIONARIO')")
     public List<Boleta> listar() {
         return service.listar();
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','FUNCIONARIO')")
     public Boleta buscarPorId(@PathVariable Long id) {
         return service.buscarPorId(id);
     }
 
     @GetMapping("/{id}/detalle")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR','FUNCIONARIO')")
     public List<DetalleBoleta> detalle(@PathVariable Long id) {
         return service.detalleDe(id);
     }

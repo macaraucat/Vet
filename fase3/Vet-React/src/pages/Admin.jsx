@@ -23,7 +23,7 @@ const SECCIONES = {
 }
 const SECCION_POR_ROL = {
     ADMINISTRADOR: ['dashboard', 'usuarios', 'productos', 'ordenes', 'perfil'],
-    FUNCIONARIO: ['productos', 'perfil'],
+    FUNCIONARIO: ['productos', 'ordenes', 'perfil'],
 }
 const COLS_PRODUCTOS = [
     { titulo: 'SKU', render: (p) => p.codigo },
