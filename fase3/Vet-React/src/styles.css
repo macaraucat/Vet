@@ -502,3 +502,9 @@ main {
         height: 200px;
     }
 }
+
+
+.catalogo-product-image {
+    object-fit: contain;
+    background-color: #fff;
+}
