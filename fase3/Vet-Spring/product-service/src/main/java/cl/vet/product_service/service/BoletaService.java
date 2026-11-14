@@ -11,7 +11,7 @@ import cl.vet.product_service.repository.DetalleBoletaRepository;
 import cl.vet.product_service.repository.ProductoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,7 +22,7 @@ public class BoletaService {
     private final BoletaRepository boletaRepository;
     private final DetalleBoletaRepository detalleBoletaRepository;
     private final ProductoRepository productoRepository;
-
+    @Transactional
     public Boleta crear(BoletaRequestDTO request) {
         int total = 0;
 
